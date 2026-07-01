@@ -30,7 +30,6 @@ def execute_scraper() -> None:
     else:
         postal_code = constants_variables_getter('POSTAL_CODE_VALLS')
 
-
     navigator = initialize(postal_code)
 
     if not navigator:
