@@ -1,121 +1,103 @@
-import time
-from selenium import webdriver
+from mercadona_navigator.initialize_mercadona_grocery import initialize
+import argparse
+import re
+from constants.constants_variables import constants_variables_getter
+from mercadona_navigator.navigate_through_main_page import navigate_through_main_page
+
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-from random_user_agent.user_agent import UserAgent
-from random_user_agent.params import SoftwareName, OperatingSystem
-from bs4 import BeautifulSoup
-
-BASIC_URL = "https://tienda.mercadona.es/"
 
 
-def inicialitzar_botiga_mercadona(codi_postal="43800", debug=True):
+EXCLUDED_CATEGORIES = constants_variables_getter('EXCLUDED_CATEGORIES')
+EXCLUDED_SUB_CATEGORIES = constants_variables_getter('EXCLUDED_SUB_CATEGORIES')
 
-    if debug:
-        options = webdriver.ChromeOptions()
+def execute_scraper() -> None:
+    parser = argparse.ArgumentParser(
+        description="Mercadona Scraper"
+    )
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        driver.maximize_window()
+    parser.add_argument(
+        "-cp",
+        type=str,
+        help="Postal Code variable name"
+    )
+
+    args = parser.parse_args()
+
+    if args.cp:
+        postal_code = constants_variables_getter[args.cp]
     else:
-        options = webdriver.ChromeOptions()
+        postal_code = constants_variables_getter('POSTAL_CODE_VALLS')
 
-        # 1. ACTIVA EL MODE HEADLESS
-        # Actualment, Google recomana fer servir '--headless=new' en comptes de '--headless' a seques.
-        options.add_argument('--headless=new')
 
-        # 2. FIXA LA MIDA DE LA FINESTRA (Molt important!)
-        # Si no ho fas, el mode invisible a vegades obre una finestra minúscula de mòbil,
-        # amagant el botó "Continuar" i fent petar el teu script.
-        options.add_argument('--window-size=1920,1080')
-        options.add_argument('--disable-gpu')  # Ajuda a evitar errors gràfics en l'execució en segon pla
+    navigator = initialize(postal_code)
 
-        # 3. TRUC ANTIBLOQUEIG (Cloudflare)
-        # Quan fas servir el mode headless, Chrome avisa a la web dient: "Hola, sóc un HeadlessChrome".
-        # Les webs com Mercadona ho detecten i et bloquegen a l'instant.
-        # Li canviem el "DNI" (User-Agent) perquè es pensi que som un usuari normal des de Windows:
+    if not navigator:
+        raise Exception("No s'ha pogut inicialitzar el navegador. Tancant sraper")
 
-        software_names = [SoftwareName.CHROME.value]
-        operating_systems = [OperatingSystem.WINDOWS.value]
+    urls_to_follow = navigate_through_main_page(navigator)
+    navigator.quit()
 
-        user_agent_rotator = UserAgent(software_names=software_names, operating_systems=operating_systems, limit=100)
+    products_to_scrap_urls = {}
+    for title, url in urls_to_follow.items():
+        navigator = initialize(postal_code, True)
+        products_to_scrap_urls[title] = []
 
-        # Get Random User Agent String.
-        user_agent = user_agent_rotator.get_random_user_agent()
+        navigator.get(url)
+        print(f"Agafant les urls dels productes de {title} - {url}")
 
-        options.add_argument(
-            'user-agent='+ user_agent)
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
-    try:
-        # 1. Anar a la web de Mercadona
-        print("Obrint Mercadona...")
-        driver.get(BASIC_URL)
-
-        # 2. Acceptar les Cookies (si apareix el banyador)
-        try:
-            boto_cookies = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH,
-                                            "//button[contains(text(), 'Aceptar')] | //button[@data-testid='cookie-policy-accept']"))
-            )
-            boto_cookies.click()
-            print("Cookies acceptades.")
-        except Exception:
-            print("No ha aparegut el cartell de cookies o s'ha tancat automàticament.")
-
-        # 3. Introduir el Codi Postal
-        print(f"Introduint el codi postal: {codi_postal}...")
-        input_cp = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.NAME, "postalCode"))
+        element_h2 = WebDriverWait(navigator, 5).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "h2.section__header.headline1-b"))
         )
-        input_cp.clear()
-        input_cp.send_keys(codi_postal)
 
-        # TRUC MÀGIC: Simulem que premem la tecla "ENTER" des del mateix camp de text
-        input_cp.send_keys(Keys.RETURN)
+        text_titol = element_h2.text
+        print(f"El títol extret és: {text_titol}")
 
-        time.sleep(5)
+        products = WebDriverWait(navigator, 5).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.product-cell-container"))
+        )
 
-        return driver
+        for product in products:
+            product.click()
+            url_product = navigator.current_url
+            close_button_modal = WebDriverWait(navigator, 5).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "button.modal-content__close"))
+            )
 
-    except Exception as e:
-        print(f"Alguna cosa ha fallat durant l'inici: {e}")
-        driver.quit()
-        return None
+            category = WebDriverWait(navigator, 5).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "span.subhead1-r"))
+            ).text
+
+            category = re.sub(r'[^a-zA-ZÀ-ÿ\s]', '', category).strip()
+
+            subcategory = WebDriverWait(navigator, 5).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "span.subhead1-sb"))
+            ).text
+            subcategory = re.sub(r'[^a-zA-ZÀ-ÿ\s]', '', subcategory).strip()
+
+            append_item = True
+            if category in EXCLUDED_CATEGORIES:
+                print(f"Descartem producte {url_product} per ser de la categoria {category}")
+                append_item = False
+
+            if append_item and subcategory in EXCLUDED_SUB_CATEGORIES:
+                print(f"Descartem producte {url_product} per ser de la subcategoria {subcategory}")
+                append_item = False
+
+            if append_item and url_product:
+                products_to_scrap_urls[title].append({
+                    'url': url_product,
+                    'category': category,
+                    'subcategory': subcategory
+                })
+
+            close_button_modal.click()
+
+        print(f"Total productes de {title}: {len(products_to_scrap_urls[title])}")
+        navigator.quit()
+
 
 
 if __name__ == "__main__":
-    navegador = inicialitzar_botiga_mercadona(codi_postal="43800", debug=False)
-
-    links_to_follow = []
-
-    if navegador:
-
-        html_pàgina = navegador.page_source
-        soup = BeautifulSoup(html_pàgina, 'html.parser')
-        banner = soup.select("div.banner")[0]
-        if banner:
-            link = banner.find('a')['href'][1:]
-            links_to_follow.append(BASIC_URL+link)
-
-        carousels = soup.select("section.section-carousel")
-        print(f"S'han trobat {len(carousels)} carrusels de productes.")
-        for idx, carousel in enumerate(carousels):
-            titol_el = carousel.select_one("h2, h3")
-            titol = titol_el.text.strip() if titol_el else "Sense títol"
-            print(f" - Carrusel {idx + 1}: {titol}")
-            link = banner.find('a')
-            if link:
-                links_to_follow.append(BASIC_URL+(link['href'][1:]))
-
-
-        navegador.quit()
-
-    else:
-        print("No s'ha pogut iniciar el navegador. Tancant sraper")
-
-    print(links_to_follow)
+    execute_scraper()
