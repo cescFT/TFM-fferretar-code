@@ -22,6 +22,7 @@ def create_selenium_driver(test = False) -> webdriver.Chrome:
 
     if test:
         options = webdriver.ChromeOptions()
+        options.add_argument('--window-size=1920,1080')
 
     software_names = [SoftwareName.CHROME.value]
     operating_systems = [OperatingSystem.WINDOWS.value]
