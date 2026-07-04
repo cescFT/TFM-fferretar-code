@@ -9,6 +9,8 @@ from mercadona_navigator.navigate_through_main_page import navigate_through_main
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import concurrent.futures
+from dto.product_scrap_data import ProductScrapData
 
 
 def execute_scraper() -> None:
@@ -80,18 +82,31 @@ def execute_scraper() -> None:
     print(f"Temps total per totes les categories principals: {((end_time_total - start_date_total)/60):.2f} min.")
 
 
-    ###### TODO: IMPLEMENTAR TRHEADS AQUI! COMPROVAR QUE TOT S'AGAFI OK EN TOTS ELS PRODUCTES
+    ###### TODO: PROVAR!
     info_products = []
+    products_to_process = []
     for title, product_data in products_to_scrap_urls.items():
         for product_data_item in product_data:
-            product_info = product_scrap_data.get_product_scrap_data(product_data_item, title, wh_code)
-            info_products.append(product_info)
-            print(f"Producte {product_info['product_name']} de {title} processat correctament")
-        print(info_products)
+            product_scrap_data_request = ProductScrapData(
+                product_data_item, title, wh_code
+            )
+            products_to_process.append(product_scrap_data_request)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=7) as executor:
+        # L'executor envia tots els productes als fils i en recull els resultats
+        resultats = executor.map(product_scrap_data.process_thread_product_scrap_data, products_to_process)
+
+        for product_info in resultats:
+            if product_info:
+                info_products.append(product_info)
+                print(f"Producte {product_info['product_name']} processat correctament")
+
     #####
 
-    # desar a sqlite?
+    print(info_products)
+
     # pensar tema de les dades valors nutricionals + nutriscore preguntar a gemini <--- TODO despres de fer threads i recuperar tots els productes correctament
+    # desar a sqlite?
     # a traves de les imatges que se li passaran a un prompt...
     # generar api key i posar-la a un .env...
 

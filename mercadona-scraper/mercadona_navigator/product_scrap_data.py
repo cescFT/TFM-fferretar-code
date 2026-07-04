@@ -8,6 +8,7 @@ from constants import constants_variables
 from mercadona_api import utils as mercadona_api_caller
 import datetime
 import re
+from dto.product_scrap_data import ProductScrapData
 
 NOT_INGREDIENTS_SAME_NAME_CATEGORIES = constants_variables.constants_variables_getter('NOT_INGREDIENTS_SAME_NAME_CATEGORIES')
 EXCLUDED_CATEGORIES = constants_variables.constants_variables_getter('EXCLUDED_CATEGORIES')
@@ -59,8 +60,19 @@ def get_urls_and_data_from_specific_page(
 
     return products_to_scrap_urls_result
 
+def process_thread_product_scrap_data(item: ProductScrapData):
+    try:
+        return get_product_scrap_data(item.get_product_data_item(), item.get_title(), item.get_wh_code())
+    except Exception as e:
+        print(f"Error processant el producte {e}")
+        return None
 
-def get_product_scrap_data(data:dict, title_category_main_page: str, wh_id: str) -> dict:
+
+def get_product_scrap_data(
+        data:dict,
+        title_category_main_page: str,
+        wh_id: str
+) -> dict:
     id = data['url'].split("/")[4]
     response_api = mercadona_api_caller.get_data_from_api(id, wh_id)
 
