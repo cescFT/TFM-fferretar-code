@@ -22,17 +22,17 @@ def get_urls_and_data_from_specific_page(
     products_to_scrap_urls_result = {}
     product.click()
     url_product = navigator.current_url
-    close_button_modal = WebDriverWait(navigator, 5).until(
+    close_button_modal = WebDriverWait(navigator, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "button.modal-content__close"))
     )
 
-    category = WebDriverWait(navigator, 5).until(
+    category = WebDriverWait(navigator, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "span.subhead1-r"))
     ).text
 
     category = re.sub(r'[^a-zA-ZÀ-ÿ\s]', '', category).strip()
 
-    subcategory = WebDriverWait(navigator, 5).until(
+    subcategory = WebDriverWait(navigator, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "span.subhead1-sb"))
     ).text
     subcategory = re.sub(r'[^a-zA-ZÀ-ÿ\s]', '', subcategory).strip()
@@ -60,9 +60,9 @@ def get_urls_and_data_from_specific_page(
     return products_to_scrap_urls_result
 
 
-def get_product_scrap_data(data:dict, title_category_main_page: str) -> dict:
+def get_product_scrap_data(data:dict, title_category_main_page: str, wh_id: str) -> dict:
     id = data['url'].split("/")[4]
-    response_api = mercadona_api_caller.get_data_from_api(id)
+    response_api = mercadona_api_caller.get_data_from_api(id, wh_id)
 
     product_name = response_api['display_name']
     bar_code = response_api['ean']

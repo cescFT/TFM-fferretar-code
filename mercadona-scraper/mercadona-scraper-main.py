@@ -1,5 +1,6 @@
 from mercadona_navigator import product_scrap_data
 from mercadona_navigator.initialize_mercadona_grocery import initialize
+from validations.validate_postal_code import validate as validate_postal_code
 import argparse
 import time
 from constants.constants_variables import constants_variables_getter
@@ -24,9 +25,13 @@ def execute_scraper() -> None:
     args = parser.parse_args()
 
     if args.cp:
-        postal_code = constants_variables_getter[args.cp]
+        postal_code_data = validate_postal_code(args.cp)
+        postal_code = postal_code_data['POSTAL_CODE']
+        wh_code = postal_code_data['WH']
     else:
-        postal_code = constants_variables_getter('POSTAL_CODE_VALLS')
+        postal_code_data = constants_variables_getter('VALLS_DATA')
+        postal_code = postal_code_data['POSTAL_CODE']
+        wh_code = postal_code_data['WH']
 
     navigator = initialize(postal_code)
 
@@ -34,16 +39,14 @@ def execute_scraper() -> None:
         raise Exception("No s'ha pogut inicialitzar el navegador. Tancant sraper")
 
     urls_to_follow = navigate_through_main_page(navigator)
-    navigator.quit()
 
     products_to_scrap_urls = {}
     start_date_total = time.perf_counter()
     for title, url in urls_to_follow.items():
         start_date = time.perf_counter()
-        navigator = initialize(postal_code)
+        navigator.get(url)
         products_to_scrap_urls[title] = []
 
-        navigator.get(url)
         print(f"Agafant les urls dels productes de {title} - {url}")
 
         element_h2 = WebDriverWait(navigator, 5).until(
@@ -67,11 +70,11 @@ def execute_scraper() -> None:
             if products_to_scrap_urls_result:
                 products_to_scrap_urls[title].append(products_to_scrap_urls_result)
 
-        navigator.quit()
         end_time = time.perf_counter()
         elapsed_time = end_time - start_date
         print(f"Total productes de {title}: {len(products_to_scrap_urls[title])}. Temps execució {elapsed_time:.2f} segons.")
-        break
+        # break
+    navigator.quit()
 
     end_time_total = time.perf_counter()
     print(f"Temps total per totes les categories principals: {((end_time_total - start_date_total)/60):.2f} min.")
@@ -81,7 +84,7 @@ def execute_scraper() -> None:
     info_products = []
     for title, product_data in products_to_scrap_urls.items():
         for product_data_item in product_data:
-            product_info = product_scrap_data.get_product_scrap_data(product_data_item, title)
+            product_info = product_scrap_data.get_product_scrap_data(product_data_item, title, wh_code)
             info_products.append(product_info)
             print(f"Producte {product_info['product_name']} de {title} processat correctament")
         print(info_products)

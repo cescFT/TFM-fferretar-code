@@ -1,10 +1,19 @@
 
 constants = {
     "BASIC_URL": "https://tienda.mercadona.es/",
-    "MERCADONA_BASE_URL_API": "https://tienda.mercadona.es/api/products/@@product_id@@/?lang=es&wh=3973", # TODO FER CODI PER CANVIAR EL WH en funció del codi postal
-    "POSTAL_CODE_BCN": "08017",
-    "POSTAL_CODE_TGN": "43007",
-    "POSTAL_CODE_VALLS": "43800",
+    "MERCADONA_BASE_URL_API": "https://tienda.mercadona.es/api/products/@@product_id@@/?lang=es&wh=@@wh@@",
+    "BCN_DATA": {
+        "POSTAL_CODE": "08017",
+        "WH": "bcn1"
+    },
+    "TGN_DATA": {
+        "POSTAL_CODE": "43007",
+        "WH": "4074"
+    },
+    "VALLS_DATA": {
+        "POSTAL_CODE": "43800",
+        "WH": "3973"
+    },
     "EXCLUDED_CATEGORIES": [
         "Cuidado del cabello",
         "Cuidado facial y corporal",
@@ -26,10 +35,7 @@ constants = {
     ]
 }
 
-def get_all_constants() -> dict:
-    return constants
-
-def constants_variables_getter(key: str) -> str:
+def constants_variables_getter(key: str) -> str|dict:
     """
 
     :return:
