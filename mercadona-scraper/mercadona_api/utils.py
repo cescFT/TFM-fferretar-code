@@ -4,9 +4,10 @@ import json
 
 MERCADONA_BASE_URL_API = constants_variables_getter('MERCADONA_BASE_URL_API')
 
-def get_data_from_api(product_id: str) -> dict:
+def get_data_from_api(product_id: str, wh_id: str) -> dict:
 
     url = MERCADONA_BASE_URL_API.replace("@@product_id@@", product_id)
+    url = url.replace("@@wh@@", wh_id)
 
     response = requests.get(url)
 
