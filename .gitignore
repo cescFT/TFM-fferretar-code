@@ -1,3 +1,4 @@
 .idea
 .tfm-venv/
 desktop.ini
+.env
