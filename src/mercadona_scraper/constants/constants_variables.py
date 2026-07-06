@@ -27,11 +27,12 @@ constants = {
         "Higiene y cuidado",
         "Toallitas y pañales"
     ],
-    "EXCLUDED_CATEGORIES_TO_GET_NUTRITIONAL_SCORE": [
-        "Fruta y verdura"
-    ],
     "NOT_INGREDIENTS_SAME_NAME_CATEGORIES": [
         "Fruta y verdura"
+    ],
+    "LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA": "5",
+    "BASIC_NUTRIENTS_TO_GET": [
+        1,2,3
     ]
 }
 
