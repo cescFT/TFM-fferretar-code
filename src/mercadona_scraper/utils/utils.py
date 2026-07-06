@@ -73,3 +73,5 @@ def insert_product_data_to_database(info_products: list) -> None:
         for insert_photo in inserts_photos:
             cur.execute(insert_photo)
         conn.commit()
+
+    conn.close()
