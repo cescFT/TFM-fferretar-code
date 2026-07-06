@@ -10,17 +10,14 @@ def update_food_found_nutriments(data_to_update: list) -> None:
 
     for product_nutritional_data_dto in data_to_update:
         nutriments = product_nutritional_data_dto.get_nutrients()
-        product_ids.append(product_nutritional_data_dto.get_id())
+        product_ids.append(product_nutritional_data_dto.get_mercadona_id())
         for nutriment in nutriments:
             if nutriment.get_nutrient_id() is None:
                 new_nutriments_to_save.append(nutriment)
             else:
                 nutriments_already_saved.append(nutriment.get_nutrient_id())
 
-
-
     db_path = get_path_sqlite_db()
-
 
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
@@ -38,9 +35,9 @@ def update_food_found_nutriments(data_to_update: list) -> None:
 
         for product_nutritional_data_dto in data_to_update:
             if product_nutritional_data_dto.get_nutriscore() is not None:
-                cur.execute(f"UPDATE products SET nutriscore = ? WHERE id = ?", (
+                cur.execute(f"UPDATE products SET nutriscore = ? WHERE id_product = ?", (
                         product_nutritional_data_dto.get_nutriscore(),
-                        product_nutritional_data_dto.get_id()
+                        product_nutritional_data_dto.get_mercadona_id()
                     )
                 )
 
@@ -65,7 +62,7 @@ def update_food_found_nutriments(data_to_update: list) -> None:
         cur.execute(f"""
                 update products
                 set found_nutriments = 1
-                where id IN({placeholder})
+                where id_product IN({placeholder})
                 """, product_ids)
         conn.commit()
 
