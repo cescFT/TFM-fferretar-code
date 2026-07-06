@@ -82,14 +82,17 @@ if __name__ == '__main__':
             imatge = Image.open(BytesIO(img_content.content))
             images.append(imatge)
 
-        
-        resposta_gemini = gemini_connection.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=[prompt, images],
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json"
+        try:
+            resposta_gemini = gemini_connection.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=[prompt, images],
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                )
             )
-        )
+        except Exception as e:
+            print(f"Error: {e}")
+            continue
 
         try:
             nutritional_data = json.loads(resposta_gemini.text)
@@ -107,6 +110,9 @@ if __name__ == '__main__':
     for product in products_data:
         product_id = product['id']
         nutritional_data = nutritional_data_responses[product_id]
+
+        if not nutritional_data:
+            continue
 
         product_nutritional_data_dto = ProductNutritionalDataDTO(
             product_id,
