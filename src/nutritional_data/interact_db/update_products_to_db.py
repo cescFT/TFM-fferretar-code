@@ -17,18 +17,24 @@ def update_food_found_nutriments(data_to_update: list) -> None:
             else:
                 nutriments_already_saved.append(nutriment.get_nutrient_id())
 
+    unique_new_nutriments_to_save = {}
+    for nutriment in new_nutriments_to_save:
+        if nutriment.get_nutrient_name() not in unique_new_nutriments_to_save:
+            unique_new_nutriments_to_save[nutriment.get_nutrient_name()] = nutriment.get_nutrient_unit()
+
+
     db_path = get_path_sqlite_db()
 
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
 
-        for nutriment in new_nutriments_to_save:
+        for nutriment_name, unit in unique_new_nutriments_to_save.items():
             cur.execute(f"""
                     insert into nutrients (nom, unitat_mesura_nutrient)
                     values (?, ?)
-                    """, (nutriment.get_nutrient_name(), nutriment.get_nutrient_unit()))
+                    """, (nutriment_name, unit))
 
-        if new_nutriments_to_save:
+        if unique_new_nutriments_to_save:
             conn.commit()
 
         all_nutriments = get_all_nutriments()
