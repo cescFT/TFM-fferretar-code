@@ -53,6 +53,12 @@ def get_path_sqlite_db() -> str:
 
     return str(db_path)
 
+def get_path_csv_from_db() -> str:
+    actual_path = Path(__file__).resolve()
+    project_path = actual_path.parent.parent.parent.parent
+    csv_path = project_path / 'csv' / 'mercadona-scraper-results.csv'
+    return str(csv_path)
+
 def insert_product_data_to_database(info_products: list) -> None:
     inserts = []
     inserts_photos = []
