@@ -13,6 +13,7 @@ from dto.product_nutritional_data import ProductNutritionalDataDTO, NutrientDTO
 
 LIMIT_PRODUCTS = constants_variables_getter('LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA')
 BASIC_NUTRIENTS_TO_GET = constants_variables_getter('BASIC_NUTRIENTS_TO_GET')
+EXCLUDE_CATEGORY_TO_GET_NUTRIMENTS = constants_variables_getter('EXCLUDE_CATEGORY_TO_GET_NUTRIMENTS')
 NO_DATA = BASIC_NUTRIENTS_TO_GET[0]
 ENERGY_KCAL = BASIC_NUTRIENTS_TO_GET[1]
 ENERGY_KJ = BASIC_NUTRIENTS_TO_GET[2]
@@ -77,22 +78,23 @@ if __name__ == '__main__':
     for product in products_data:
         images = []
 
+        if product['category'] in EXCLUDE_CATEGORY_TO_GET_NUTRIMENTS:
+            nutritional_data_responses[product['id']] = {}
+            continue
+
         for photo in product['photo_urls']:
             img_content = requests.get(photo, timeout=10)
             imatge = Image.open(BytesIO(img_content.content))
             images.append(imatge)
 
-        try:
-            resposta_gemini = gemini_connection.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=[prompt, images],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
-                )
+
+        resposta_gemini = gemini_connection.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=[prompt, images],
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json"
             )
-        except Exception as e:
-            print(f"Error: {e}")
-            continue
+        )
 
         try:
             nutritional_data = json.loads(resposta_gemini.text)
@@ -101,7 +103,7 @@ if __name__ == '__main__':
 
 
         nutritional_data_responses[product['id']] = nutritional_data
-        print(nutritional_data)
+        print(f"GEMINI - Informació nutricional per al producte {product['product_name']} ({product['id_product']}): {nutritional_data}")
         #break # comentar aquesta linia si volem que ho faci per tots...
 
 
@@ -110,9 +112,6 @@ if __name__ == '__main__':
     for product in products_data:
         product_id = product['id']
         nutritional_data = nutritional_data_responses[product_id]
-
-        if not nutritional_data:
-            continue
 
         product_nutritional_data_dto = ProductNutritionalDataDTO(
             product_id,

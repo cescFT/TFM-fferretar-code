@@ -30,6 +30,9 @@ constants = {
     "NOT_INGREDIENTS_SAME_NAME_CATEGORIES": [
         "Fruta y verdura"
     ],
+    "EXCLUDE_CATEGORY_TO_GET_NUTRIMENTS": [
+        "Fruta y verdura"
+    ],
     "LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA": "5",
     "BASIC_NUTRIENTS_TO_GET": [
         1,2,3
