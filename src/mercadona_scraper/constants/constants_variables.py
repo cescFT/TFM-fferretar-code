@@ -1,17 +1,14 @@
 
 constants = {
     "BASIC_URL": "https://tienda.mercadona.es/",
-    "MERCADONA_BASE_URL_API": "https://tienda.mercadona.es/api/products/@@product_id@@/?lang=es&wh=@@wh@@",
+    "CIQUAL_URL": "https://ciqual.anses.fr/esearch/aliments/_search",
+    "MERCADONA_BASE_URL_API": "https://tienda.mercadona.es/api/products/@@product_id@@/?lang=@@lang@@&wh=@@wh@@",
     "BCN_DATA": {
-        "POSTAL_CODE": "08017",
+        "POSTAL_CODE": "08032", # Can Baró -> IST mig
         "WH": "bcn1"
     },
-    "TGN_DATA": {
-        "POSTAL_CODE": "43007",
-        "WH": "4074"
-    },
-    "VALLS_DATA": {
-        "POSTAL_CODE": "43800",
+    "MONTFERRI_DATA": {
+        "POSTAL_CODE": "43812",
         "WH": "3973"
     },
     "EXCLUDED_CATEGORIES": [
@@ -30,12 +27,12 @@ constants = {
     "NOT_INGREDIENTS_SAME_NAME_CATEGORIES": [
         "Fruta y verdura"
     ],
-    "EXCLUDE_CATEGORY_TO_GET_NUTRIMENTS": [
-        "Fruta y verdura"
-    ],
     "LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA": "5",
     "BASIC_NUTRIENTS_TO_GET": [
         1,2,3
+    ],
+    "CERTIFICATIONS_BASIC": [
+        1
     ]
 }
 

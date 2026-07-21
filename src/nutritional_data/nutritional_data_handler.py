@@ -9,6 +9,8 @@ from nutriments_processing.process_response import process_response_from_gemini
 
 LIMIT_PRODUCTS = constants_variables_getter('LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA')
 BASIC_NUTRIENTS_TO_GET = constants_variables_getter('BASIC_NUTRIENTS_TO_GET')
+CERTIFICATIONS_BASIC = constants_variables_getter('CERTIFICATIONS_BASIC')
+NO_CERTIFICATIONS = CERTIFICATIONS_BASIC[0]
 NO_DATA = BASIC_NUTRIENTS_TO_GET[0]
 ENERGY_KCAL = BASIC_NUTRIENTS_TO_GET[1]
 ENERGY_KJ = BASIC_NUTRIENTS_TO_GET[2]
@@ -23,6 +25,7 @@ def nutritional_data_handler() -> None:
     nutritional_data_responses = request_gemini(gemini_connection, products_data)
 
     nutriments = get_data_from_db.get_types_of_nutriments(BASIC_NUTRIENTS_TO_GET)
+    certifications = get_data_from_db.get_types_of_certifications(CERTIFICATIONS_BASIC)
 
     print("Processant respostes de gemini...")
     nutriments_to_save = process_response_from_gemini(
@@ -31,12 +34,15 @@ def nutritional_data_handler() -> None:
         NO_DATA,
         ENERGY_KCAL,
         ENERGY_KJ,
-        nutriments
+        nutriments,
+        NO_CERTIFICATIONS,
+        certifications
     )
 
-    print("Desant les dades a base de dades...")
+
+    print("Desant les dades de la informació nutricional a base de dades...")
     update_food_found_nutriments(nutriments_to_save)
-    print("Dades desades correctament a la base de dades.")
+    print("Dades desades de la informació nutricional correctament a la base de dades.")
 
 
 if __name__ == '__main__':

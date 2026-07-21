@@ -2,6 +2,9 @@ DROP TABLE IF EXISTS "product_photos";
 DROP TABLE IF EXISTS "products";
 DROP TABLE IF EXISTS "nutrients";
 DROP TABLE IF EXISTS "producte_nutrients";
+DROP TABLE IF EXISTS "certifications";
+DROP TABLE IF EXISTS "product_certifications";
+DROP TABLE IF EXISTS "gemini_models";
 
 CREATE TABLE "products" (
 	"id"	INTEGER NOT NULL,
@@ -9,7 +12,9 @@ CREATE TABLE "products" (
 	"week_num"	TEXT NOT NULL,
 	"year"	TEXT NOT NULL,
 	"postal_code"	TEXT NOT NULL,
+    "ciqual_text_to_search"	TEXT NOT NULL,
 	"found_nutriments"	INTEGER NOT NULL DEFAULT 0,
+    "origin" TEXT NOT NULL,
 	"id_product"	INTEGER NOT NULL,
 	"position"	INTEGER NOT NULL,
 	"category"	TEXT NOT NULL,
@@ -27,6 +32,9 @@ CREATE TABLE "products" (
 	"is_new_arrival"	INTEGER NOT NULL,
 	"previous_pvp"	TEXT,
 	"nutriscore"	TEXT DEFAULT NULL,
+    "planetscore" TEXT DEFAULT NULL,
+    "ciqual_text" TEXT DEFAULT NULL,
+    "ciqual_id" TEXT DEFAULT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
@@ -58,3 +66,32 @@ CREATE TABLE producte_nutrients (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (nutrient_id) REFERENCES nutrients(id) ON DELETE RESTRICT
 );
+
+
+CREATE TABLE certifications (
+	"id"	INTEGER NOT NULL,
+	"certification_name"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+INSERT INTO certifications (certification_name) VALUES ('No certificat');
+
+CREATE TABLE "product_certifications" (
+	"product_id"	INTEGER NOT NULL,
+	"certification_id"	INTEGER,
+	PRIMARY KEY("product_id", "certification_id"),
+	FOREIGN KEY("product_id") REFERENCES "products"("id_product"),
+    FOREIGN KEY("certification_id") REFERENCES "certifications"("id")
+);
+
+CREATE TABLE "gemini_models" (
+	"id"	INTEGER NOT NULL,
+	"model_name"	TEXT NOT NULL UNIQUE,
+    "is_blocked" INTEGER NOT NULL DEFAULT 0,
+    "last_petition" INTEGER NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+INSERT INTO gemini_models (model_name, last_petition) VALUES ('gemini-2.5-flash', 1784638586);
+INSERT INTO gemini_models (model_name) VALUES ('gemini-3.5-flash');
+INSERT INTO gemini_models (model_name) VALUES ('gemini-3.1-flash-lite');

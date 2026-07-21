@@ -10,10 +10,12 @@ if __name__ == "__main__":
 
     with sqlite3.connect(db_path) as conn:
         df = pd.read_sql_query("""
-            select p.*, n.nom as nom_nutrient, pn.quantitat as quantitat_nutrient, n.unitat_mesura_nutrient
+            select p.*, n.nom as nom_nutrient, pn.quantitat as quantitat_nutrient, n.unitat_mesura_nutrient, c.certification_name
         from products p
         left join producte_nutrients pn on pn.producte_mercadona_id = p.id_product
         left join nutrients n on n.id = pn.nutrient_id
+        left join product_certifications pc on pc.product_id = p.id_product
+        left join certifications c on c.id = pc.certification_id
         """, conn)
         df.to_csv(csv_path, index=False)
 

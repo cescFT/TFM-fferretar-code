@@ -34,8 +34,7 @@ def process_postal_code(driver:webdriver.Chrome, postal_code: str) -> None:
 def get_postal_code_from_wh_id(wh_id: str) -> str:
     constants_name = [
         "BCN_DATA",
-        "TGN_DATA",
-        "VALLS_DATA"
+        "MONTFERRI_DATA"
     ]
 
     for constant in constants_name:
@@ -45,6 +44,12 @@ def get_postal_code_from_wh_id(wh_id: str) -> str:
 
     raise Exception("Postal code info not found")
 
+
+def get_path_of_create_database() -> str:
+    actual_path = Path(__file__).resolve()
+    project_path = actual_path.parent.parent.parent.parent
+    db_path = project_path / 'db' / 'create_db_tables_statement.sql'
+    return str(db_path)
 
 def get_path_sqlite_db() -> str:
     actual_path = Path(__file__).resolve()
@@ -58,6 +63,20 @@ def get_path_csv_from_db() -> str:
     project_path = actual_path.parent.parent.parent.parent
     csv_path = project_path / 'csv' / 'mercadona-scraper-results.csv'
     return str(csv_path)
+
+
+def clear_database() -> None:
+    db_path = get_path_sqlite_db()
+    db_create_file = get_path_of_create_database()
+
+    with open(db_create_file, 'r') as sql_file:
+        sql_script = sql_file.read()
+
+    db = sqlite3.connect(db_path)
+    cursor = db.cursor()
+    cursor.executescript(sql_script)
+    db.commit()
+    db.close()
 
 def insert_product_data_to_database(info_products: list) -> None:
     inserts = []

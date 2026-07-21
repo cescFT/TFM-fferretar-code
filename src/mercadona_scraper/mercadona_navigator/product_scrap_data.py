@@ -89,8 +89,19 @@ def get_product_scrap_data(
 ) -> ProductScrapedDTO:
     id = data['url'].split("/")[4]
     response_api = mercadona_api_caller.get_data_from_api(id, wh_id)
+    en_response_api = mercadona_api_caller.get_data_from_api(id, wh_id, "en")
 
     product_name = response_api['display_name']
+    en_product_name = en_response_api['display_name']
+    categories = en_response_api['categories']
+    origin = response_api['origin']
+    if not origin:
+        origin = ""
+
+    category_en = categories[0]['name'] if categories else ""
+    subcategory_en = ""
+    if categories and categories[0] and "categories" in categories[0]:
+        subcategory_en = categories[0]["categories"][0]["name"]
     bar_code = response_api['ean']
     ingredients = response_api['nutrition_information']['ingredients']
     if ingredients is None:
@@ -131,10 +142,13 @@ def get_product_scrap_data(
         position=data['position'],
         category=data['category'],
         subcategory=data['subcategory'],
+        en_category=category_en,
+        en_subcategory=subcategory_en,
         title_category_main_page=title_category_main_page,
         title_in_page_product=data['title_in_page_product'],
         photos=photo_data,
         product_name=product_name,
+        en_product_name=en_product_name,
         quantity=quantity,
         quantity_units=units,
         price=price,
@@ -144,7 +158,8 @@ def get_product_scrap_data(
         bar_code=bar_code,
         is_new_arrival=new_arrival,
         previous_pvp=previous_pvp,
-        postal_code=get_postal_code_from_wh_id(wh_id)
+        postal_code=get_postal_code_from_wh_id(wh_id),
+        origin=origin
     )
 
     return dto
