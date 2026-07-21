@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import concurrent.futures
 from dto.product_scrap_data_request import ProductScrapDataRequestDTO
-from utils.utils import insert_product_data_to_database
+from utils.utils import insert_product_data_to_database, clear_database
 
 def execute_scraper() -> None:
     parser = argparse.ArgumentParser(
@@ -24,6 +24,12 @@ def execute_scraper() -> None:
         help="Postal Code variable name"
     )
 
+    parser.add_argument(
+        "-clear",
+        type=bool,
+        help="Clear database"
+    )
+
     args = parser.parse_args()
 
     if args.cp:
@@ -31,9 +37,12 @@ def execute_scraper() -> None:
         postal_code = postal_code_data['POSTAL_CODE']
         wh_code = postal_code_data['WH']
     else:
-        postal_code_data = constants_variables_getter('VALLS_DATA')
+        postal_code_data = constants_variables_getter('MONTFERRI_DATA')
         postal_code = postal_code_data['POSTAL_CODE']
         wh_code = postal_code_data['WH']
+
+    if True: #args.clear:
+        clear_database()
 
     navigator = initialize(postal_code)
 
@@ -78,7 +87,7 @@ def execute_scraper() -> None:
         end_time = time.perf_counter()
         elapsed_time = end_time - start_date
         print(f"Total productes de {title}: {len(products_to_scrap_urls[title])}. Temps execució {elapsed_time:.2f} segons.")
-        #break # comentar aquesta linia quan funcioni per tots els elements...
+        break # comentar aquesta linia quan funcioni per tots els elements...
     navigator.quit()
 
     end_time_total = time.perf_counter()

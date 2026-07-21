@@ -2,8 +2,7 @@ from constants.constants_variables import constants_variables_getter
 
 CONSTANTS_NAME = [
         "BCN_DATA",
-        "TGN_DATA",
-        "VALLS_DATA"
+        "MONTFERRI_DATA"
     ]
 
 def validate(postal_code: str) -> dict:

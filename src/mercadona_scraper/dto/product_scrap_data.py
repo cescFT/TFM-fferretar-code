@@ -8,10 +8,13 @@ class ProductScrapedDTO:
             position,
             category,
             subcategory,
+            en_category,
+            en_subcategory,
             title_category_main_page,
             title_in_page_product,
             photos,
             product_name,
+            en_product_name,
             quantity,
             quantity_units,
             price,
@@ -21,7 +24,8 @@ class ProductScrapedDTO:
             bar_code,
             is_new_arrival,
             previous_pvp,
-            postal_code
+            postal_code,
+            origin
     ):
         self.date = date
         self.week_num = week_num
@@ -29,11 +33,14 @@ class ProductScrapedDTO:
         self.id_product = id_product
         self.position = position
         self.category = category
+        self.en_category = en_category
+        self.en_subcategory = en_subcategory
         self.subcategory = subcategory
         self.title_category_main_page = title_category_main_page
         self.title_in_page_product = title_in_page_product
         self.photos = photos
         self.product_name = product_name
+        self.en_product_name = en_product_name
         self.quantity = quantity
         self.quantity_units = quantity_units
         self.price = price
@@ -44,6 +51,10 @@ class ProductScrapedDTO:
         self.is_new_arrival = is_new_arrival
         self.previous_pvp = previous_pvp
         self.postal_code = postal_code
+        self.origin = origin
+
+    def construct_name_to_search_to_ciqual(self):
+        return f"{self.en_product_name} {self.en_category} {self.en_subcategory}"
 
     def get_product_name(self):
         return self.product_name
@@ -57,11 +68,11 @@ class ProductScrapedDTO:
     def get_insert_str(self):
         basic_insert = """
             INSERT INTO products (
-                date_scraped, week_num, year, postal_code, id_product, position, category, subcategory,
+                date_scraped, week_num, year, postal_code, ciqual_text_to_search, origin, id_product, position, category, subcategory,
                 title_category_main_page, title_in_page_product,
                 product_name, quantity, quantity_units, price, price_units,
                 pvp, ingredients, bar_code, is_new_arrival, previous_pvp
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         new_arrival = '0'
@@ -78,6 +89,8 @@ class ProductScrapedDTO:
             str(self.week_num),
             self.year,
             self.postal_code,
+            self.construct_name_to_search_to_ciqual(),
+            self.origin,
             self.id_product,
             str(self.position),
             self.category,
