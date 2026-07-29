@@ -17,7 +17,7 @@ if __name__ == "__main__":
         left join product_certifications pc on pc.product_id = p.id_product
         left join certifications c on c.id = pc.certification_id
         """, conn)
-        df.to_csv(csv_path, index=False)
+        df.to_csv(csv_path, index=False, sep=";")
 
     conn.close()
 

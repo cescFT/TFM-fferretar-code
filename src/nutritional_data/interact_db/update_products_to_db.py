@@ -1,6 +1,25 @@
 import sqlite3
 from utils.utils import get_path_sqlite_db
 from interact_db.get_data_from_db import get_all_nutriments, get_all_certifications
+import json
+
+def update_nutriscore_from_nutriments(nustriscore_data: dict) -> None:
+    db_path = get_path_sqlite_db()
+
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        for mercadona_id, nutriscore in nustriscore_data.items():
+            cur.execute(f"""
+                                update products
+                                set nutriscore = ?
+                                where
+                                    id_product = ?
+                                """, (json.dumps(nutriscore), mercadona_id))
+
+        conn.commit()
+
+    conn.close()
+
 
 def update_food_found_nutriments(data_to_update: list) -> None:
 

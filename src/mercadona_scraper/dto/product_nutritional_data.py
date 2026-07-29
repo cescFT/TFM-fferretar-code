@@ -124,3 +124,82 @@ class ProductNutritionalDataDTO:
 
     def set_ciqual_response(self, ciqual_response:CiqualDTO):
         self.ciqual_response = ciqual_response
+
+class NutrimentDataDTO:
+    def __init__(self, nutriment_id: int, nutriment_name: str, nutriment_value: float, nutriment_unit: str):
+        self.nutriment_id = nutriment_id
+        self.nutriment_name = nutriment_name
+        self.nutriment_value = nutriment_value
+        self.nutriment_unit = nutriment_unit
+
+    def get_nutriment_id(self):
+        return self.nutriment_id
+
+    def get_nutriment_name(self):
+        return self.nutriment_name
+
+    def get_nutriment_value(self):
+        return self.nutriment_value
+
+    def get_nutriment_unit(self):
+        return self.nutriment_unit
+
+class ProductNutrimentsDTO:
+    def __init__(
+            self,
+            id: int,
+            id_product: int,
+            category: str,
+            subcategory: str,
+            second_subcategory: str,
+            product_name: str,
+            ingredients: str,
+            alcohol_grades: float,
+            nutriments: list
+    ):
+        self.id = id
+        self.id_product = id_product
+        self.category = category
+        self.subcategory = subcategory
+        self.second_subcategory = second_subcategory
+        self.product_name = product_name
+        self.ingredients = ingredients
+        self.alcohol_grades = alcohol_grades
+        self.nutriments = []
+        for nutriment in nutriments:
+            self.nutriments.append(
+                NutrimentDataDTO(
+                    nutriment['id_nutriment'],
+                    nutriment['nutriment_name'],
+                    nutriment['quantity'],
+                    nutriment['units']
+                )
+            )
+
+
+    def get_id(self):
+        return self.id
+
+    def get_mercadona_id(self):
+        return self.id_product
+
+    def get_category(self):
+        return self.category
+
+    def get_subcategory(self):
+        return self.subcategory
+
+    def get_second_subcategory(self):
+        return self.second_subcategory
+
+    def get_product_name(self):
+        return self.product_name
+
+    def get_ingredients(self):
+        return self.ingredients
+
+    def get_alcohol_grades(self):
+        return self.alcohol_grades
+
+    def get_nutriments(self):
+        return self.nutriments

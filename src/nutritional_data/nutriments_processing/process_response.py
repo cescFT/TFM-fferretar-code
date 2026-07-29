@@ -37,10 +37,6 @@ def process_response_from_gemini(
             product['origin']
         )
 
-        # afegir també el tema del nutriscore...
-
-
-
         if not nutritional_data:
             product_nutritional_data_dto = add_no_nutrients_data(product_nutritional_data_dto, no_data_id)
             print(

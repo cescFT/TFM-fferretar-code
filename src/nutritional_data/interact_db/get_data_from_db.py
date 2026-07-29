@@ -2,6 +2,10 @@ import sqlite3
 from utils.utils import get_path_sqlite_db
 from ciqual import requests as request_to_ciqual
 from dto.gemini_model_data import GeminiModelDTO
+from constants.constants_variables import constants_variables_getter
+from dto.product_nutritional_data import ProductNutrimentsDTO
+
+NO_DATA_NUTRIMENTS = constants_variables_getter("NUTRIMENT_NO_DATA")
 
 def get_gemini_models() -> list:
     db_path = get_path_sqlite_db()
@@ -105,6 +109,97 @@ def get_types_of_nutriments(special_nutriments_ids: list) -> dict:
 
     return to_return
 
+
+def get_products_without_nutriscore(limit: int) -> list:
+    result = []
+    data_to_return = []
+    db_path = get_path_sqlite_db()
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        cur.execute("""
+                    select p.id,
+                           p.id_product,
+                           p.category,
+                           p.subcategory,
+                           p.second_subcategory,
+                           p.product_name,
+                           p.ingredients,
+                           p.alcohol_grades
+                    from products p
+                    where 
+                        nutriscore is null
+                    limit ?
+                    """, (limit,))
+
+        products = cur.fetchall()
+
+        if not products:
+            return result
+
+        mercadona_ids = []
+
+        for product in products:
+            result.append({
+                'id': product[0],
+                'id_product': product[1],
+                'category': product[2],
+                'subcategory': product[3],
+                'second_subcategory': product[4],
+                'product_name': product[5],
+                'ingredients': product[6],
+                'alcohol_grades': product[7]
+            })
+            mercadona_ids.append(product[1])
+
+        placeholders = ", ".join(["?"] * len(mercadona_ids))
+        cur.execute(f"""
+        select pn.producte_mercadona_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
+        from producte_nutrients pn
+        inner join nutrients n on n.id = pn.nutrient_id
+        where
+            pn.producte_mercadona_id in ({placeholders})
+        """, mercadona_ids)
+
+        nutriments = cur.fetchall()
+        nutriments_indexed_by_mercadona_id = {}
+        for nutriment in nutriments:
+            mercadona_id = nutriment[0]
+            nutriment_id = nutriment[1]
+            if not mercadona_id in nutriments_indexed_by_mercadona_id:
+                nutriments_indexed_by_mercadona_id[mercadona_id] = []
+
+            if nutriment_id == int(NO_DATA_NUTRIMENTS):
+                continue
+
+            nutriments_indexed_by_mercadona_id[mercadona_id].append({
+                'id_nutriment': nutriment_id,
+                'nutriment_name': nutriment[2],
+                'quantity': nutriment[3],
+                'units': nutriment[4]
+            })
+
+        for mercadona_id, nutriment_data in nutriments_indexed_by_mercadona_id.items():
+            for idx, product in enumerate(result):
+                if product['id_product'] == int(mercadona_id):
+                    item = result[idx]
+                    item['nutriments'] = nutriment_data
+                    data_to_return.append(
+                        ProductNutrimentsDTO(
+                            item['id'],
+                            item['id_product'],
+                            item['category'],
+                            item['subcategory'],
+                            item['second_subcategory'],
+                            item['product_name'],
+                            item['ingredients'],
+                            item['alcohol_grades'],
+                            item['nutriments']
+                        )
+                    )
+
+    conn.close()
+
+    return data_to_return
 
 def get_products_without_nutritional_data(limit: int) -> list:
 

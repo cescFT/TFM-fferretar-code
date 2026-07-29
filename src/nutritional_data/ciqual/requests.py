@@ -8,7 +8,7 @@ def get_results(text_to_search: str) -> dict:
     ciqual_processed_response = {}
     request = {
         "from": 0,
-        "size": 10000,
+        "size": 10,
         "query": {
             "bool": {
                 "must": [

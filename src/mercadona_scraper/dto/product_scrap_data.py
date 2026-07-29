@@ -25,7 +25,10 @@ class ProductScrapedDTO:
             is_new_arrival,
             previous_pvp,
             postal_code,
-            origin
+            origin,
+            second_subcategory,
+            alcohol_grades,
+            second_subcategory_en
     ):
         self.date = date
         self.week_num = week_num
@@ -52,9 +55,12 @@ class ProductScrapedDTO:
         self.previous_pvp = previous_pvp
         self.postal_code = postal_code
         self.origin = origin
+        self.second_subcategory = second_subcategory
+        self.alcohol_grades = alcohol_grades
+        self.second_subcategory_en = second_subcategory_en
 
     def construct_name_to_search_to_ciqual(self):
-        return f"{self.en_product_name} {self.en_category} {self.en_subcategory}"
+        return f"{self.en_product_name} {self.en_category} {self.en_subcategory} {self.second_subcategory_en}"
 
     def get_product_name(self):
         return self.product_name
@@ -68,11 +74,12 @@ class ProductScrapedDTO:
     def get_insert_str(self):
         basic_insert = """
             INSERT INTO products (
-                date_scraped, week_num, year, postal_code, ciqual_text_to_search, origin, id_product, position, category, subcategory,
+                date_scraped, week_num, year, postal_code, ciqual_text_to_search, origin, id_product,
+                position, category, subcategory,second_subcategory,
                 title_category_main_page, title_in_page_product,
                 product_name, quantity, quantity_units, price, price_units,
-                pvp, ingredients, bar_code, is_new_arrival, previous_pvp
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                pvp, ingredients, bar_code, is_new_arrival, previous_pvp, alcohol_grades
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         new_arrival = '0'
@@ -95,6 +102,7 @@ class ProductScrapedDTO:
             str(self.position),
             self.category,
             self.subcategory,
+            self.second_subcategory,
             self.title_category_main_page,
             self.title_in_page_product,
             self.product_name,
@@ -106,7 +114,8 @@ class ProductScrapedDTO:
             self.ingredients,
             self.bar_code,
             new_arrival,
-            previous_pvp
+            previous_pvp,
+            self.alcohol_grades
         )
 
         return basic_insert, tuple_data
