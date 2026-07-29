@@ -41,7 +41,7 @@ def execute_scraper() -> None:
         postal_code = postal_code_data['POSTAL_CODE']
         wh_code = postal_code_data['WH']
 
-    if True: #args.clear:
+    if args.clear:
         clear_database()
 
     navigator = initialize(postal_code)
@@ -87,7 +87,7 @@ def execute_scraper() -> None:
         end_time = time.perf_counter()
         elapsed_time = end_time - start_date
         print(f"Total productes de {title}: {len(products_to_scrap_urls[title])}. Temps execució {elapsed_time:.2f} segons.")
-        break # comentar aquesta linia quan funcioni per tots els elements...
+        #break # comentar aquesta linia quan funcioni per tots els elements...
     navigator.quit()
 
     end_time_total = time.perf_counter()

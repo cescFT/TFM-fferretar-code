@@ -76,7 +76,6 @@ def nutritional_data_handler() -> None:
         certifications
     )
 
-
     print("Desant les dades de la informació nutricional a base de dades...")
     update_food_found_nutriments(nutriments_to_save)
     print("Dades desades de la informació nutricional correctament a la base de dades.")

@@ -127,7 +127,8 @@ def get_products_without_nutriscore(limit: int) -> list:
                            p.alcohol_grades
                     from products p
                     where 
-                        nutriscore is null
+                        p.nutriscore is null and
+                        p.found_nutriments = 1
                     limit ?
                     """, (limit,))
 
