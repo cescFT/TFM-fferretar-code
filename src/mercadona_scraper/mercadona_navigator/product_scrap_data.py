@@ -102,6 +102,30 @@ def get_product_scrap_data(
     subcategory_en = ""
     if categories and categories[0] and "categories" in categories[0]:
         subcategory_en = categories[0]["categories"][0]["name"]
+
+    second_subcategory = ""
+    category_es = response_api['categories'][0]
+    if category_es and "categories" in category_es:
+        second_subcategory_data = category_es["categories"][0]
+        if second_subcategory_data and "categories" in second_subcategory_data:
+            second_subcategory_data = second_subcategory_data["categories"][0]
+            second_subcategory = second_subcategory_data["name"]
+
+    second_subcategory_en = ""
+    category_data_en = en_response_api['categories'][0]
+    if category_data_en and "categories" in category_data_en:
+        second_subcategory_data = category_data_en["categories"][0]
+        if second_subcategory_data and "categories" in second_subcategory_data:
+            second_subcategory_data = second_subcategory_data["categories"][0]
+            second_subcategory_en = second_subcategory_data["name"]
+
+    alcohol_grades = ''
+    if "details" in response_api:
+        item_details = response_api['details']
+        if "alcohol_by_volume" in item_details and item_details["alcohol_by_volume"]:
+            alcohol_grades = item_details["alcohol_by_volume"]
+            alcohol_grades = alcohol_grades.replace("º", "")
+
     bar_code = response_api['ean']
     ingredients = response_api['nutrition_information']['ingredients']
     if ingredients is None:
@@ -159,7 +183,10 @@ def get_product_scrap_data(
         is_new_arrival=new_arrival,
         previous_pvp=previous_pvp,
         postal_code=get_postal_code_from_wh_id(wh_id),
-        origin=origin
+        origin=origin,
+        second_subcategory=second_subcategory,
+        alcohol_grades=alcohol_grades,
+        second_subcategory_en=second_subcategory_en
     )
 
     return dto

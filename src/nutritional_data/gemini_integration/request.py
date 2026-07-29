@@ -8,10 +8,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 
-def request_gemini(gemini_connection: genai.Client, products_data: list) -> dict:
-    nutritional_data_responses = {}
-
-    prompt = (
+PROMPT_GEMINI = (
         "<context>\n"
         "Ets un expert nutricionista especialitzat a analitzar etiquetes de productes de supermercat i extreure'n el valor nutricional. "
         "La teva tasca és analitzar les imatges d'aquest producte. "
@@ -65,6 +62,11 @@ def request_gemini(gemini_connection: genai.Client, products_data: list) -> dict
         "</json_structure_with_data>"
     )
 
+
+def request_gemini(gemini_connection: genai.Client, products_data: list) -> dict:
+    nutritional_data_responses = {}
+
+
     gemini_model = get_gemini_model()
 
     for product in products_data:
@@ -76,7 +78,7 @@ def request_gemini(gemini_connection: genai.Client, products_data: list) -> dict
             imatge = Image.open(BytesIO(img_content.content))
             images.append(imatge)
 
-        prompt = prompt.replace("@@product_name@@", product['ciqual_text_to_search'])
+        prompt = PROMPT_GEMINI.replace("@@product_name@@", product['ciqual_text_to_search'])
         prompt = prompt.replace("@@ciqual_possible_responses@@", json.dumps(product['ciqual_possible_responses']))
 
         try:

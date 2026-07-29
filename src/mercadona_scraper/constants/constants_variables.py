@@ -22,15 +22,25 @@ constants = {
     "EXCLUDED_SUB_CATEGORIES": [
         "Biberón y chupete",
         "Higiene y cuidado",
-        "Toallitas y pañales"
+        "Toallitas y pañales",
+        "Velas y decoración"
     ],
     "NOT_INGREDIENTS_SAME_NAME_CATEGORIES": [
         "Fruta y verdura"
     ],
     "LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA": "5",
+    "LIMIT_PRODUCTS_TO_GET_NUTRISCORE": "5",
     "BASIC_NUTRIENTS_TO_GET": [
         1,2,3
     ],
+    "NUTRIMENT_NO_DATA": "1",
+    "NUTRIMENTS_NUTRISCORE": {
+        "GENERAL_FOOD": ["Energia", "sucres", "greixos_saturats", "sal", "fibra", "proteines"],
+        "RED_MEAT": ["Energia", "sucres", "greixos_saturats", "sal", "fibra", "proteines"],
+        "CHEESE": ["Energia", "sucres", "greixos_saturats", "sal", "fibra", "proteines"],
+        "FATS_OILS_NUTS_SEEDS": ["greixos_totals", "greixos_saturats", "sucres", "sal", "fibra", "proteines"],
+        "BEVERAGES": ["Energia", "sucres", "greixos_saturats", "sal", "fibra", "proteines"],
+    },
     "CERTIFICATIONS_BASIC": [
         1
     ]

@@ -1,0 +1,30 @@
+import json
+from gemini_integration.request import PROMPT_GEMINI
+
+def get_manual_data_from_foods(products_data: list) -> dict:
+    nutritional_data_responses = {}
+
+    for product in products_data:
+        print("Prompt:\n\n")
+        prompt = PROMPT_GEMINI.replace("@@product_name@@", product['ciqual_text_to_search'])
+        prompt = prompt.replace("@@ciqual_possible_responses@@", json.dumps(product['ciqual_possible_responses']))
+        prompt += "\n Retorna el json en una sola línia"
+
+        print(prompt)
+
+        print("\n\nFotos:")
+        for photo in product['photo_urls']:
+            print("* :" + photo)
+
+
+        json_data = input(product['product_name'] + "("+str(product['id'])+"-"+str(product['id_product'])+")> ")
+        data_processed = json.loads(json_data)
+        if not data_processed['sodi'] and data_processed['sal']:
+            sal_data = data_processed['sal']
+            sal_quantity = sal_data['quantity']
+            data_processed['sodi'] = {"quantity": sal_quantity * 400, "units": "mg" }
+        nutritional_data_responses[product['id']] = json.loads(json_data)
+        print("=============================================================\n")
+
+
+    return nutritional_data_responses
