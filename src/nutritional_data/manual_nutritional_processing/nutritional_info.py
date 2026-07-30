@@ -19,7 +19,7 @@ def get_manual_data_from_foods(products_data: list) -> dict:
 
         json_data = input(product['product_name'] + "("+str(product['id'])+"-"+str(product['id_product'])+")> ")
         data_processed = json.loads(json_data)
-        if data_processed and not data_processed['sodi'] and data_processed['sal']:
+        if data_processed and "sal" in data_processed and data_processed['sal'] and not data_processed['sodi']:
             sal_data = data_processed['sal']
             sal_quantity = sal_data['quantity']
             data_processed['sodi'] = {"quantity": sal_quantity * 400, "units": "mg" }
