@@ -28,7 +28,8 @@ class ProductScrapedDTO:
             origin,
             second_subcategory,
             alcohol_grades,
-            second_subcategory_en
+            second_subcategory_en,
+            has_found_nutriments
     ):
         self.date = date
         self.week_num = week_num
@@ -58,9 +59,26 @@ class ProductScrapedDTO:
         self.second_subcategory = second_subcategory
         self.alcohol_grades = alcohol_grades
         self.second_subcategory_en = second_subcategory_en
+        self.has_found_nutriments = has_found_nutriments
+        self.nutriscore = None
+        self.planetscore = None
+        self.ciqual_text = None
+        self.ciqual_id = None
 
     def construct_name_to_search_to_ciqual(self):
         return f"{self.en_product_name} {self.en_category} {self.en_subcategory} {self.second_subcategory_en}"
+
+    def set_nutriscore(self, nutriscore):
+        self.nutriscore = nutriscore
+
+    def set_planetscore(self, planetscore):
+        self.planetscore = planetscore
+
+    def set_ciqual_text(self, ciqual_text):
+        self.ciqual_text = ciqual_text
+
+    def set_ciqual_id(self, ciqual_id):
+        self.ciqual_id = ciqual_id
 
     def get_product_name(self):
         return self.product_name
@@ -78,8 +96,9 @@ class ProductScrapedDTO:
                 position, category, subcategory,second_subcategory,
                 title_category_main_page, title_in_page_product,
                 product_name, quantity, quantity_units, price, price_units,
-                pvp, ingredients, bar_code, is_new_arrival, previous_pvp, alcohol_grades
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                pvp, ingredients, bar_code, is_new_arrival, previous_pvp, alcohol_grades, found_nutriments,
+                nutriscore, planetscore, ciqual_text, ciqual_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         new_arrival = '0'
@@ -89,6 +108,10 @@ class ProductScrapedDTO:
         previous_pvp = ''
         if self.previous_pvp:
             previous_pvp = str(self.previous_pvp)
+
+        found_nutriments = '0'
+        if self.has_found_nutriments:
+            found_nutriments = '1'
 
 
         tuple_data = (
@@ -115,7 +138,12 @@ class ProductScrapedDTO:
             self.bar_code,
             new_arrival,
             previous_pvp,
-            self.alcohol_grades
+            self.alcohol_grades,
+            found_nutriments,
+            self.nutriscore,
+            self.planetscore,
+            self.ciqual_text,
+            self.ciqual_id
         )
 
         return basic_insert, tuple_data

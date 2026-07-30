@@ -7,6 +7,30 @@ from dto.product_nutritional_data import ProductNutrimentsDTO
 
 NO_DATA_NUTRIMENTS = constants_variables_getter("NUTRIMENT_NO_DATA")
 
+
+def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict:
+    db_path = get_path_sqlite_db()
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        cur.execute("""
+                    SELECT origin, found_nutriments,  nutriscore,  planetscore, ciqual_text, ciqual_id
+                    from products p
+                    where p.id_product = ?
+                        group by p.id_product
+                    """, (mercadona_id,))
+        response = cur.fetchone()
+
+    conn.close()
+
+    return {
+        'origin': response[0],
+        'found_nutriments': response[1] == 1,
+        'nutriscore': response[2],
+        'planetscore': response[3],
+        'ciqual_text': response[4],
+        'ciqual_id': response[5]
+    }
+
 def get_gemini_models() -> list:
     db_path = get_path_sqlite_db()
     with sqlite3.connect(db_path) as conn:

@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from interact_db.get_data_from_db import retrieve_product_data_from_mercadona_id
 
 from constants import constants_variables
 from mercadona_api import utils as mercadona_api_caller
@@ -158,6 +159,15 @@ def get_product_scrap_data(
     year = now.strftime("%Y")
     year_iso, week_num, day = now.isocalendar()
 
+    product_data_from_db = retrieve_product_data_from_mercadona_id(id)
+
+    has_found_nutriments = False
+    if product_data_from_db:
+        if not origin:
+            origin = product_data_from_db['origin']
+
+        has_found_nutriments = product_data_from_db['found_nutriments']
+
     dto = ProductScrapedDTO(
         date=now.strftime("%Y-%m-%d %H:%M:%S"),
         week_num=week_num,
@@ -186,7 +196,21 @@ def get_product_scrap_data(
         origin=origin,
         second_subcategory=second_subcategory,
         alcohol_grades=alcohol_grades,
-        second_subcategory_en=second_subcategory_en
+        second_subcategory_en=second_subcategory_en,
+        has_found_nutriments=has_found_nutriments
     )
+
+    if product_data_from_db:
+        if product_data_from_db['nutriscore']:
+            dto.set_nutriscore(product_data_from_db['nutriscore'])
+
+        if product_data_from_db['planetscore']:
+            dto.set_planetscore(product_data_from_db['planetscore'])
+
+        if product_data_from_db['ciqual_text']:
+            dto.set_ciqual_text(product_data_from_db['ciqual_text'])
+
+        if product_data_from_db['ciqual_id']:
+            dto.set_ciqual_id(product_data_from_db['ciqual_id'])
 
     return dto
