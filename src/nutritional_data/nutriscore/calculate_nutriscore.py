@@ -13,10 +13,11 @@ NUTRIMENTS_NUTRISCORE = constants_variables_getter("NUTRIMENTS_NUTRISCORE")
 def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
     data_to_return = {}
 
+    print(f"Producte: {product.get_product_name()}\n")
     if not product.get_nutriments():
+        print("No hi ha nutrients per aquest producte, no podem calcular nutriscore.")
         return data_to_return
 
-    print(f"Producte: {product.get_product_name()}\n")
     category_nutriscore = parse(product)
 
     print(f"Categoria nutriscore: {category_nutriscore}\n")

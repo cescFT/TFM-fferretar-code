@@ -15,8 +15,8 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     print(f" * Alcohol: {"-" if not alcohol else alcohol}\n")
     print(f" * Ingredientes: {ingredients}\n")
 
-    if category == 'Aceite, especias y salsas':
-        if subcategory == 'Aceite, vinagre y sal':
+    if category == 'Aceite especias y salsas':
+        if subcategory == 'Aceite vinagre y sal':
             if second_subcategory in ["Aceite de oliva", "Otros aceites"]:
                 return "FATS_OILS_NUTS_SEEDS"
             elif second_subcategory == "Vinagre y otros aderezos":
@@ -52,7 +52,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             return "FATS_OILS_NUTS_SEEDS"
         if subcategory == "Patatas fritas y snacks":
             return "GENERAL_FOOD"
-    elif category == "Arroz, legumbres y pasta":
+    elif category == "Arroz legumbres y pasta":
         if subcategory == "Arroz":
             if ingredients.contains("cocido") or ingredients.contains("cocida") or product_name.contains("Cous cous"):
                 return "GENERAL_FOOD"
@@ -61,7 +61,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
                 return "GENERAL_FOOD"
         if subcategory == "Pasta y fideos" and second_subcategory in ["Pasta rellena", "Fideos orientales"]:
             return "GENERAL_FOOD"
-    elif category == "Azúcar, caramelos y chocolate":
+    elif category == "Azúcar caramelos y chocolate":
         if subcategory in ["Chicles y caramelos","Chocolate","Golosinas"]:
             return "GENERAL_FOOD"
         elif subcategory == "Mermelada y miel":
@@ -82,7 +82,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
                 return "BEVERAGES"
             if alcohol > 1.2:
                 return None
-    elif category == "Cacao, café e infusiones":
+    elif category == "Cacao café e infusiones":
         if subcategory == "Cacao soluble y chocolate a la taza":
             return "GENERAL_FOOD"
     elif category == "Carne":
@@ -127,13 +127,13 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             if second_subcategory in ["Carne rebozada", "Carne"]:
                 return check_if_is_red_meal(ingredients)
             return "GENERAL_FOOD"
-    elif category == "Conservas, caldos y cremas":
+    elif category == "Conservas caldos y cremas":
         return "GENERAL_FOOD"
     elif category == "Fruta y verdura":
         if subcategory == "Lechuga y ensalada preparada":
             if second_subcategory == "Ensalada preparada":
                 return "GENERAL_FOOD"
-    elif category == "Huevos, leche y mantequilla":
+    elif category == "Huevos leche y mantequilla":
         if subcategory == "Leche y bebidas vegetales":
             if second_subcategory in [
                 "Leche semidesnatada",

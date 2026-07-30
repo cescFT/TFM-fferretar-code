@@ -1,3 +1,5 @@
+import math
+
 
 def calculate(nutriments:dict) -> dict:
 
@@ -8,7 +10,10 @@ def calculate(nutriments:dict) -> dict:
         if total_fats > 0
         else 0
     )
-    energy_from_saturates = saturated_fats * 37
+
+    ratio_sfa = round(ratio_sfa, 1)
+
+    energy_from_saturates = math.ceil(saturated_fats * 37)
     sugars = nutriments["sucres"]
     salt = nutriments["sal"]
     fiber = nutriments["fibra"]
@@ -86,7 +91,7 @@ def calculate_negative_points (
 
     ratio_sfa_thesholds = [10, 16, 22, 28, 34, 40, 46, 52, 58, 64]
 
-    pnt_sfa = sum(1 for t in ratio_sfa_thesholds if ratio_sfa < t)
+    pnt_sfa = sum(1 for t in ratio_sfa_thesholds if t < ratio_sfa)
     if ratio_sfa >= 64:
         pnt_sfa += 1
 

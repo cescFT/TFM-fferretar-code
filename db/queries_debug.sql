@@ -13,7 +13,13 @@ select p.id, p.id_product, p.category, p.subcategory, p.product_name, p.origin, 
                 where
                     p.found_nutriments = 0 and
                     pn.nutrient_id is null
-                group by p.id_product;
+                group by p.id_product
+                limit 15;
+
+SELECT found_nutriments
+                    from products p
+                    where p.id_product = 21578
+                        group by p.id_product;
 
 
 select pn.producte_mercadona_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
