@@ -36,7 +36,7 @@ def calculate(nutriments: dict) -> dict:
 
     return {
         'letter': letter,
-        'nutritional_score': nutritional_score,
+        'points': nutritional_score,
         'negative_points': negative_score,
         'positive_points': positive_score,
     }

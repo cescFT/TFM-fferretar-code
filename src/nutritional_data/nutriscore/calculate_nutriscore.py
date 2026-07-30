@@ -23,6 +23,7 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
     print(f"Categoria nutriscore: {category_nutriscore}\n")
 
     if not category_nutriscore:
+        print("Pel producte no s'ha trobat una categoria per calcular el nutriscore. No podem calcular-lo.")
         return data_to_return
 
     if category_nutriscore != "WATER":
