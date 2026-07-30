@@ -20,16 +20,16 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             if second_subcategory in ["Aceite de oliva", "Otros aceites"]:
                 return "FATS_OILS_NUTS_SEEDS"
             elif second_subcategory == "Vinagre y otros aderezos":
-                if ingredients.contains("vinagre"):
+                if "vinagre" in ingredients:
                     return None
                 else:
                     return "GENERAL_FOOD"
         elif subcategory in ["Mayonesa, ketchup y mostaza", "Otras salsas"]:
             return "GENERAL_FOOD"
     elif category == "Agua y refrescos":
-        if ingredients.contains("coco"):
+        if "coco" in ingredients:
             return "BEVERAGES"
-        if product_name.lower().contains('agua mineral'):
+        if "agua mineral" in product_name.lower():
             return "WATER"
         if subcategory in [
             "Isotónico y energético",
@@ -54,7 +54,9 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             return "GENERAL_FOOD"
     elif category == "Arroz legumbres y pasta":
         if subcategory == "Arroz":
-            if ingredients.contains("cocido") or ingredients.contains("cocida") or product_name.contains("Cous cous"):
+            if "cocido" in ingredients or \
+                "cocida" in ingredients or \
+                "cous cous"in product_name.lower():
                 return "GENERAL_FOOD"
         if subcategory == "Legumbres":
             if len(splited_ingredients) > 1:
@@ -110,7 +112,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
                 return "GENERAL_FOOD"
             elif second_subcategory == "Sobrasada":
                 return "RED_MEAT"
-        elif subcategory.contains("Queso"):
+        elif "queso" in subcategory.lower():
             return "CHEESE"
         else:
             return "RED_MEAT"
@@ -200,9 +202,9 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
 
 
 def check_if_is_red_meal(ingredients: str) -> str:
-    if ingredients and ingredients.contains('ternera') or \
-            ingredients.contains('cerdo') or \
-            ingredients.contains('cordero'):
+    if ingredients and 'ternera' in ingredients or \
+            'cerdo' in ingredients or \
+            'cordero' in ingredients:
         return "RED_MEAT"
     else:
         return "GENERAL_FOOD"

@@ -153,6 +153,7 @@ def get_products_without_nutriscore(limit: int) -> list:
                     where 
                         p.nutriscore is null and
                         p.found_nutriments = 1
+                    group by p.id_product
                     limit ?
                     """, (limit,))
 
