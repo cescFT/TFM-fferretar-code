@@ -1,6 +1,6 @@
 # Food environment on Mercadona's supermarket
 
-# Brief resume of the project
+## Brief resume of the project
 
 The aim of this project is to store all code and stuff necessary for my own TFM on Data Science Master at Universitat Oberta de Catalunya.
 
@@ -10,7 +10,7 @@ For this reason, I have developed software which is able to obtain data using we
 Finally, there is also a part of software which will get all the data retrieved from web scraping techniques and will extract conclusions
 using data analysis techiques.
 
-# Configuration
+## Configuration
 
 TODO: Aqui quan tingui el tema de l'anàlisi de dades, s'ha d'explicar
 
@@ -44,7 +44,7 @@ pip install -r requirements.txt
 
 Finally, if you want to exit virtual environment, you have to use command `deactivate`.
 
-# Folder structure
+## Folder structure
 
 TODO: Aqui quan tingui el tema de l'anàlisi de dades, s'ha d'explicar
 
@@ -110,7 +110,7 @@ is just to check specific sql's used in other parts of the project.
     * `nutriscore_calculator_handler.py`: Script that calculates nutriscore.
     * `nutritional_data_handler.py`: Script that retrieve nutritional information of product and save it into database.
 
-# How to execute retrieve data from Mercadona supermarket online?
+## How to execute retrieve data from Mercadona supermarket online?
 
 The execution flow of retrieve information from Mercadona supermarket is:
 
