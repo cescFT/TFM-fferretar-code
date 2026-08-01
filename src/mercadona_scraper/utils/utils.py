@@ -1,3 +1,9 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -5,24 +11,46 @@ from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 
 from constants.constants_variables import constants_variables_getter
-import sqlite3
 from pathlib import Path
+from dto.product_scrap_data import ProductScrapedDTO
+
+import sqlite3
 
 
 def accept_cookies(driver: webdriver.Chrome) -> None:
+    """
+    Function that enables accept cookies in Mercadona's supermarket online.
+
+    Args:
+        driver (webdriver.Chrome): Chrome driver.
+
+    Returns:
+        None.
+    """
+
     try:
         boto_cookies = WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.XPATH,
                                         "//button[contains(text(), 'Aceptar')] | //button[@data-testid='cookie-policy-accept']"))
         )
         boto_cookies.click()
-        print("Cookies acceptades.")
+        print("Accepted cookies.")
     except Exception:
-        print("No ha aparegut el cartell de cookies o s'ha tancat automàticament.")
+        print("Cookies panel has not appear or is closed automatically.")
 
 def process_postal_code(driver:webdriver.Chrome, postal_code: str) -> None:
+    """
+    Function responsible for processing postal code and submit form.
 
-    print(f"Introduint el codi postal: {postal_code}...")
+    Args:
+        driver (webdriver.Chrome): Chrome driver.
+        postal_code (str): Postal code.
+
+    Returns:
+         None.
+    """
+
+    print(f"Introducing postal code: {postal_code}...")
     input_cp = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "postalCode"))
     )
@@ -32,6 +60,16 @@ def process_postal_code(driver:webdriver.Chrome, postal_code: str) -> None:
     input_cp.send_keys(Keys.RETURN)
 
 def get_postal_code_from_wh_id(wh_id: str) -> str:
+    """
+    Function that retrieve postal code from warehouse id.
+
+    Args:
+        wh_id (str): warehouse id.
+
+    Returns:
+        str: postal code.
+    """
+
     constants_name = [
         "BCN_DATA",
         "MONTFERRI_DATA"
@@ -46,12 +84,32 @@ def get_postal_code_from_wh_id(wh_id: str) -> str:
 
 
 def get_path_of_create_database() -> str:
+    """
+    Function that retrieve path of file to create database.
+
+    Args:
+        None.
+
+    Returns:
+        str: path of file to create database.
+    """
+
     actual_path = Path(__file__).resolve()
     project_path = actual_path.parent.parent.parent.parent
     db_path = project_path / 'db' / 'create_db_tables_statement.sql'
     return str(db_path)
 
 def get_path_sqlite_db() -> str:
+    """
+    Function that retrieve path of sqlite database file.
+
+    Args:
+        None.
+
+    Returns:
+         str: path of sqlite database file.
+    """
+
     actual_path = Path(__file__).resolve()
     project_path = actual_path.parent.parent.parent.parent
     db_path = project_path / 'db' / 'mercadona-scraper-results.db'
@@ -59,6 +117,16 @@ def get_path_sqlite_db() -> str:
     return str(db_path)
 
 def get_path_csv_from_db() -> str:
+    """
+    Function that retrieve path of csv file.
+
+    Args:
+        None.
+
+    Returns:
+         str: path of csv file.
+    """
+
     actual_path = Path(__file__).resolve()
     project_path = actual_path.parent.parent.parent.parent
     csv_path = project_path / 'csv' / 'mercadona-scraper-results.csv'
@@ -66,6 +134,15 @@ def get_path_csv_from_db() -> str:
 
 
 def clear_database() -> None:
+    """
+    Function that clear/create database.
+
+    Args:
+        None.
+
+    Returns:
+          None.
+    """
     db_path = get_path_sqlite_db()
     db_create_file = get_path_of_create_database()
 
@@ -79,8 +156,20 @@ def clear_database() -> None:
     db.close()
 
 def insert_product_data_to_database(info_products: list) -> None:
+    """
+    Function that insert product scraped data to database.
+
+    Args:
+        info_products (list): list of product scraped data.
+
+    Returns:
+        None.
+    """
+
     inserts = []
     inserts_photos = []
+
+    product: ProductScrapedDTO
     for product in info_products:
         inserts.append({'product': product, 'insert':product.get_insert_str()})
 
@@ -91,7 +180,9 @@ def insert_product_data_to_database(info_products: list) -> None:
 
         for insert in inserts:
             cur.execute(insert['insert'][0], insert['insert'][1])
-            photos_to_insert = insert['product'].get_insert_photos(cur.lastrowid)
+            product: ProductScrapedDTO
+            product = insert['product']
+            photos_to_insert = product.get_insert_photos(cur.lastrowid)
             for photo_to_insert in photos_to_insert:
                 inserts_photos.append(photo_to_insert)
 

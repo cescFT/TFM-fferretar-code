@@ -1,3 +1,9 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from gemini_integration import connect
 from gemini_integration.request import request_gemini
 
@@ -18,6 +24,16 @@ ENERGY_KCAL = BASIC_NUTRIENTS_TO_GET[1]
 ENERGY_KJ = BASIC_NUTRIENTS_TO_GET[2]
 
 def nutritional_data_handler() -> None:
+    """
+    Function that executes script to get nutritional data for each product.
+
+    Args:
+        None.
+
+    Returns:
+        None.
+    """
+
     parser = argparse.ArgumentParser(
         description="Nutritional data handler"
     )
@@ -46,17 +62,17 @@ def nutritional_data_handler() -> None:
 
 
     products_data = get_products_without_nutritional_data(limit)
-    print(f"S'han trobat {len(products_data)} productes sense dades nutricionals.")
+    print(f"Found {len(products_data)} products without no nutritional data.")
 
     if not products_data:
-        print("Proces finalitzat.")
+        print("Process ended.")
         return
 
     if not args.manual:
-        print("Establint connexió amb gemini...")
+        print("Establishing connection with gemini...")
         gemini_connection = connect.create_connection_to_gemini()
-        print("Connexió establerta amb gemini.")
-        print("S'estan enviant les peticions a gemini...")
+        print("Connection with gemini already done.")
+        print("Sending petitions to gemini...")
         nutritional_data_responses = request_gemini(gemini_connection, products_data)
     else:
         nutritional_data_responses = nutritional_info.get_manual_data_from_foods(products_data)
@@ -64,7 +80,7 @@ def nutritional_data_handler() -> None:
     nutriments = get_data_from_db.get_types_of_nutriments(BASIC_NUTRIENTS_TO_GET)
     certifications = get_data_from_db.get_types_of_certifications(CERTIFICATIONS_BASIC)
 
-    print("Processant respostes de gemini...")
+    print("Processing responses of gemini...")
     nutriments_to_save = process_response_from_gemini(
         products_data,
         nutritional_data_responses,
@@ -76,12 +92,12 @@ def nutritional_data_handler() -> None:
         certifications
     )
 
-    print("Desant les dades de la informació nutricional a base de dades...")
+    print("Saving nutritional data into database...")
     update_food_found_nutriments(nutriments_to_save)
-    print("Dades desades de la informació nutricional correctament a la base de dades.")
+    print("Nutritional data saved correctly into database.")
 
 if __name__ == '__main__':
-    print("Inici script...")
+    print("Starting script...")
     nutritional_data_handler()
-    print("Fi script.")
+    print("End of script.")
 

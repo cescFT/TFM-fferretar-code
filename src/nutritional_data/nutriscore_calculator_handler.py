@@ -1,3 +1,9 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from interact_db.get_data_from_db import get_products_without_nutriscore
 from constants.constants_variables import constants_variables_getter
 from nutriscore.calculate_nutriscore import calculate_nutriscore
@@ -8,6 +14,16 @@ import argparse
 LIMIT_PRODUCTS = constants_variables_getter('LIMIT_PRODUCTS_TO_GET_NUTRISCORE')
 
 def execute() -> None:
+    """
+    Function that executes the script for calculate nutriscore data.
+
+    Args:
+        None.
+
+    Returns:
+        None.
+    """
+
     parser = argparse.ArgumentParser(
         description="Nustriscore calculator"
     )
@@ -29,7 +45,7 @@ def execute() -> None:
     products = get_products_without_nutriscore(limit)
 
     if not products:
-        print("Tots els productes tenen calculat el nutriscore!")
+        print("All the products has calculated nutriscore!")
         return
 
     nutriscore_to_save = {}
@@ -41,11 +57,11 @@ def execute() -> None:
         print("="*20)
         print("\n")
 
-    print("Actualitzant nutriscore dels aliments...")
+    print("Updating nutriscore for products...")
     update_nutriscore_from_nutriments(nutriscore_to_save)
-    print("Nustriscore dels aliments desat correctament!")
+    print("Nustriscore saved correctly!")
 
 if __name__ == '__main__':
-    print("Inici script...")
+    print("Starting script...")
     execute()
-    print("Fi script.")
+    print("End of script.")

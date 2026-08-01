@@ -1,3 +1,9 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote import webelement
@@ -7,14 +13,14 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from interact_db.get_data_from_db import retrieve_product_data_from_mercadona_id
-
 from constants import constants_variables
 from mercadona_api import utils as mercadona_api_caller
-import datetime
-import re
 from dto.product_scrap_data_request import ProductScrapDataRequestDTO
 from dto.product_scrap_data import ProductScrapedDTO
 from utils.utils import get_postal_code_from_wh_id
+
+import datetime
+import re
 
 NOT_INGREDIENTS_SAME_NAME_CATEGORIES = constants_variables.constants_variables_getter('NOT_INGREDIENTS_SAME_NAME_CATEGORIES')
 EXCLUDED_CATEGORIES = constants_variables.constants_variables_getter('EXCLUDED_CATEGORIES')
@@ -26,6 +32,19 @@ def get_urls_and_data_from_specific_page(
     position: int,
     title_text: str
 ) -> dict:
+    """
+    Function that retrieve all urls of products in specific page and returns basic information of each product.
+
+    Args:
+        product (webelement.WebElement): Product as web element to get basic data of the product.
+        navigator (webdriver.Chrome): Chrome webdriver.
+        position (int): Position of the product in the page.
+        title_text (str): Title of the category.
+
+    Returns:
+        dict: Basic data of each product in the landing.
+    """
+
     products_to_scrap_urls_result = {}
     try:
         product.click()
@@ -48,11 +67,11 @@ def get_urls_and_data_from_specific_page(
 
         append_item = True
         if category in EXCLUDED_CATEGORIES:
-            print(f"Descartem producte {url_product} per ser de la categoria {category}")
+            print(f"Discard product {url_product} because is of category {category}")
             append_item = False
 
         if append_item and subcategory in EXCLUDED_SUB_CATEGORIES:
-            print(f"Descartem producte {url_product} per ser de la subcategoria {subcategory}")
+            print(f"Discard product {url_product} because is from subcategory {subcategory}")
             append_item = False
 
         if append_item and url_product:
@@ -66,20 +85,31 @@ def get_urls_and_data_from_specific_page(
 
         close_button_modal.click()
     except TimeoutException:
-        print(f"TimeoutException: El producte ha trigat massa en carregar. Saltem al següent.")
-        # Intentem tancar el modal enviant la tecla ESCAPE a la pantalla
+        print(f"TimeoutException: The product took to long on loading. Skip to the next.")
+
         try:
             ActionChains(navigator).send_keys(Keys.ESCAPE).perform()
         except Exception as e:
-            print(f"No s'ha pogut tancar el modal amb ESC: {e}")
+            print(f"Modal cannot be closed with ESC button: {e}")
 
     return products_to_scrap_urls_result
 
-def process_thread_product_scrap_data(item: ProductScrapDataRequestDTO):
+def process_thread_product_scrap_data(item: ProductScrapDataRequestDTO) -> ProductScrapedDTO|None:
+    """
+    Function that executes a single thread. Each thread is a product.
+
+    Args:
+        item (ProductScrapDataRequestDTO): Request of product.
+
+
+    Returns:
+        ProductScrapedDTO|None: Information of product if all is correct.
+    """
+
     try:
         return get_product_scrap_data(item.get_product_data_item(), item.get_title(), item.get_wh_code())
     except Exception as e:
-        print(f"Error processant el producte {e}")
+        print(f"Error processing the product {e}")
         return None
 
 
@@ -88,6 +118,19 @@ def get_product_scrap_data(
         title_category_main_page: str,
         wh_id: str
 ) -> ProductScrapedDTO:
+    """
+    Function that gets all information of product. It gets information of the requests and then use
+    mercadona api in order to get product information.
+
+    Args:
+        data (dict): Basic information of the product.
+        title_category_main_page (str): Title of the category in the main page.
+        wh_id (str): Warehouse id.
+
+    Returns:
+        ProductScrapedDTO: Product information.
+    """
+
     id = data['url'].split("/")[4]
     response_api = mercadona_api_caller.get_data_from_api(id, wh_id)
     en_response_api = mercadona_api_caller.get_data_from_api(id, wh_id, "en")

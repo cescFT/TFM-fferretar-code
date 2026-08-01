@@ -1,7 +1,22 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 import re
 
-
 def calculate(nutriments: dict) -> dict:
+    """
+    Calculates beverage nutriscore.
+
+    Args:
+        nutriments (dict): Dictionary which have all data necessary to calculate beverage nutriscore.
+
+    Returns:
+        dict: Dictionary with nutriscore result.
+    """
+
     energy = nutriments["Energia"]
     sugars = nutriments["sucres"]
     saturated_fats = nutriments["greixos_saturats"]
@@ -47,6 +62,18 @@ def calculate_positive_score(
         fibres: float,
         fruit_percentage: float
 ) -> dict:
+    """
+    Calculates P part of nutriscore points for beverages.
+
+    Args:
+        proteins (float): Proteins of the product.
+        fibres (float): Fibres of the product.
+        fruit_percentage (float): Percentage of fruits of the product.
+
+    Returns:
+        dict: Result of the P part.
+    """
+
     proteins_thresholds = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3]
     pnt_p = sum(1 for t in proteins_thresholds if proteins > t)
 
@@ -77,6 +104,20 @@ def calculate_negative_score(
         salt: float,
         has_non_nutritive_sweeteners: bool
 ) -> dict:
+    """
+    Calculates N part of nutriscore points for beverages.
+
+    Args:
+        energy (float): Energy of the product.
+        sugars (float): Sugars of the product.
+        saturated_fats (float): Saturated fats of the product.
+        salt (float): Salt of the product.
+        has_non_nutritive_sweeteners (bool): Bool that represents if product has or not non nutritive sweeteners.
+
+    Returns:
+        dict: Result of the N part.
+    """
+
     energy_thresholds = [30, 90, 150, 210, 240, 270, 300, 330, 360, 390]
 
     pnt_e = None
@@ -123,6 +164,16 @@ def calculate_negative_score(
 
 
 def check_presence_of_non_nutritive_sweeteners(ingredients: str|None) -> bool:
+    """
+    Checks presence of non-nutritive sweeteners.
+
+    Args:
+        ingredients (str|None): List of ingredients as string.
+
+    Returns:
+        bool: True if has presence of non nutritive sweeteners. Otherwise, False.
+    """
+
     if not ingredients:
         return False
 

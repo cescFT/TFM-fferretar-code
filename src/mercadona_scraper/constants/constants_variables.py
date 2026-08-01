@@ -1,10 +1,15 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
 
 constants = {
     "BASIC_URL": "https://tienda.mercadona.es/",
     "CIQUAL_URL": "https://ciqual.anses.fr/esearch/aliments/_search",
     "MERCADONA_BASE_URL_API": "https://tienda.mercadona.es/api/products/@@product_id@@/?lang=@@lang@@&wh=@@wh@@",
     "BCN_DATA": {
-        "POSTAL_CODE": "08032", # Can Baró -> IST mig
+        "POSTAL_CODE": "08032", # Can Baró -> IST medium
         "WH": "bcn1"
     },
     "MONTFERRI_DATA": {
@@ -46,10 +51,15 @@ constants = {
     ]
 }
 
-def constants_variables_getter(key: str) -> str|dict:
+def constants_variables_getter(key: str) -> str|dict|list:
     """
+    Function that gets constants variables by key.
 
-    :return:
+    Args:
+        key (str): key of constants variable
+
+    Returns:
+        str|dict|list: Constant
     """
 
     if key not in constants:

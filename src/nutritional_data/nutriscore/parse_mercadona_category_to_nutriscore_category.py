@@ -1,6 +1,22 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from dto.product_nutritional_data import ProductNutrimentsDTO
 
 def parse(product: ProductNutrimentsDTO) -> str|None:
+    """
+    Function that parse mercadona category, subcategory and second subcategory to nutriscore categories.
+
+    Args:
+        product (ProductNutrimentsDTO): Product to be parsed.
+
+    Returns:
+        str|None: Category of nutriscore or None if nutriscore is not applicable.
+    """
+
     category = product.get_category()
     subcategory = product.get_subcategory()
     second_subcategory = product.get_second_subcategory()
@@ -9,11 +25,11 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     product_name = product.get_product_name()
     splited_ingredients = ingredients.split(",")
 
-    print(f" * Categoria Mercadona: {category}\n")
-    print(f" * Subcategoria Mercadona: {subcategory}\n")
-    print(f" * Segona subcategoria Mercadona: {second_subcategory}\n")
+    print(f" * Mercadona category: {category}\n")
+    print(f" * Mercadona subcategory: {subcategory}\n")
+    print(f" * Mercadona second subcategory: {second_subcategory}\n")
     print(f" * Alcohol: {"-" if not alcohol else alcohol}\n")
-    print(f" * Ingredientes: {ingredients}\n")
+    print(f" * Ingredients: {ingredients}\n")
 
     if category == 'Aceite especias y salsas':
         if subcategory == 'Aceite vinagre y sal':

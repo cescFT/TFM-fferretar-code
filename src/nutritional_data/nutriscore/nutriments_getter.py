@@ -1,6 +1,27 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO
 
-def get_nutriments(nutriments_to_get: list, product: ProductNutrimentsDTO) -> dict:
+def get_nutriments(
+        nutriments_to_get: list,
+        product: ProductNutrimentsDTO
+) -> dict:
+    """
+    Function that parses nutriments data from database to dict in order to calculate nutriscore.
+
+    Args:
+        nutriments_to_get (list): Nutriments data to parse.
+        product (ProductNutrimentsDTO): Product to be parsed.
+
+    Returns:
+        dict: Nutriment data for calculate nutriscore.
+    """
+
+
     to_return = {}
     nutriments_product = product.get_nutriments()
 

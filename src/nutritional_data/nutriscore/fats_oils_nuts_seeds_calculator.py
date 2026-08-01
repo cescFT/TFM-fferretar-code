@@ -1,7 +1,22 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 import math
 
 
 def calculate(nutriments:dict) -> dict:
+    """
+    Calculates fats, oils, nuts and seeds nutriscore.
+
+    Args:
+        nutriments (dict): Dictionary which have all data necessary to calculate fats, oils, nuts and seeds nutriscore.
+
+    Returns:
+        dict: Dictionary with nutriscore result.
+    """
 
     total_fats = nutriments["greixos_totals"]
     saturated_fats = nutriments["greixos_saturats"]
@@ -52,6 +67,18 @@ def calculate_positive_points(
         fiber: float,
         fruit_percentage: float,
 ) -> dict:
+    """
+    Calculates P part of nutriscore points for fats, oils, nuts and seeds.
+
+    Args:
+        proteins (float): Proteins of the product.
+        fibres (float): Fibres of the product.
+        fruit_percentage (float): Percentage of fruits of the product.
+
+    Returns:
+        dict: Result of the P part.
+    """
+
 
     proteins_thresholds = [2.4, 4.8, 7.2, 9.6, 12.0, 14.0, 17.0]
     pnt_proteins = sum(1 for t in proteins_thresholds if proteins > t)
@@ -82,6 +109,18 @@ def calculate_negative_points (
         ratio_sfa: float,
         salt: float
 ) -> dict:
+    """
+    Calculates N part of nutriscore points for fats, oils, nuts and seeds.
+
+    Args:
+        energy_from_saturates (float): Energy from saturates of the product.
+        sugars (float): Sugars of the product.
+        ratio_sfa (float): saturated_fats / total_fats.
+        salt (float): Salt of the product.
+
+    Returns:
+        dict: Result of the N part.
+    """
 
     energy_from_saturates_thresholds = [120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200]
     pnt_energy = sum(1 for t in energy_from_saturates_thresholds if energy_from_saturates > t)
