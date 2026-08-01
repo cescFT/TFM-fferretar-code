@@ -1,12 +1,21 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from google import genai
 from google.genai import types
+
+from dto.gemini_model_data import GeminiModelDTO
 from gemini_integration.model_getter import get_gemini_model
 from interact_db.update_gemini_model import update_is_blocked_gemini_models, update_last_petition_gemini_model
+from io import BytesIO
+from PIL import Image
+
 import time
 import json
 import requests
-from io import BytesIO
-from PIL import Image
 
 PROMPT_GEMINI = (
         "<context>\n"
@@ -69,9 +78,20 @@ PROMPT_GEMINI = (
 
 
 def request_gemini(gemini_connection: genai.Client, products_data: list) -> dict:
+    """
+    Request to gemini and return dict with data from gemini.
+
+    Args:
+        gemini_connection (genai.Client): client with gemini connection.
+        products_data (list): list of products data
+
+    Returns:
+         dict: Dictionary with data obtained from gemini.
+    """
+
     nutritional_data_responses = {}
 
-
+    gemini_model: GeminiModelDTO
     gemini_model = get_gemini_model()
 
     for product in products_data:
@@ -87,7 +107,7 @@ def request_gemini(gemini_connection: genai.Client, products_data: list) -> dict
         prompt = prompt.replace("@@ciqual_possible_responses@@", json.dumps(product['ciqual_possible_responses']))
 
         try:
-            print(f"Provant la petició amb el model de gemini: {gemini_model.get_model_name()}")
+            print(f"Trying petition with gemini model: {gemini_model.get_model_name()}")
             resposta_gemini = gemini_connection.models.generate_content(
                 model=gemini_model.get_model_name(),
                 contents=[prompt, images],
@@ -108,7 +128,7 @@ def request_gemini(gemini_connection: genai.Client, products_data: list) -> dict
             nutritional_data = {}
 
         nutritional_data_responses[product['id']] = nutritional_data
-        print(f"GEMINI - Informació nutricional per al producte {product['product_name']} ({product['id_product']}): {nutritional_data}")
+        print(f"GEMINI - Nutritional info of product {product['product_name']} ({product['id_product']}): {nutritional_data}")
         time.sleep(8)
         #break # comentar aquesta linia si volem que ho faci per tots...
 

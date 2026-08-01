@@ -1,3 +1,9 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from dto.product_nutritional_data import ProductNutrimentsDTO
 from nutriscore.parse_mercadona_category_to_nutriscore_category import parse
 from nutriscore.nutriments_getter import get_nutriments
@@ -11,19 +17,29 @@ from nutriscore.beverages_calculator import calculate as calculate_beverages
 NUTRIMENTS_NUTRISCORE = constants_variables_getter("NUTRIMENTS_NUTRISCORE")
 
 def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
+    """
+    Calculator of nutriscore for specific product.
+
+    Args:
+        product (ProductNutrimentsDTO): Product to calculate nutriscore.
+
+    Returns:
+        dict: nutriscore for specific product.
+    """
+
     data_to_return = {}
 
-    print(f"Producte: {product.get_product_name()}\n")
+    print(f"Product: {product.get_product_name()}\n")
     if not product.get_nutriments():
-        print("No hi ha nutrients per aquest producte, no podem calcular nutriscore.")
+        print("There are no nutriments for this product, we cannot calculate nutriscore.")
         return data_to_return
 
     category_nutriscore = parse(product)
 
-    print(f"Categoria nutriscore: {category_nutriscore}\n")
+    print(f"Nutriscore category: {category_nutriscore}\n")
 
     if not category_nutriscore:
-        print("Pel producte no s'ha trobat una categoria per calcular el nutriscore. No podem calcular-lo.")
+        print("For product there are no nutriscore category for calculate nutriscore. We cannot calculate.")
         return data_to_return
 
     if category_nutriscore != "WATER":
@@ -56,4 +72,3 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
     data_to_return['nutriscore_category'] = category_nutriscore
 
     return data_to_return
-

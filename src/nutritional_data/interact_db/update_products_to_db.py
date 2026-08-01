@@ -1,9 +1,26 @@
-import sqlite3
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
+from dto.product_nutritional_data import CiqualDTO, NutrientDTO, CertificationDTO, ProductNutritionalDataDTO
 from utils.utils import get_path_sqlite_db
 from interact_db.get_data_from_db import get_all_nutriments, get_all_certifications
+import sqlite3
 import json
 
 def update_nutriscore_from_nutriments(nustriscore_data: dict) -> None:
+    """
+    Function that updates nutriscore calculated with nutriment data.
+
+    Args:
+        nutriscore_data (dict): Nutriscore calculated with nutriment data per each execution.
+
+    Returns:
+        None.
+    """
+
     db_path = get_path_sqlite_db()
 
     with sqlite3.connect(db_path) as conn:
@@ -22,6 +39,15 @@ def update_nutriscore_from_nutriments(nustriscore_data: dict) -> None:
 
 
 def update_food_found_nutriments(data_to_update: list) -> None:
+    """
+    Function that updates food nutriments.
+
+    Args:
+        data_to_update (list): List of data to be updated or created into database for each product.
+
+    Returns:
+        None.
+    """
 
     new_nutriments_to_save = []
     new_certifications_to_save = []
@@ -29,15 +55,18 @@ def update_food_found_nutriments(data_to_update: list) -> None:
     certifications_already_saved = []
     product_ids = []
 
+    product_nutritional_data_dto: ProductNutritionalDataDTO
     for product_nutritional_data_dto in data_to_update:
         nutriments = product_nutritional_data_dto.get_nutrients()
         product_ids.append(product_nutritional_data_dto.get_mercadona_id())
+        nutriment: NutrientDTO
         for nutriment in nutriments:
             if nutriment.get_nutrient_id() is None:
                 new_nutriments_to_save.append(nutriment)
             else:
                 nutriments_already_saved.append(nutriment.get_nutrient_id())
 
+        certification: CertificationDTO
         for certification in product_nutritional_data_dto.get_certifications():
             if certification.get_certification_id() is None:
                 new_certifications_to_save.append(certification)
@@ -46,11 +75,13 @@ def update_food_found_nutriments(data_to_update: list) -> None:
 
 
     unique_new_nutriments_to_save = {}
+    nutriment: NutrientDTO
     for nutriment in new_nutriments_to_save:
         if nutriment.get_nutrient_name() not in unique_new_nutriments_to_save:
             unique_new_nutriments_to_save[nutriment.get_nutrient_name()] = nutriment.get_nutrient_unit()
 
     unique_certifications_to_save = {}
+    certification: CertificationDTO
     for certification in new_certifications_to_save:
         if certification.get_certification_name() not in unique_certifications_to_save:
             unique_certifications_to_save[certification.get_certification_name()] = certification.get_certification_id()
@@ -82,6 +113,7 @@ def update_food_found_nutriments(data_to_update: list) -> None:
 
         all_certifications = get_all_certifications()
 
+        product_nutritional_data_dto: ProductNutritionalDataDTO
         for product_nutritional_data_dto in data_to_update:
             if product_nutritional_data_dto.get_nutriscore() is not None:
                 cur.execute(f"UPDATE products SET nutriscore = ? WHERE id_product = ?", (
@@ -98,10 +130,13 @@ def update_food_found_nutriments(data_to_update: list) -> None:
                     )
                 )
 
-            if product_nutritional_data_dto.get_ciqual_response() is not None:
+
+            ciqual_response = product_nutritional_data_dto.get_ciqual_response()
+            ciqual_response: CiqualDTO
+            if ciqual_response is not None:
                 cur.execute(f"UPDATE products SET ciqual_text = ?, ciqual_id = ? WHERE id_product = ?", (
-                    product_nutritional_data_dto.get_ciqual_response().get_text(),
-                    product_nutritional_data_dto.get_ciqual_response().get_id(),
+                    ciqual_response.get_text(),
+                    ciqual_response.get_id(),
                     product_nutritional_data_dto.get_mercadona_id()
                 ))
 

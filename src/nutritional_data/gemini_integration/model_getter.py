@@ -1,13 +1,30 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from dto.gemini_model_data import GeminiModelDTO
 from interact_db.get_data_from_db import get_gemini_models
 from interact_db.update_gemini_model import update_is_blocked_gemini_models
 
 def get_gemini_model() -> GeminiModelDTO:
+    """
+    Getter of gemini model which remains in rate-limits free tier.
+
+    Args:
+        None.
+
+    Returns:
+        GeminiModelDTO: Gemini model dto with all necessary data.
+    """
+
     available_gemini_models = get_gemini_models()
 
     models_to_update = []
     model_to_return = None
 
+    model: GeminiModelDTO
     for model in available_gemini_models:
         if model.get_is_blocked():
             if model.get_hours_since_last_petition() > 24:
@@ -26,4 +43,3 @@ def get_gemini_model() -> GeminiModelDTO:
         raise Exception("No gemini models available now.")
 
     return model_to_return
-

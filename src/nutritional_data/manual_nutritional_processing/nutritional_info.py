@@ -1,7 +1,23 @@
-import json
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from gemini_integration.request import PROMPT_GEMINI
+import json
 
 def get_manual_data_from_foods(products_data: list) -> dict:
+    """
+    Function that enables user to add product information manually.
+
+    Args:
+        products_data (list): list of products data.
+
+    Returns:
+        dict: Dictionary with manual data.
+    """
+
     nutritional_data_responses = {}
 
     for product in products_data:
@@ -12,7 +28,7 @@ def get_manual_data_from_foods(products_data: list) -> dict:
 
         print(prompt)
 
-        print("\n\nFotos:")
+        print("\n\nPhotos:")
         for photo in product['photo_urls']:
             print("* :" + photo)
 

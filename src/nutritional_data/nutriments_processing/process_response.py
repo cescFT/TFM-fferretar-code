@@ -1,3 +1,9 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from dto.product_nutritional_data import ProductNutritionalDataDTO, NutrientDTO, CiqualDTO, CertificationDTO
 
 
@@ -5,6 +11,17 @@ def add_no_nutrients_data(
     product_nutritional_data_dto: ProductNutritionalDataDTO,
     no_data_id: int
 ) -> ProductNutritionalDataDTO:
+    """
+    Function that is used when no nutritrional data is available.
+    
+    Args:
+        product_nutritional_data_dto (ProductNutritionalDataDTO): Product data.
+        no_data_id (int): Id of no data of nutritional data.
+    
+    Returns:
+        ProductNutritionalDataDTO: Product data with no nutritional data added.  
+    """
+    
     no_data_nutriment = NutrientDTO('', 0, '')
     no_data_nutriment.set_nutrient_id(no_data_id)
     product_nutritional_data_dto.add_nutrient(no_data_nutriment)
@@ -22,6 +39,21 @@ def process_response_from_gemini(
     no_certification_id: int,
     certifications: dict
 ) -> list:
+    """
+    Function that process response from gemini integration or manual data and save information into database.
+    
+    Args:
+        products_data (list): Products to be processed.
+        nutritional_data_responses (dict): Nutritional data retrieved manually or from gemini integration.
+        no_data_id (int): Identification of no data of nutritional data.
+        energy_kcal_id (int): Identification of energy kcal data.
+        energy_kj_id (int): Identification of energy kj data.
+        nutriments (dict): Dictionary of nutriments.
+        no_certification_id (int): Identification of no certifications on the product labels.
+        certifications (dict): Dictionary of certifications.
+    :return: 
+    """
+    
     nutriments_to_save = []
     for product in products_data:
         product_id = product['id']
@@ -40,8 +72,8 @@ def process_response_from_gemini(
         if not nutritional_data:
             product_nutritional_data_dto = add_no_nutrients_data(product_nutritional_data_dto, no_data_id)
             print(
-                f"No hi ha dades nutricionals per a {product_nutritional_data_dto.get_product_name()} "
-                f"({product_nutritional_data_dto.get_mercadona_id()}) en la categoria {product_nutritional_data_dto.get_category()}"
+                f"No nutritional data of {product_nutritional_data_dto.get_product_name()} "
+                f"({product_nutritional_data_dto.get_mercadona_id()}) in category {product_nutritional_data_dto.get_category()}"
             )
             nutriments_to_save.append(product_nutritional_data_dto)
             continue
@@ -96,8 +128,8 @@ def process_response_from_gemini(
         if not product_nutritional_data_dto.get_nutrients():
             product_nutritional_data_dto = add_no_nutrients_data(product_nutritional_data_dto, no_data_id)
             print(
-                f"No hi ha dades nutricionals per a {product_nutritional_data_dto.get_product_name()} "
-                f"({product_nutritional_data_dto.get_mercadona_id()}) en la categoria {product_nutritional_data_dto.get_category()}"
+                f"No nutritional data of product {product_nutritional_data_dto.get_product_name()} "
+                f"({product_nutritional_data_dto.get_mercadona_id()}) in category {product_nutritional_data_dto.get_category()}"
             )
 
         nutriments_to_save.append(product_nutritional_data_dto)

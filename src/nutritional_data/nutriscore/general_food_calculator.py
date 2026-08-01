@@ -1,5 +1,26 @@
+"""
+TFM: Food environment on Mercadona's supermarket
 
-def calculate(nutriments:dict, is_red_meat: bool = False, is_cheese = False) -> dict:
+Author: Francesc Ferré Tarrés
+"""
+
+def calculate(
+        nutriments:dict,
+        is_red_meat: bool = False,
+        is_cheese = False
+) -> dict:
+    """
+    Calculates general food nutriscore.
+
+    Args:
+        nutriments (dict): Dictionary which have all data necessary to calculate general food nutriscore.
+        is_red_meat (bool): If True, calculator adapts proteins for red meat category.
+        is_cheese (bool): If True, calculator adapts proteins for cheese category.
+
+    Returns:
+        dict: Dictionary with nutriscore result.
+    """
+
     energy = nutriments["Energia"]
     sugars = nutriments["sucres"]
     saturated_fats = nutriments["greixos_saturats"]
@@ -44,6 +65,18 @@ def calculate_positive_score(
         fruit_percentage: float,
         is_red_meat = False
 ) -> dict:
+    """
+    Calculates P part of nutriscore points for general food.
+
+    Args:
+        proteins (float): Proteins of the product.
+        fiber (float): Fiber of the product.
+        fruit_percentage (float): Percentage of fruits of the product.
+        is_red_meat (bool): If True, calculator adapts proteins for red meat category.
+
+    Returns:
+        dict: Result of the P part.
+    """
 
     p_thresholds = [2.4, 4.8, 7.2, 9.6, 12.0, 14.0, 17.0]
     pts_p = sum(1 for t in p_thresholds if proteins > t)
@@ -77,6 +110,19 @@ def calculate_negative_score(
         sugars: float,
         salt: float
 ) -> dict:
+    """
+    Calculates N part of nutriscore points for general food.
+
+    Args:
+        energy (float): Energy of the product.
+        saturated_fats (float): Saturated fats of the product.
+        sugars (float): Sugars of the product.
+        salt (float): Salt of the product.
+
+    Returns:
+        dict: Result of the N part.
+    """
+
     e_thresholds = [335, 670, 1005, 1340, 1675, 2010, 2345, 2680, 3015, 3350]
     pts_e = sum(1 for t in e_thresholds if energy > t)
 

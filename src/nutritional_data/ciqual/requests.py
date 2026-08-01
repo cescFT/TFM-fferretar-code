@@ -1,9 +1,27 @@
-import requests
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from constants.constants_variables import constants_variables_getter
+import requests
 
 CIQUAL_URL = constants_variables_getter('CIQUAL_URL')
 
 def get_results(text_to_search: str) -> dict:
+    """
+    Function to get data from ciqual ElasticSearch engine.
+
+    Args:
+        text_to_search (str): Text to looking for.
+
+    Returns:
+        dict: Dictionary with ciqual data.
+
+    Raises:
+        Exception: When ciqual data not found.
+    """
 
     ciqual_processed_response = {}
     request = {

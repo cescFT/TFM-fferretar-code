@@ -1,9 +1,15 @@
-import pandas as pd
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 import sqlite3
+import pandas as pd
 from utils.utils import get_path_sqlite_db, get_path_csv_from_db
 
 if __name__ == "__main__":
-    print("Inici script...")
+    print("Starting script...")
 
     db_path = get_path_sqlite_db()
     csv_path = get_path_csv_from_db()
@@ -21,4 +27,4 @@ if __name__ == "__main__":
 
     conn.close()
 
-    print("Fi script.")
+    print("End of script.")

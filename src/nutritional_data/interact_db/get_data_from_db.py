@@ -1,14 +1,30 @@
-import sqlite3
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from utils.utils import get_path_sqlite_db
 from ciqual import requests as request_to_ciqual
 from dto.gemini_model_data import GeminiModelDTO
 from constants.constants_variables import constants_variables_getter
 from dto.product_nutritional_data import ProductNutrimentsDTO
 
+import sqlite3
+
 NO_DATA_NUTRIMENTS = constants_variables_getter("NUTRIMENT_NO_DATA")
 
+def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict|None:
+    """
+    Retrieve product data using mercadona id.
 
-def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict:
+    Args:
+        mercadona_id (str): Mercadona id.
+
+    Returns:
+        dict|None: All data about the product.
+    """
+
     db_path = get_path_sqlite_db()
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
@@ -22,6 +38,9 @@ def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict:
 
     conn.close()
 
+    if not response:
+        return None
+
     return {
         'origin': response[0],
         'found_nutriments': response[1] == 1,
@@ -32,6 +51,16 @@ def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict:
     }
 
 def get_gemini_models() -> list:
+    """
+    Returns all gemini models availables ordered by id.
+
+    Args:
+        None.
+
+    Returns:
+        list: List of gemini models.
+    """
+
     db_path = get_path_sqlite_db()
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
@@ -51,6 +80,16 @@ def get_gemini_models() -> list:
     return response_dto
 
 def get_all_certifications() -> dict:
+    """
+    Gets all product certifications available into database.
+
+    Args:
+        None.
+
+    Returns:
+        dict: Dictionary of certifications.
+    """
+
     to_return = {}
     db_path = get_path_sqlite_db()
 
@@ -70,6 +109,16 @@ def get_all_certifications() -> dict:
     return to_return
 
 def get_all_nutriments() -> dict:
+    """
+    Gets all nutriments available in database.
+
+    Args:
+        None.
+
+    Returns:
+        dict: Dictionary indexed by id and value is name.
+    """
+
     to_return = {}
     db_path = get_path_sqlite_db()
 
@@ -90,6 +139,16 @@ def get_all_nutriments() -> dict:
     return to_return
 
 def get_types_of_certifications(special_certifications_ids: list) -> dict:
+    """
+    Get types of certifications that are not special certifications.
+
+    Args:
+        special_certifications_ids (list): List of special certifications which are no needed.
+
+    Returns:
+        dict: Dictionary indexed by id and as value is certification name.
+    """
+
     to_return = {}
     db_path = get_path_sqlite_db()
 
@@ -112,6 +171,15 @@ def get_types_of_certifications(special_certifications_ids: list) -> dict:
 
 
 def get_types_of_nutriments(special_nutriments_ids: list) -> dict:
+    """
+    Gets all nutriments without special nutriments not no get.
+
+    Args:
+        special_nutriments_ids (list): List of special nutriments ids not to get.
+
+    Returns:
+        dict: Dictionary where id is the index and value is the name.
+    """
 
     to_return = {}
     db_path = get_path_sqlite_db()
@@ -135,6 +203,17 @@ def get_types_of_nutriments(special_nutriments_ids: list) -> dict:
 
 
 def get_products_without_nutriscore(limit: int) -> list:
+    """
+    Get products without nutriscore limited by parameter with all
+    nutriment data mandatory to calculate nutriscore.
+
+    Args:
+        limit (int): Number limit of products to be find.
+
+    Returns:
+        list: List of products without nutriscore.
+    """
+
     result = []
     data_to_return = []
     db_path = get_path_sqlite_db()
@@ -228,6 +307,15 @@ def get_products_without_nutriscore(limit: int) -> list:
     return data_to_return
 
 def get_products_without_nutritional_data(limit: int) -> list:
+    """
+    Get products without nutritional data limited by paramter.
+
+    Args:
+        limit (int): Limit of products to return.
+
+    Returns:
+        list: List of products without nutritional data.
+    """
 
     result = []
     db_path = get_path_sqlite_db()
@@ -280,7 +368,7 @@ def get_products_without_nutritional_data(limit: int) -> list:
             try:
                 ciqual_response = request_to_ciqual.get_results(product[6])
             except Exception as e:
-                print("La petició a ciqual ha fallat: ", e)
+                print("Ciqual request failed: ", e)
 
             result.append({
                 'id': product[0],

@@ -1,4 +1,13 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 class ProductScrapedDTO:
+    """
+    DTO class that gets all data from Mercadona's supermarket.
+    """
     def __init__(
             self,
             date,
@@ -65,31 +74,111 @@ class ProductScrapedDTO:
         self.ciqual_text = None
         self.ciqual_id = None
 
-    def construct_name_to_search_to_ciqual(self):
+    def construct_name_to_search_to_ciqual(self) -> str:
+        """
+        Function that generates name to search into ciqual ElasticSearch engine.
+
+        Args:
+            None.
+
+        Returns:
+             str: Text to search in ciqual ElasticSearch engine.
+        """
+
         return f"{self.en_product_name} {self.en_category} {self.en_subcategory} {self.second_subcategory_en}"
 
-    def set_nutriscore(self, nutriscore):
+    def set_nutriscore(self, nutriscore: str|None) -> None:
+        """
+        Function set nutriscore.
+
+        Args:
+            nutriscore (str|None): Nutriscore data.
+
+        Returns:
+             None.
+        """
+
         self.nutriscore = nutriscore
 
-    def set_planetscore(self, planetscore):
+    def set_planetscore(self, planetscore: str|None) -> None:
+        """
+        Function set planetscore.
+
+        Args:
+            planetscore (str|None): Nutriscore data already calculated.
+
+        Returns:
+             None.
+        """
+
         self.planetscore = planetscore
 
-    def set_ciqual_text(self, ciqual_text):
+    def set_ciqual_text(self, ciqual_text: str|None) -> None:
+        """
+        Function set ciqual text.
+
+        Args:
+            ciqual_text (str|None): Ciqual text already found.
+
+        Returns:
+            None.
+        """
+
         self.ciqual_text = ciqual_text
 
-    def set_ciqual_id(self, ciqual_id):
+    def set_ciqual_id(self, ciqual_id: str|None) -> None:
+        """
+        Function set ciqual id.
+
+        Args:
+            ciqual_id (str|None): Ciqual id already found.
+
+        Returns:
+             None.
+        """
+
         self.ciqual_id = ciqual_id
 
-    def get_product_name(self):
+    def get_product_name(self) -> str:
+        """
+        Function get product name.
+
+        Args:
+            None.
+
+        Returns:
+             str: Product name.
+        """
+
         return self.product_name
 
-    def get_insert_photos(self, row_id):
+    def get_insert_photos(self, row_id: int) -> list:
+        """
+        Function that generates inserts for product photos.
+
+        Args:
+            row_id (int): Id autogenerate of product.
+
+        Returns:
+            list: List of inserts photos.
+        """
+
         insert_photos = []
         for photo in self.photos:
             insert_photos.append(f"INSERT INTO product_photos (product_id, photo_url) VALUES ({row_id}, '{photo}');")
         return insert_photos
 
-    def get_insert_str(self):
+    def get_insert_str(self) -> tuple:
+        """
+        Function get insert string for product.
+
+        Args:
+            None.
+
+        Returns:
+            tuple: Insert string for product.
+        """
+
         basic_insert = """
             INSERT INTO products (
                 date_scraped, week_num, year, postal_code, ciqual_text_to_search, origin, id_product,

@@ -1,3 +1,9 @@
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 from constants.constants_variables import constants_variables_getter
 
 CONSTANTS_NAME = [
@@ -6,6 +12,19 @@ CONSTANTS_NAME = [
     ]
 
 def validate(postal_code: str) -> dict:
+    """
+    Validates if postal code is valid.
+
+    Args:
+        postal_code (str): Postal code to validate.
+
+    Returns:
+        dict: Validated postal data.
+
+    Raises:
+        Exception: When postal code is invalid.
+    """
+
 
     for constant in CONSTANTS_NAME:
         city_data = constants_variables_getter(constant)

@@ -1,10 +1,31 @@
-from constants.constants_variables import constants_variables_getter
+"""
+TFM: Food environment on Mercadona's supermarket
+
+Author: Francesc Ferré Tarrés
+"""
+
 import requests
 import json
+
+from constants.constants_variables import constants_variables_getter
 
 MERCADONA_BASE_URL_API = constants_variables_getter('MERCADONA_BASE_URL_API')
 
 def get_data_from_api(product_id: str, wh_id: str, lang:str = "es") -> dict:
+    """
+    Function in charge to create cURL petition to mercadona API and returns its response if it is correct.
+
+    Args:
+        product_id (str): Product ID.
+        wh_id (str): Warehouse ID.
+        lang (str): Language. Defaults to "es".
+
+    Returns:
+         dict: JSON response from Mercadona API if request is successful.
+
+    Raise:
+        Exception: If request fails.
+    """
 
     url = MERCADONA_BASE_URL_API.replace("@@product_id@@", product_id)
     url = url.replace("@@wh@@", wh_id)
