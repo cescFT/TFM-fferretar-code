@@ -73,6 +73,7 @@ class ProductScrapedDTO:
         self.planetscore = None
         self.ciqual_text = None
         self.ciqual_id = None
+        self.ewo_ultra_processed_punctuation = None
 
     def construct_name_to_search_to_ciqual(self) -> str:
         """
@@ -139,6 +140,18 @@ class ProductScrapedDTO:
 
         self.ciqual_id = ciqual_id
 
+    def set_ewo_ultra_processed_punctuation(self, ewo_punctuation: str|None) -> None:
+        """
+        Function set ewo ultra processed punctuation.
+
+        Args:
+            ewo_punctuation (str | None): Punctuation UPF from ewo calculation.
+
+        Returns:
+            None.
+        """
+        self.ewo_ultra_processed_punctuation = ewo_punctuation
+
     def get_product_name(self) -> str:
         """
         Function get product name.
@@ -186,8 +199,8 @@ class ProductScrapedDTO:
                 title_category_main_page, title_in_page_product,
                 product_name, quantity, quantity_units, price, price_units,
                 pvp, ingredients, bar_code, is_new_arrival, previous_pvp, alcohol_grades, found_nutriments,
-                nutriscore, planetscore, ciqual_text, ciqual_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                nutriscore, planetscore, ciqual_text, ciqual_id, ewo_ultra_processed_punctuation
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         new_arrival = '0'
@@ -232,7 +245,8 @@ class ProductScrapedDTO:
             self.nutriscore,
             self.planetscore,
             self.ciqual_text,
-            self.ciqual_id
+            self.ciqual_id,
+            self.ewo_ultra_processed_punctuation
         )
 
         return basic_insert, tuple_data

@@ -10,6 +10,34 @@ from interact_db.get_data_from_db import get_all_nutriments, get_all_certificati
 import sqlite3
 import json
 
+def update_ewo_ultraprocessed_qualification(qualifications_data: dict) -> None:
+    """
+    Function that updates ewo ultraprocessed punctuation calculated with followed algorithm explanation.
+
+    Args:
+        qualifications_data (dict): Qualifications calculated with algorithm.
+
+    Returns:
+        None.
+    """
+
+    db_path = get_path_sqlite_db()
+
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        for mercadona_id, qualification in qualifications_data.items():
+            cur.execute(f"""
+                                update products
+                                set ewo_ultra_processed_punctuation = ?
+                                where
+                                    id_product = ?
+                                """, (json.dumps(qualification), mercadona_id))
+
+        conn.commit()
+
+    conn.close()
+
+
 def update_nutriscore_from_nutriments(nustriscore_data: dict) -> None:
     """
     Function that updates nutriscore calculated with nutriment data.

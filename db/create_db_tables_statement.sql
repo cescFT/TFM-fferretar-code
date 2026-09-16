@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS "producte_nutrients";
 DROP TABLE IF EXISTS "certifications";
 DROP TABLE IF EXISTS "product_certifications";
 DROP TABLE IF EXISTS "gemini_models";
+DROP TABLE IF EXISTS "categories_counter";
 
 CREATE TABLE "products" (
 	"id"	INTEGER NOT NULL,
@@ -15,7 +16,7 @@ CREATE TABLE "products" (
     "ciqual_text_to_search"	TEXT NOT NULL,
 	"found_nutriments"	INTEGER NOT NULL DEFAULT 0,
     "origin" TEXT NOT NULL,
-	"id_product"	INTEGER NOT NULL,
+	"id_product"	TEXT NOT NULL,
 	"position"	INTEGER NOT NULL,
 	"category"	TEXT NOT NULL,
 	"subcategory"	TEXT NOT NULL,
@@ -37,6 +38,7 @@ CREATE TABLE "products" (
     "planetscore" TEXT DEFAULT NULL,
     "ciqual_text" TEXT DEFAULT NULL,
     "ciqual_id" TEXT DEFAULT NULL,
+    "ewo_ultra_processed_punctuation" TEXT DEFAULT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
@@ -79,7 +81,7 @@ CREATE TABLE certifications (
 INSERT INTO certifications (certification_name) VALUES ('No certificat');
 
 CREATE TABLE "product_certifications" (
-	"product_id"	INTEGER NOT NULL,
+	"product_id"	TEXT NOT NULL,
 	"certification_id"	INTEGER,
 	PRIMARY KEY("product_id", "certification_id"),
 	FOREIGN KEY("product_id") REFERENCES "products"("id_product"),
@@ -97,3 +99,15 @@ CREATE TABLE "gemini_models" (
 INSERT INTO gemini_models (model_name, last_petition) VALUES ('gemini-2.5-flash', 1784638586);
 INSERT INTO gemini_models (model_name) VALUES ('gemini-3.5-flash');
 INSERT INTO gemini_models (model_name) VALUES ('gemini-3.1-flash-lite');
+
+CREATE TABLE "categories_counter" (
+    "id" INTEGER NOT NULL,
+    "date_scraped"	TEXT NOT NULL,
+	"week_num"	TEXT NOT NULL,
+	"year"	TEXT NOT NULL,
+	"postal_code"	TEXT NOT NULL,
+    "category"	TEXT NOT NULL,
+	"subcategory"	TEXT NOT NULL,
+    "total_items" INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY ("id" AUTOINCREMENT)
+);

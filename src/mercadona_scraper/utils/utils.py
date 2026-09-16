@@ -12,6 +12,8 @@ from selenium import webdriver
 
 from constants.constants_variables import constants_variables_getter
 from pathlib import Path
+
+from dto.product_nutritional_data import ProductNutrimentsDTO
 from dto.product_scrap_data import ProductScrapedDTO
 
 import sqlite3
@@ -132,6 +134,21 @@ def get_path_csv_from_db() -> str:
     csv_path = project_path / 'csv' / 'mercadona-scraper-results.csv'
     return str(csv_path)
 
+def get_path_ewo_ingredients_data() -> str:
+    """
+    Function that retrieve path of ewo ingredients file.
+
+    Args:
+        None.
+
+    Returns:
+         str: path of ewo ingredients file.
+    """
+
+    actual_path = Path(__file__).resolve()
+    project_path = actual_path.parent.parent.parent.parent
+    ewo_ingredients_path = project_path / 'external_data' / 'EWO_ingredients_translated.xlsx'
+    return str(ewo_ingredients_path)
 
 def clear_database() -> None:
     """
@@ -191,3 +208,32 @@ def insert_product_data_to_database(info_products: list) -> None:
         conn.commit()
 
     conn.close()
+
+def match_nutritional_data_with_each_product(
+    nutriments_indexed_by_mercadona_id: dict,
+    product_items: list
+) -> list:
+    data_to_return = []
+    for mercadona_id, nutriment_data in nutriments_indexed_by_mercadona_id.items():
+        for idx, product in enumerate(product_items):
+            if product['id_product'] == mercadona_id:
+                item = product_items[idx]
+                item['nutriments'] = nutriment_data
+
+                product_nutriments_dto = ProductNutrimentsDTO(
+                        item['id'],
+                        item['id_product'],
+                        item['category'],
+                        item['subcategory'],
+                        item['second_subcategory'],
+                        item['product_name'],
+                        item['ingredients'],
+                        item['nutriments']
+                    )
+
+                if 'alcohol_grades' in item and item['alcohol_grades']:
+                    product_nutriments_dto.set_alcohol_grades(item['alcohol_grades'])
+
+                data_to_return.append(product_nutriments_dto)
+
+    return data_to_return

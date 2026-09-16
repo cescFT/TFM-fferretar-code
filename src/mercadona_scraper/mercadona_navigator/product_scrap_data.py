@@ -256,4 +256,7 @@ def get_product_scrap_data(
         if product_data_from_db['ciqual_id']:
             dto.set_ciqual_id(product_data_from_db['ciqual_id'])
 
+        if product_data_from_db['ewo_ultra_processed_punctuation']:
+            dto.set_ewo_ultra_processed_punctuation(product_data_from_db['ewo_ultra_processed_punctuation'])
+
     return dto
