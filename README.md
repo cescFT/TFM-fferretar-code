@@ -85,10 +85,13 @@ is just to check specific sql's used in other parts of the project.
     * `validations/validate_postal_code.py`: As customer of my application, you can introduce a postal code as argument. So,
     it need to be validated if is recognized as valid. This file contains code to check this.
     * `mercadona_scraper_main.py`: Script which scrape data from online supermarket and save data into database.
+    * `mercadona_scraper_categories_aggregation_main.py`: Script which retrieve an aggregation data of total products for each category.
   * `nutritional_data/`: This folder contains the second part to enrich data scraped from online supermarket. New
   variables added in scripts contained in this folder are nutritional data such as energy, salt, fat, ... . This data
   is used to calculate nutriscore. Thus, new variables added are nutritrional data and nutriscore.
     * `ciqual/requests.py`: Contains ElasticSearch query to get data from ciqual for then calculate planet score.
+    * `ewo/calculate_ultraprocessed_punctuation.py`: Contains the implementation of the algorithm to calculate ultraprocessed qualifications of products.
+    * `ewo/parse_mercadona_categories_to_ewo_categories.py`: Parses Mercadona categories to EWO categories.
     * `gemini_integration/connect.py`: Creates gemini client object which ables to make gemini requests.
     * `gemini_integration/model_getter.py`: Retrieve gemini model enabled to make petitions.
     * `gemini_integration/request.py`: Makes petitions to gemini model.
@@ -108,6 +111,7 @@ is just to check specific sql's used in other parts of the project.
     mercadona category, subcategory and second subcategory.
     * `nutriscore/red_meat_calculator.py`: Calculator of nutriscore for red meat category.
     * `nutriscore_calculator_handler.py`: Script that calculates nutriscore.
+    * `ewo_ultraprocessed_punctuation_handler.py`: Script that calculates ultraprocessed punctuation.
     * `nutritional_data_handler.py`: Script that retrieve nutritional information of product and save it into database.
 
 ## How to execute retrieve data from Mercadona supermarket online?
@@ -159,7 +163,15 @@ The arguments that allow this script are:
 
 * ***limit***: Limit of products per execution which do not have nutriscore.
 
-4. **Database content as CSV**
+4. **Calculate ewo ultraprocessed qualification mark**
+
+This scripts implements the ewo algorithm to calculate ultraprocessed qualifications of products.
+
+The arguments that allow this scripts are:
+
+* ***limit***: Limit of products per execution which do not have ultraprocessed qualification mark.
+
+5. **Database content as CSV**
 
 The last script of lifecycle about retrieve information of Mercadona online supermarket is the script called
 `db_to_csv.py`. This script executes an SQL which retrieve all data from database and transforms this data to CSV format.
