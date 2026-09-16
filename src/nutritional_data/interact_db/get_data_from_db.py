@@ -4,7 +4,7 @@ TFM: Food environment on Mercadona's supermarket
 Author: Francesc Ferré Tarrés
 """
 
-from utils.utils import get_path_sqlite_db
+from utils.utils import get_path_sqlite_db, match_nutritional_data_with_each_product
 from ciqual import requests as request_to_ciqual
 from dto.gemini_model_data import GeminiModelDTO
 from constants.constants_variables import constants_variables_getter
@@ -29,7 +29,8 @@ def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict|None:
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
         cur.execute("""
-                    SELECT origin, found_nutriments,  nutriscore,  planetscore, ciqual_text, ciqual_id
+                    SELECT origin, found_nutriments,  nutriscore,  planetscore,
+                           ciqual_text, ciqual_id, ewo_ultra_processed_punctuation
                     from products p
                     where p.id_product = ?
                         group by p.id_product
@@ -47,7 +48,8 @@ def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict|None:
         'nutriscore': response[2],
         'planetscore': response[3],
         'ciqual_text': response[4],
-        'ciqual_id': response[5]
+        'ciqual_id': response[5],
+        'ewo_ultra_processed_punctuation': response[6],
     }
 
 def get_gemini_models() -> list:
@@ -201,6 +203,105 @@ def get_types_of_nutriments(special_nutriments_ids: list) -> dict:
 
     return to_return
 
+def get_nutriments_of_specific_products(mercadona_ids: list) -> dict:
+    """
+    Function to retrieve nutriments of specific products by mercadona_id
+
+    Args:
+        mercadona_ids (list): List of mercadona ids products.
+
+    Returns:
+        dict: Dictionary with mercadona_id as key and list of nutriments as value
+    """
+
+    db_path = get_path_sqlite_db()
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        placeholders = ", ".join(["?"] * len(mercadona_ids))
+        cur.execute(f"""
+                select pn.producte_mercadona_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
+                from producte_nutrients pn
+                inner join nutrients n on n.id = pn.nutrient_id
+                where
+                    pn.producte_mercadona_id in ({placeholders})
+                """, mercadona_ids)
+
+        nutriments = cur.fetchall()
+        nutriments_indexed_by_mercadona_id = {}
+        for nutriment in nutriments:
+            mercadona_id = nutriment[0]
+            nutriment_id = nutriment[1]
+            if not mercadona_id in nutriments_indexed_by_mercadona_id:
+                nutriments_indexed_by_mercadona_id[mercadona_id] = []
+
+            if nutriment_id == int(NO_DATA_NUTRIMENTS):
+                continue
+
+            nutriments_indexed_by_mercadona_id[mercadona_id].append({
+                'id_nutriment': nutriment_id,
+                'nutriment_name': nutriment[2],
+                'quantity': nutriment[3],
+                'units': nutriment[4]
+            })
+
+    conn.close()
+    return nutriments_indexed_by_mercadona_id
+
+
+def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
+    """
+    Function that gets products without ultraprocessed qualification.
+
+    Args:
+        limit (int): Number limit of products to be find.
+
+    Returns:
+        list: List of products without ultraprocessed qualification.
+    """
+
+    response = []
+
+    db_path = get_path_sqlite_db()
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        cur.execute("""
+                    select p.id,
+                           p.id_product,
+                           p.category,
+                           p.subcategory,
+                           p.second_subcategory,
+                           p.product_name,
+                           p.ingredients
+                    from products p
+                    where p.ewo_ultra_processed_punctuation is null
+                      and p.found_nutriments = 1
+                    group by p.id_product limit ?
+                    """, (limit,))
+
+        products = cur.fetchall()
+
+        if not products:
+            return response
+
+        mercadona_ids = []
+        for product in products:
+            response.append({
+                'id': product[0],
+                'id_product': product[1],
+                'category': product[2],
+                'subcategory': product[3],
+                'second_subcategory': product[4],
+                'product_name': product[5],
+                'ingredients': product[6]
+            })
+            mercadona_ids.append(product[1])
+
+        nutriments = get_nutriments_of_specific_products(mercadona_ids)
+        response = match_nutritional_data_with_each_product(nutriments, response)
+
+    conn.close()
+
+    return response
 
 def get_products_without_nutriscore(limit: int) -> list:
     """
@@ -256,51 +357,8 @@ def get_products_without_nutriscore(limit: int) -> list:
             })
             mercadona_ids.append(product[1])
 
-        placeholders = ", ".join(["?"] * len(mercadona_ids))
-        cur.execute(f"""
-        select pn.producte_mercadona_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
-        from producte_nutrients pn
-        inner join nutrients n on n.id = pn.nutrient_id
-        where
-            pn.producte_mercadona_id in ({placeholders})
-        """, mercadona_ids)
-
-        nutriments = cur.fetchall()
-        nutriments_indexed_by_mercadona_id = {}
-        for nutriment in nutriments:
-            mercadona_id = nutriment[0]
-            nutriment_id = nutriment[1]
-            if not mercadona_id in nutriments_indexed_by_mercadona_id:
-                nutriments_indexed_by_mercadona_id[mercadona_id] = []
-
-            if nutriment_id == int(NO_DATA_NUTRIMENTS):
-                continue
-
-            nutriments_indexed_by_mercadona_id[mercadona_id].append({
-                'id_nutriment': nutriment_id,
-                'nutriment_name': nutriment[2],
-                'quantity': nutriment[3],
-                'units': nutriment[4]
-            })
-
-        for mercadona_id, nutriment_data in nutriments_indexed_by_mercadona_id.items():
-            for idx, product in enumerate(result):
-                if product['id_product'] == int(mercadona_id):
-                    item = result[idx]
-                    item['nutriments'] = nutriment_data
-                    data_to_return.append(
-                        ProductNutrimentsDTO(
-                            item['id'],
-                            item['id_product'],
-                            item['category'],
-                            item['subcategory'],
-                            item['second_subcategory'],
-                            item['product_name'],
-                            item['ingredients'],
-                            item['alcohol_grades'],
-                            item['nutriments']
-                        )
-                    )
+        nutriments_indexed_by_mercadona_id = get_nutriments_of_specific_products(mercadona_ids)
+        data_to_return = match_nutritional_data_with_each_product(nutriments_indexed_by_mercadona_id, result)
 
     conn.close()
 

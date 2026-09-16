@@ -186,14 +186,14 @@ def check_presence_of_non_nutritive_sweeteners(ingredients: str|None) -> bool:
         r"|"
         # Names
         r"sorbitol(?:s)?"
-        r"|mannitol"
+        r"|manitol"
         r"|isomalt"
         r"|alitame"
-        r"|polyglycitol(?:\s+syrup)?"
+        r"|poliglicitol(?:\s+jarabe)?"
         r"|maltitol(?:s)?"
         r"|lactitol"
-        r"|xylitol"
-        r"|erythritol"
+        r"|xilitol"
+        r"|eritritol"
         r")\b",
         re.IGNORECASE
     )

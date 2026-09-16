@@ -35,6 +35,7 @@ constants = {
     ],
     "LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA": "5",
     "LIMIT_PRODUCTS_TO_GET_NUTRISCORE": "5",
+    "LIMIT_PRODUCTS_TO_CALCULATE_ULTRAPROCESSED_PUNCTUATION": "5",
     "BASIC_NUTRIENTS_TO_GET": [
         1,2,3
     ],
@@ -46,6 +47,7 @@ constants = {
         "FATS_OILS_NUTS_SEEDS": ["greixos_totals", "greixos_saturats", "sucres", "sal", "fibra", "proteines"],
         "BEVERAGES": ["Energia", "sucres", "greixos_saturats", "sal", "fibra", "proteines"],
     },
+    "NUTRIMENTS_DM_EWO": ["greixos_totals_g", "hidrats_carboni_g", "fibra_g", "proteines_g", "sal_g"],
     "CERTIFICATIONS_BASIC": [
         1
     ]

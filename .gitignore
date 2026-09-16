@@ -1,4 +1,5 @@
 .idea
 .tfm-venv/
+external_data/EWO_ingredients_translated.xlsx
 desktop.ini
 .env

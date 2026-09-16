@@ -24,6 +24,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     ingredients = product.get_ingredients()
     product_name = product.get_product_name()
     splited_ingredients = ingredients.split(",")
+    splited_ingredients_y = ingredients.split("y")
 
     print(f" * Mercadona category: {category}\n")
     print(f" * Mercadona subcategory: {subcategory}\n")
@@ -75,7 +76,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
                 "cous cous"in product_name.lower():
                 return "GENERAL_FOOD"
         if subcategory == "Legumbres":
-            if len(splited_ingredients) > 1:
+            if len(splited_ingredients) > 1 or len(splited_ingredients_y) > 1:
                 return "GENERAL_FOOD"
         if subcategory == "Pasta y fideos" and second_subcategory in ["Pasta rellena", "Fideos orientales"]:
             return "GENERAL_FOOD"

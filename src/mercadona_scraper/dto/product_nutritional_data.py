@@ -497,7 +497,6 @@ class ProductNutrimentsDTO:
             second_subcategory: str,
             product_name: str,
             ingredients: str,
-            alcohol_grades: float,
             nutriments: list
     ):
         self.id = id
@@ -507,7 +506,7 @@ class ProductNutrimentsDTO:
         self.second_subcategory = second_subcategory
         self.product_name = product_name
         self.ingredients = ingredients
-        self.alcohol_grades = alcohol_grades
+        self.alcohol_grades = 0
         self.nutriments = []
         for nutriment in nutriments:
             self.nutriments.append(
@@ -635,3 +634,16 @@ class ProductNutrimentsDTO:
         """
 
         return self.nutriments
+
+    def set_alcohol_grades(self, alcohol_grades: float) -> None:
+        """
+        Function set alcohol grades.
+
+        Args:
+            alcohol_grades (float): Alcohol grades.
+
+        Returns:
+            None.
+        """
+
+        self.alcohol_grades = alcohol_grades
