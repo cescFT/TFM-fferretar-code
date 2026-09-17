@@ -199,6 +199,33 @@ def calculate_first_step_punctuation(
                 matched = True
                 already_matched.append(ingredient_name)
 
+        elif ingredient_name == "zumo_concentrado_no_limon" and not ingredient_name in already_matched:
+            pattern = r'\bzumo\s+concentrado\s+de\s+([^;().]+)'
+
+            if not re.search(pattern, ingredients) or "zumo concentrado de limon" in already_matched:
+                continue
+
+            juice_positions = re.finditer(pattern, ingredients)
+
+            juices = []
+
+            for match in juice_positions:
+                text_after = match.group(1).strip()
+                fruits = re.split(r'\s*,\s*|\s+y\s+', text_after)
+                for fruit in fruits:
+                    fruit = fruit.strip()
+                    if fruit:
+                        juices.append(fruit)
+
+            if any(juice == 'limon' for juice in juices):
+                if not "zumo concentrado de limon" in already_matched:
+                    score = 0
+                    matched = True
+                    already_matched.append("zumo concentrado de limon")
+            else:
+                matched = True
+                already_matched.append(ingredient_name)
+
         elif re.search(pattern_ingredient_name, ingredients) and not ingredient_name in already_matched:
             matched = True
             already_matched.append(ingredient_name)
