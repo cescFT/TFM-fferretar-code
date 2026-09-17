@@ -61,6 +61,7 @@ def execute_scraper() -> None:
 
     if args.clear:
         clear_database()
+        print("Database is cleared.")
 
     navigator = initialize(postal_code)
 

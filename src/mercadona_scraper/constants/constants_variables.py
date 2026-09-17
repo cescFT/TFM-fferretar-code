@@ -6,6 +6,7 @@ Author: Francesc Ferré Tarrés
 
 constants = {
     "BASIC_URL": "https://tienda.mercadona.es/",
+    "BASIC_URL_CATEGORIES": "https://tienda.mercadona.es/categories/112",
     "CIQUAL_URL": "https://ciqual.anses.fr/esearch/aliments/_search",
     "MERCADONA_BASE_URL_API": "https://tienda.mercadona.es/api/products/@@product_id@@/?lang=@@lang@@&wh=@@wh@@",
     "BCN_DATA": {
@@ -28,7 +29,8 @@ constants = {
         "Biberón y chupete",
         "Higiene y cuidado",
         "Toallitas y pañales",
-        "Velas y decoración"
+        "Velas y decoración",
+        "Hielo"
     ],
     "NOT_INGREDIENTS_SAME_NAME_CATEGORIES": [
         "Fruta y verdura"

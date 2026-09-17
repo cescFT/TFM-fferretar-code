@@ -6,25 +6,35 @@ Author: Francesc Ferré Tarrés
 
 import sqlite3
 import pandas as pd
-from utils.utils import get_path_sqlite_db, get_path_csv_from_db
+from utils.utils import (
+    get_path_sqlite_db,
+    get_path_product_csv_from_db,
+    get_path_categories_aggregation_csv_from_db
+)
 
 if __name__ == "__main__":
-    print("Starting script...")
+    print("Script start.")
 
     db_path = get_path_sqlite_db()
-    csv_path = get_path_csv_from_db()
+    csv_path = get_path_product_csv_from_db()
+    csv_path_aggregation = get_path_categories_aggregation_csv_from_db()
 
     with sqlite3.connect(db_path) as conn:
+        print("Generating CSV file of product data.")
         df = pd.read_sql_query("""
-            select p.*, n.nom as nom_nutrient, pn.quantitat as quantitat_nutrient, n.unitat_mesura_nutrient, c.certification_name
+            select *
         from products p
-        left join producte_nutrients pn on pn.producte_mercadona_id = p.id_product
-        left join nutrients n on n.id = pn.nutrient_id
-        left join product_certifications pc on pc.product_id = p.id_product
-        left join certifications c on c.id = pc.certification_id
         """, conn)
-        df.to_csv(csv_path, index=False, sep=";")
+        df.to_csv(csv_path, index=False, sep="|", encoding="utf-8")
+        print("CSV product data generated.")
+        print("Generating CSV file of categories aggregation.")
+        df_aggregate = pd.read_sql_query("""
+            select * from categories_counter c
+        """, conn)
+
+        df_aggregate.to_csv(csv_path_aggregation, index=False, sep="|", encoding="utf-8")
+        print("CSV categories aggregation generated.")
 
     conn.close()
 
-    print("End of script.")
+    print("Script end.")

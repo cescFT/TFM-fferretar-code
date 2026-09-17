@@ -131,6 +131,16 @@ This script allow the use of different arguments:
 to use another one, you will get an exception.
 * ***clear***: With the execution of this argument, all data from existing database will be removed. It's just like hard reset.
 
+1.1. **Web scraping - retrieve aggregated data of total products in each category/subcategory**
+
+To have more context when analyze data, after executing the script above mentioned, you need to execute the script 
+`src/mercadona_scraper/mercadona_scraper_categories_aggregation_main.py` which iterates over all categories and subcategories
+to collect how many products are available to be sold in each category/subcategory.
+
+This script allows the use of different arguments:
+* ***-cp***: Postal code of the user. In this case only are allowed two different postal codes (08032 / 43812). If you try
+to use another one, you will get an exception.
+
 2. **Retrieve nutritional data**
 
 With the execution of the first script you will obtain a lot of information of the products. Essentially, you will have
@@ -175,3 +185,5 @@ The arguments that allow this scripts are:
 
 The last script of lifecycle about retrieve information of Mercadona online supermarket is the script called
 `db_to_csv.py`. This script executes an SQL which retrieve all data from database and transforms this data to CSV format.
+
+Also, it generates a CSV file with aggregated data of total products in each category/subcategory.
