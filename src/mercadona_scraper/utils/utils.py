@@ -13,6 +13,7 @@ from selenium import webdriver
 from constants.constants_variables import constants_variables_getter
 from pathlib import Path
 
+from dto.categories_aggregate import CategoriesAggregate
 from dto.product_nutritional_data import ProductNutrimentsDTO
 from dto.product_scrap_data import ProductScrapedDTO
 
@@ -118,7 +119,23 @@ def get_path_sqlite_db() -> str:
 
     return str(db_path)
 
-def get_path_csv_from_db() -> str:
+def get_path_categories_aggregation_csv_from_db() -> str:
+    """
+    Function that returns path of aggregation csv file.
+
+    Args:
+        None.
+
+    Returns:
+        None.
+    """
+
+    actual_path = Path(__file__).resolve()
+    project_path = actual_path.parent.parent.parent.parent
+    csv_path = project_path / 'csv' / 'mercadona-scraper-aggregation-results.csv'
+    return str(csv_path)
+
+def get_path_product_csv_from_db() -> str:
     """
     Function that retrieve path of csv file.
 
@@ -171,6 +188,25 @@ def clear_database() -> None:
     cursor.executescript(sql_script)
     db.commit()
     db.close()
+
+def insert_aggregate_data_into_db(aggregate_data_to_save: list) -> None:
+    """
+    Function that inserts aggregate categories information into database.
+    Args:
+        aggregate_data_to_save (list): list of aggregate categories information.
+
+    Returns:
+        None.
+    """
+
+    db_path = get_path_sqlite_db()
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        aggregate_data: CategoriesAggregate
+        for aggregate_data in aggregate_data_to_save:
+            cur.execute(aggregate_data.get_insert_to_db())
+        conn.commit()
+    conn.close()
 
 def insert_product_data_to_database(info_products: list) -> None:
     """
