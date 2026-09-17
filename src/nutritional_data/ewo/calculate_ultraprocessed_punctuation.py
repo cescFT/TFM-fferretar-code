@@ -177,7 +177,29 @@ def calculate_first_step_punctuation(
         pattern_ingredient_name = r'(?<!\w)' + re.escape(ingredient_name) + r'(?!\w)'
         pattern_reference_ingredient = r'(?<!\w)' + re.escape(reference_ingredient) + r'(?!\w)'
 
-        if re.search(pattern_ingredient_name, ingredients) and not ingredient_name in already_matched:
+        if ingredient_name == "vitaminas_anadidas_no_e" and not ingredient_name in already_matched:
+            pattern = r'(?:^|[,;(])\s*vitaminas?\b'
+            if not re.search(pattern, ingredients):
+                continue
+
+            vitamin_positions = re.finditer(pattern, ingredients)
+            not_have_vit_e = True
+            for match in vitamin_positions:
+                text_after = ingredients[match.end():match.end() + 100]
+                vitamins = re.findall(
+                    r'\b(?:a\d{0,2}|b\d{0,2}|c|d\d{0,2}|e|f|k\d{0,2})\b',
+                    text_after
+                )
+
+                if vitamins and 'e' in vitamins:
+                    not_have_vit_e = False
+                    break
+
+            if not_have_vit_e:
+                matched = True
+                already_matched.append(ingredient_name)
+
+        elif re.search(pattern_ingredient_name, ingredients) and not ingredient_name in already_matched:
             matched = True
             already_matched.append(ingredient_name)
         elif reference_ingredient and reference_ingredient != 'nan':
