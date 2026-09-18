@@ -14,7 +14,7 @@ from constants.constants_variables import constants_variables_getter
 from pathlib import Path
 
 from dto.categories_aggregate import CategoriesAggregate
-from dto.product_nutritional_data import ProductNutrimentsDTO
+from dto.product_nutritional_data import ProductNutrimentsDTO, CertificationDTO
 from dto.product_scrap_data import ProductScrapedDTO
 
 import sqlite3
@@ -249,6 +249,16 @@ def match_nutritional_data_with_each_product(
     nutriments_indexed_by_mercadona_id: dict,
     product_items: list
 ) -> list:
+    """
+    Function which is responsible to match product with nutritional data.
+
+    Args:
+        nutriments_indexed_by_mercadona_id (dict): Nutriments indexed by Mercadona ID.
+        product_items (list): List of product items.
+
+    Returns:
+        list: Product items with nutritional data.
+    """
     data_to_return = []
     for mercadona_id, nutriment_data in nutriments_indexed_by_mercadona_id.items():
         for idx, product in enumerate(product_items):
@@ -273,3 +283,30 @@ def match_nutritional_data_with_each_product(
                 data_to_return.append(product_nutriments_dto)
 
     return data_to_return
+
+def match_product_data_with_certifications_each_product(
+    product_items: list,
+    certifications_indexed_by_mercadona_id: dict
+) -> list:
+    """
+    Function that matches products with each certifications.
+    Args:
+        product_items (list): List of product items.
+        certifications_indexed_by_mercadona_id (dict): Certifications indexed by Mercadona ID.
+
+    Returns:
+        list: Product items with certifications.
+    """
+
+    product: ProductNutrimentsDTO
+    for idx, product in enumerate(product_items):
+        product_mercadona_id = product.get_mercadona_id()
+        for mercadona_id, certifications in certifications_indexed_by_mercadona_id.items():
+            if product_mercadona_id == mercadona_id:
+                for cert in certifications:
+                    product.add_certification(CertificationDTO(cert['certification_name'], cert['id']))
+                break
+
+        product_items[idx] = product
+
+    return product_items

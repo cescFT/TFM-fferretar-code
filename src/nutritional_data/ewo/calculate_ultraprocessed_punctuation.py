@@ -4,7 +4,7 @@ TFM: Food environment on Mercadona's supermarket
 Author: Francesc Ferré Tarrés
 """
 
-from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO
+from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO, CertificationDTO
 from nutritional_data.ewo.parse_mercadona_categories_to_ewo_categories import parse
 from mercadona_scraper.constants.constants_variables import constants_variables_getter
 import pandas as pd
@@ -39,7 +39,11 @@ def calculate_ultraprocessed_punctuation(
         print(f"The product {product.get_mercadona_id()} {product.get_product_name()} has directly a good punctuation.")
         return {'qualification': "1"}
 
-    punctuation_step1 = calculate_first_step_punctuation(product.get_ingredients(), ewo_ingredients)
+    punctuation_step1 = calculate_first_step_punctuation(
+        product.get_ingredients(),
+        product.get_certifications(),
+        ewo_ingredients
+    )
     punctuation_step2 = calculate_second_step_punctuation(product, category)
 
     qualification = calculate_third_step_punctuation(punctuation_step1, punctuation_step2)
@@ -139,12 +143,14 @@ def calculate_second_step_punctuation(
 
 def calculate_first_step_punctuation(
     ingredients: str,
+    product_certifications: list,
     ewo_ingredients: pd.DataFrame
 ) -> int:
     """
     Function that calculates first step of ultraprocessing punctuation.
     Args:
         ingredients (str): Ingredients of the product.
+        product_certifications (list): List of product certifications.
         ewo_ingredients (pd.DataFrame): DataFrame with EWO ingredients.
 
     Returns:
@@ -226,6 +232,26 @@ def calculate_first_step_punctuation(
                 matched = True
                 already_matched.append(ingredient_name)
 
+        elif ingredient_name == "gluten" and not ingredient_name in already_matched:
+            has_no_gluten_cert = False
+
+            certification: CertificationDTO
+            for certification in product_certifications:
+                if certification.get_certification_name() == 'gluten-free':
+                    has_no_gluten_cert = True
+                    break
+
+            if has_no_gluten_cert:
+                continue
+
+            pattern_no_gluten = r'(?<!\w)' + re.escape("sin gluten") + r'(?!\w)'
+
+            if re.search(pattern_no_gluten, ingredients):
+                continue
+
+            if re.search(pattern_ingredient_name, ingredients) and not ingredient_name in already_matched:
+                matched = True
+                already_matched.append(ingredient_name)
         elif re.search(pattern_ingredient_name, ingredients) and not ingredient_name in already_matched:
             matched = True
             already_matched.append(ingredient_name)

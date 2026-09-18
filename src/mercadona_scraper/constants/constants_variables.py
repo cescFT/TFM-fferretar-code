@@ -42,6 +42,7 @@ constants = {
         1,2,3
     ],
     "NUTRIMENT_NO_DATA": "1",
+    "CERTIFICATIONS_NO_DATA": "1",
     "NUTRIMENTS_NUTRISCORE": {
         "GENERAL_FOOD": ["Energia", "sucres", "greixos_saturats", "sal", "fibra", "proteines"],
         "RED_MEAT": ["Energia", "sucres", "greixos_saturats", "sal", "fibra", "proteines"],

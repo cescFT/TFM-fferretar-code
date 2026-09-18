@@ -4,15 +4,18 @@ TFM: Food environment on Mercadona's supermarket
 Author: Francesc Ferré Tarrés
 """
 
-from utils.utils import get_path_sqlite_db, match_nutritional_data_with_each_product
+from utils.utils import (
+    get_path_sqlite_db,
+    match_nutritional_data_with_each_product,
+    match_product_data_with_certifications_each_product)
 from ciqual import requests as request_to_ciqual
 from dto.gemini_model_data import GeminiModelDTO
 from constants.constants_variables import constants_variables_getter
-from dto.product_nutritional_data import ProductNutrimentsDTO
 
 import sqlite3
 
 NO_DATA_NUTRIMENTS = constants_variables_getter("NUTRIMENT_NO_DATA")
+CERTIFICATIONS_NO_DATA = constants_variables_getter("CERTIFICATIONS_NO_DATA")
 
 def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict|None:
     """
@@ -247,6 +250,47 @@ def get_nutriments_of_specific_products(mercadona_ids: list) -> dict:
     conn.close()
     return nutriments_indexed_by_mercadona_id
 
+def get_certifications_of_specific_products(mercadona_ids: list) -> dict:
+    """
+    Function that gets certification information of specific products by mercadona ids.
+    Args:
+        mercadona_ids (list): List of Mercadona IDs.
+
+    Returns:
+        dict: Certifications indexed by Mercadona ID.
+    """
+
+    db_path = get_path_sqlite_db()
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        cur.execute(f"""
+            select c.id, c.certification_name, pc.product_id
+            from product_certifications pc
+            inner join certifications c on pc.certification_id = c.id
+            where pc.product_id in ({','.join(['?'] * len(mercadona_ids))})
+        """, mercadona_ids)
+
+        certifications = cur.fetchall()
+
+        certifications_indexed_by_mercadona_id = {}
+        for certification in certifications:
+            certification_id = certification[0]
+            certification_name = certification[1]
+            mercadona_id = certification[2]
+
+            if mercadona_id not in certifications_indexed_by_mercadona_id:
+                certifications_indexed_by_mercadona_id[mercadona_id] = []
+
+            if certification_id == int(CERTIFICATIONS_NO_DATA):
+                continue
+
+            certifications_indexed_by_mercadona_id[mercadona_id].append({
+                'id': certification_id,
+                'certification_name': certification_name
+            })
+
+    conn.close()
+    return certifications_indexed_by_mercadona_id
 
 def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
     """
@@ -271,7 +315,8 @@ def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
                            p.subcategory,
                            p.second_subcategory,
                            p.product_name,
-                           p.ingredients
+                           p.ingredients,
+                           p.alcohol_grades
                     from products p
                     where p.ewo_ultra_processed_punctuation is null
                       and p.found_nutriments = 1
@@ -292,12 +337,15 @@ def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
                 'subcategory': product[3],
                 'second_subcategory': product[4],
                 'product_name': product[5],
-                'ingredients': product[6]
+                'ingredients': product[6],
+                'alcohol_grades': product[7]
             })
             mercadona_ids.append(product[1])
 
         nutriments = get_nutriments_of_specific_products(mercadona_ids)
+        certifications = get_certifications_of_specific_products(mercadona_ids)
         response = match_nutritional_data_with_each_product(nutriments, response)
+        response = match_product_data_with_certifications_each_product(response, certifications)
 
     conn.close()
 

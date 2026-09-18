@@ -518,6 +518,8 @@ class ProductNutrimentsDTO:
                 )
             )
 
+        self.certifications = []
+
     def get_id(self) -> int:
         """
         Function get product id.
@@ -647,3 +649,23 @@ class ProductNutrimentsDTO:
         """
 
         self.alcohol_grades = alcohol_grades
+
+    def add_certification(self, certification: CertificationDTO) -> None:
+        """
+        Function that enables to add certification information in dto object.
+        Args:
+            certification (CertificationDTO): Certification information.
+
+        Returns:
+            None.
+        """
+        self.certifications.append(certification)
+
+    def get_certifications(self) -> list:
+        """
+        Function that enables to get certification information in dto object.
+
+        Returns:
+            list: Certification information.
+        """
+        return self.certifications
