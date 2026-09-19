@@ -4,6 +4,7 @@ TFM: Food environment on Mercadona's supermarket
 Author: Francesc Ferré Tarrés
 """
 
+from dto.ewo_reference import EwoReference
 from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO, CertificationDTO
 from nutritional_data.ewo.parse_mercadona_categories_to_ewo_categories import parse
 from mercadona_scraper.constants.constants_variables import constants_variables_getter
@@ -157,14 +158,6 @@ def calculate_first_step_punctuation(
         int: First step of ultraprocessing punctuation.
     """
 
-    punctuation_items = {
-        0: 0,
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0
-    }
-
     ingredients = ''.join(
         c for c in unicodedata.normalize('NFD', ingredients)
         if unicodedata.category(c) != 'Mn'
@@ -172,112 +165,177 @@ def calculate_first_step_punctuation(
 
     already_matched = []
     for _, row in ewo_ingredients.iterrows():
-        ingredient_name = str(row['es']).strip() if pd.notna(row['es']) else ""
-        reference_ingredient = str(row['reference']).strip() if pd.notna(row['reference']) else ""
         score = int(row['score']) if pd.notna(row['score']) else None
 
         if score is None:
             continue
 
-        matched = False
-        pattern_ingredient_name = r'(?<!\w)' + re.escape(ingredient_name) + r'(?!\w)'
-        pattern_reference_ingredient = r'(?<!\w)' + re.escape(reference_ingredient) + r'(?!\w)'
+        ingredient_names = str(row['es']).strip() if pd.notna(row['es']) else ""
+        ingredient_names_splitted = ingredient_names.split(' / ')
+        reference_ingredient = str(row['reference']).strip() if pd.notna(row['reference']) else ""
 
-        if ingredient_name == "vitaminas_anadidas_no_e" and not ingredient_name in already_matched:
-            pattern = r'(?:^|[,;(])\s*vitaminas?\b'
-            if not re.search(pattern, ingredients):
-                continue
+        if reference_ingredient == 'nan':
+            reference_ingredient = ""
 
-            vitamin_positions = re.finditer(pattern, ingredients)
-            not_have_vit_e = True
-            for match in vitamin_positions:
-                text_after = ingredients[match.end():match.end() + 100]
-                vitamins = re.findall(
-                    r'\b(?:a\d{0,2}|b\d{0,2}|c|d\d{0,2}|e|f|k\d{0,2})\b',
-                    text_after
-                )
+        ingredient_is_already_found = check_ingredient_already_found(
+            reference_ingredient,
+            already_matched,
+            ingredient_names_splitted
+        )
 
-                if vitamins and 'e' in vitamins:
-                    not_have_vit_e = False
-                    break
+        if ingredient_is_already_found:
+            continue
 
-            if not_have_vit_e:
-                matched = True
-                already_matched.append(ingredient_name)
-
-        elif ingredient_name == "zumo_concentrado_no_limon" and not ingredient_name in already_matched:
-            pattern = r'\bzumo\s+concentrado\s+de\s+([^;().]+)'
-
-            if not re.search(pattern, ingredients) or "zumo concentrado de limon" in already_matched:
-                continue
-
-            juice_positions = re.finditer(pattern, ingredients)
-
-            juices = []
-
-            for match in juice_positions:
-                text_after = match.group(1).strip()
-                fruits = re.split(r'\s*,\s*|\s+y\s+', text_after)
-                for fruit in fruits:
-                    fruit = fruit.strip()
-                    if fruit:
-                        juices.append(fruit)
-
-            if any(juice == 'limon' for juice in juices):
-                if not "zumo concentrado de limon" in already_matched:
-                    score = 0
-                    matched = True
-                    already_matched.append("zumo concentrado de limon")
-            else:
-                matched = True
-                already_matched.append(ingredient_name)
-
-        elif ingredient_name == "gluten" and not ingredient_name in already_matched:
-            has_no_gluten_cert = False
-
-            certification: CertificationDTO
-            for certification in product_certifications:
-                if certification.get_certification_name() == 'gluten-free':
-                    has_no_gluten_cert = True
-                    break
-
-            if has_no_gluten_cert:
-                continue
-
-            pattern_no_gluten = r'(?<!\w)' + re.escape("sin gluten") + r'(?!\w)'
-
-            if re.search(pattern_no_gluten, ingredients):
-                continue
-
-            if re.search(pattern_ingredient_name, ingredients) and not ingredient_name in already_matched:
-                matched = True
-                already_matched.append(ingredient_name)
-        elif re.search(pattern_ingredient_name, ingredients) and not ingredient_name in already_matched:
-            matched = True
-            already_matched.append(ingredient_name)
-        elif reference_ingredient and reference_ingredient != 'nan':
-            if re.search(pattern_reference_ingredient, ingredients) and not reference_ingredient in already_matched:
+        if reference_ingredient:
+            pattern_reference_ingredient = r'(?<!\w)' + re.escape(reference_ingredient) + r'(?!\w)'
+            matched = False
+            if re.search(pattern_reference_ingredient, ingredients):
                 matched = True
                 already_exists = check_whether_exists_reference(reference_ingredient, already_matched)
                 if not already_exists:
-                    already_matched.append(reference_ingredient)
+                    ewo_reference = EwoReference(ingredient_names, reference_ingredient, score)
+                    already_matched.append(ewo_reference)
                 else:
                     matched = False
 
             if not matched:
                 reference_ingredient = reference_ingredient.replace('-', '')
                 pattern_reference_ingredient = r'(?<!\w)' + re.escape(reference_ingredient) + r'(?!\w)'
-                if re.search(pattern_reference_ingredient, ingredients) and not reference_ingredient in already_matched:
-                    matched = True
+                if re.search(pattern_reference_ingredient, ingredients):
                     already_exists = check_whether_exists_reference(reference_ingredient, already_matched)
                     if not already_exists:
-                        already_matched.append(reference_ingredient)
-                    else:
-                        matched = False
+                        ewo_reference = EwoReference(ingredient_names, reference_ingredient, score)
+                        already_matched.append(ewo_reference)
+                        matched = True
+
+            if matched:
+                continue
+
+        for idx, ingredient_name in enumerate(ingredient_names_splitted):
+            if idx != 0:
+                ingredient_is_already_found = check_ingredient_already_found(
+                    reference_ingredient,
+                    already_matched,
+                    ingredient_names_splitted
+                )
+
+                if ingredient_is_already_found:
+                    continue
 
 
-        if matched:
-            punctuation_items[score] += 1
+            pattern_ingredient_name = r'(?<!\w)' + re.escape(ingredient_name) + r'(?!\w)'
+
+            if ingredient_name == "vitaminas_anadidas_no_e":
+                pattern = r'(?:^|[,;(])\s*vitaminas?\b'
+                if not re.search(pattern, ingredients):
+                    continue
+
+                vitamin_positions = re.finditer(pattern, ingredients)
+                not_have_vit_e = True
+                for match in vitamin_positions:
+                    text_after = ingredients[match.end():match.end() + 100]
+                    vitamins = re.findall(
+                        r'\b(?:a\d{0,2}|b\d{0,2}|c|d\d{0,2}|e|f|k\d{0,2})\b',
+                        text_after
+                    )
+
+                    if vitamins and 'e' in vitamins:
+                        not_have_vit_e = False
+                        break
+
+                if not_have_vit_e:
+                    ewo_reference = EwoReference(ingredient_names, reference_ingredient, score)
+                    already_matched.append(ewo_reference)
+
+            elif ingredient_name == "zumo_concentrado_no_limon":
+                pattern = r'\bzumo\s+concentrado\s+de\s+([^;().]+)'
+
+                if not re.search(pattern, ingredients) or "zumo concentrado de limon" in already_matched:
+                    continue
+
+                juice_positions = re.finditer(pattern, ingredients)
+                juices = []
+
+                for match in juice_positions:
+                    text_after = match.group(1).strip()
+                    fruits = re.split(r'\s*,\s*|\s+y\s+', text_after)
+                    for fruit in fruits:
+                        fruit = fruit.strip()
+                        if fruit:
+                            juices.append(fruit)
+
+                if any(juice == 'limon' for juice in juices):
+                    has_concentrated_juice_lemon = False
+                    match: EwoReference
+                    for match in already_matched:
+                        if match.get_ingredient_name() == "zumo concentrado de limon":
+                            has_concentrated_juice_lemon = True
+                            break
+
+                    if not has_concentrated_juice_lemon:
+                        score = 0
+                        ewo_reference = EwoReference("zumo concentrado de limon", "", score)
+                        already_matched.append(ewo_reference)
+                else:
+                    ewo_reference = EwoReference(ingredient_names, reference_ingredient, score)
+                    already_matched.append(ewo_reference)
+
+            elif ingredient_name == "gluten":
+                has_no_gluten_cert = False
+
+                certification: CertificationDTO
+                for certification in product_certifications:
+                    if certification.get_certification_name() == 'gluten-free':
+                        has_no_gluten_cert = True
+                        break
+
+                if has_no_gluten_cert:
+                    continue
+
+                pattern_no_gluten = r'(?<!\w)' + re.escape("sin gluten") + r'(?!\w)'
+
+                if re.search(pattern_no_gluten, ingredients):
+                    continue
+
+                if re.search(pattern_ingredient_name, ingredients):
+                    ewo_reference = EwoReference(ingredient_names, reference_ingredient, score)
+                    already_matched.append(ewo_reference)
+            elif ingredient_name == "no_harinas_normales":
+                if not re.search(r'\bharinas?\b', ingredients):
+                    continue
+
+                normal_flour = [
+                    "harina de trigo",
+                    "harina blanca",
+                    "harina semiintegral",
+                    "harina integral",
+                    "harina semicompleta"
+                ]
+
+                normal_flour_already_in_matches = False
+
+                for flour in normal_flour:
+                    pattern_ingredient_name = r'(?<!\w)' + re.escape(flour) + r'(?!\w)'
+                    if re.search(pattern_ingredient_name, ingredients):
+                        normal_flour_already_in_matches = True
+                        break
+
+                if not normal_flour_already_in_matches:
+                    ewo_reference = EwoReference(ingredient_names, reference_ingredient, score)
+                    already_matched.append(ewo_reference)
+            elif re.search(pattern_ingredient_name, ingredients):
+                ewo_reference = EwoReference(ingredient_names, reference_ingredient, score)
+                already_matched.append(ewo_reference)
+
+    items_to_be_ignored = []
+    ingredient_found: EwoReference
+    for idx, ingredient_found in enumerate(already_matched):
+        ingredient_name = ingredient_found.get_ingredient_name()
+        for ingredient in already_matched:
+            if ingredient_name in ingredient.get_ingredient_name() and len(ingredient.get_ingredient_name()) > len(ingredient_name):
+                items_to_be_ignored.append(idx)
+
+    punctuation_items = calculate_punctuation_items_found(already_matched, items_to_be_ignored)
 
     p2 = punctuation_items[2]
     p3 = punctuation_items[3]
@@ -314,8 +372,70 @@ def check_whether_exists_reference(reference_ingredient: str, already_matched: l
     else:
         reference_ingredient = re.sub(r'^e', 'e-', reference_ingredient)
 
+    item: EwoReference
     for item in already_matched:
-        if reference_ingredient == item:
+        if reference_ingredient == item.get_reference():
             return True
 
     return False
+
+def check_ingredient_already_found(
+        reference_ingredient: str,
+        already_matched: list,
+        ingredient_names_to_check: list
+) -> bool:
+    """
+    Function to check whether ingredient is already found in already matched list.
+
+    Args:
+        reference_ingredient (str): Reference of the ingredient if exists (e.g. e-204)
+        already_matched (list): List of already matched ingredients.
+        ingredient_names_to_check (list): List of ingredient names to check.
+
+    Returns:
+        bool: Whether the ingredient is already found in the already matched list.
+    """
+
+    if len(already_matched) == 0:
+        return False
+
+    if reference_ingredient:
+        has_reference_with_hiphen = check_whether_exists_reference(reference_ingredient, already_matched)
+        reference_ingredient = reference_ingredient.replace('-', '')
+        has_reference_without_hiphen = check_whether_exists_reference(reference_ingredient, already_matched)
+
+        if has_reference_with_hiphen or has_reference_without_hiphen:
+            return True
+
+    for current_ingredient_name in ingredient_names_to_check:
+        ingredient_already_matched: EwoReference
+        for ingredient_already_matched in already_matched:
+            ingredients_splitted = ingredient_already_matched.get_ingredient_name().split(" / ")
+            if current_ingredient_name in ingredients_splitted:
+                return True
+
+    return False
+
+def calculate_punctuation_items_found(already_matched: list, items_to_be_ignored: list) -> dict:
+    """
+    Function to calculate the number of items found in the already matched list.
+    Args:
+        already_matched (list): List of already matched ingredients.
+        items_to_be_ignored (list): List of items to be ignored.
+
+    Returns:
+        dict: Dictionary with the number of items found in the already matched list.
+    """
+    punctuation_items = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0
+    }
+
+    for idx, item in enumerate(already_matched):
+        if idx not in items_to_be_ignored:
+            punctuation_items[item.get_score()] += 1
+
+    return punctuation_items

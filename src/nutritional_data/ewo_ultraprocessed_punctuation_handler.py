@@ -85,10 +85,6 @@ def prepare_ingredients_df_to_be_processed(ewo_ingredients_information: pd.DataF
         (ewo_ingredients_information['es'].str.strip() != '')
         ].copy()
 
-    ewo_ingredients['es'] = ewo_ingredients['es'].str.split(' / ')
-    ewo_ingredients = ewo_ingredients.explode('es')
-
-    ewo_ingredients['es'] = ewo_ingredients['es'].str.strip()
     ewo_ingredients['es'] = ewo_ingredients['es'].str.lower()
     ewo_ingredients['es'] = ewo_ingredients['es'].apply(lambda text : ''.join(
         c for c in unicodedata.normalize('NFD', text)
