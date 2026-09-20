@@ -250,7 +250,14 @@ def calculate_first_step_punctuation(
             elif ingredient_name == "zumo_concentrado_no_limon":
                 pattern = r'\bzumo\s+concentrado\s+de\s+([^;().]+)'
 
-                if not re.search(pattern, ingredients) or "zumo concentrado de limon" in already_matched:
+                has_concentrated_juice_lemon = False
+                match: EwoReference
+                for match in already_matched:
+                    if match.get_ingredient_name() == "zumo concentrado de limon":
+                        has_concentrated_juice_lemon = True
+                        break
+
+                if not re.search(pattern, ingredients) or has_concentrated_juice_lemon:
                     continue
 
                 juice_positions = re.finditer(pattern, ingredients)
