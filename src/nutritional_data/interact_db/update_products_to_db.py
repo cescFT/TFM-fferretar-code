@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -25,13 +25,13 @@ def update_ewo_ultraprocessed_qualification(qualifications_data: dict) -> None:
 
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
-        for mercadona_id, qualification in qualifications_data.items():
+        for grocery_product_id, qualification in qualifications_data.items():
             cur.execute(f"""
                                 update products
                                 set ewo_ultra_processed_punctuation = ?
                                 where
                                     id_product = ?
-                                """, (json.dumps(qualification), mercadona_id))
+                                """, (json.dumps(qualification), grocery_product_id))
 
         conn.commit()
 
@@ -53,13 +53,13 @@ def update_nutriscore_from_nutriments(nustriscore_data: dict) -> None:
 
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
-        for mercadona_id, nutriscore in nustriscore_data.items():
+        for grocery_product_id, nutriscore in nustriscore_data.items():
             cur.execute(f"""
                                 update products
                                 set nutriscore = ?
                                 where
                                     id_product = ?
-                                """, (json.dumps(nutriscore), mercadona_id))
+                                """, (json.dumps(nutriscore), grocery_product_id))
 
         conn.commit()
 
@@ -86,7 +86,7 @@ def update_food_found_nutriments(data_to_update: list) -> None:
     product_nutritional_data_dto: ProductNutritionalDataDTO
     for product_nutritional_data_dto in data_to_update:
         nutriments = product_nutritional_data_dto.get_nutrients()
-        product_ids.append(product_nutritional_data_dto.get_mercadona_id())
+        product_ids.append(product_nutritional_data_dto.get_grocery_id())
         nutriment: NutrientDTO
         for nutriment in nutriments:
             if nutriment.get_nutrient_id() is None:
@@ -146,7 +146,7 @@ def update_food_found_nutriments(data_to_update: list) -> None:
             if product_nutritional_data_dto.get_nutriscore() is not None:
                 cur.execute(f"UPDATE products SET nutriscore = ? WHERE id_product = ?", (
                         product_nutritional_data_dto.get_nutriscore(),
-                        product_nutritional_data_dto.get_mercadona_id()
+                        product_nutritional_data_dto.get_grocery_id()
                     )
                 )
 
@@ -154,7 +154,7 @@ def update_food_found_nutriments(data_to_update: list) -> None:
                 product_nutritional_data_dto.get_origin_from_gemini() is not None:
                 cur.execute(f"UPDATE products SET origin = ? WHERE id_product = ?", (
                         product_nutritional_data_dto.get_origin_from_gemini(),
-                        product_nutritional_data_dto.get_mercadona_id()
+                        product_nutritional_data_dto.get_grocery_id()
                     )
                 )
 
@@ -165,7 +165,7 @@ def update_food_found_nutriments(data_to_update: list) -> None:
                 cur.execute(f"UPDATE products SET ciqual_text = ?, ciqual_id = ? WHERE id_product = ?", (
                     ciqual_response.get_text(),
                     ciqual_response.get_id(),
-                    product_nutritional_data_dto.get_mercadona_id()
+                    product_nutritional_data_dto.get_grocery_id()
                 ))
 
             for nutriment in product_nutritional_data_dto.get_nutrients():
@@ -175,10 +175,10 @@ def update_food_found_nutriments(data_to_update: list) -> None:
                     nutriment_id = all_nutriments[nutriment.get_nutrient_name()]
 
                 cur.execute(f"""
-                insert into producte_nutrients (product_id,producte_mercadona_id, nutrient_id, quantitat) values (?, ?, ?, ?)
+                insert into producte_nutrients (product_id,product_grocery_id, nutrient_id, quantitat) values (?, ?, ?, ?)
                 """, (
                         product_nutritional_data_dto.get_id(),
-                        product_nutritional_data_dto.get_mercadona_id(),
+                        product_nutritional_data_dto.get_grocery_id(),
                         nutriment_id,
                         nutriment.get_nutrient_value()
                     )
@@ -193,8 +193,8 @@ def update_food_found_nutriments(data_to_update: list) -> None:
                 cur.execute(f"""
                                 insert into product_certifications (product_id,certification_id) values (?, ?)
                                 """, (
-                        product_nutritional_data_dto.get_mercadona_id(),
-                        certification_id
+                    product_nutritional_data_dto.get_grocery_id(),
+                    certification_id
                     )
                 )
 

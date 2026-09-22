@@ -1,15 +1,15 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
 
 from dto.product_scrap_data import ProductScrapedDTO
-from mercadona_navigator import product_scrap_data
-from mercadona_navigator.initialize_mercadona_grocery import initialize
+from grocery_navigator import product_scrap_data
+from grocery_navigator.initialize_grocery import initialize
 from validations.validate_postal_code import validate as validate_postal_code
 from constants.constants_variables import constants_variables_getter
-from mercadona_navigator.navigate_through_main_page import navigate_through_main_page
+from grocery_navigator.navigate_through_main_page import navigate_through_main_page
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -23,7 +23,7 @@ import time
 
 def execute_scraper() -> None:
     """
-    Function that executes scraping into mercadona supermarket.
+    Function that executes scraping into grocery online supermarket.
 
     Args:
         None.
@@ -33,7 +33,7 @@ def execute_scraper() -> None:
     """
 
     parser = argparse.ArgumentParser(
-        description="Mercadona Scraper"
+        description="Grocery Scraper"
     )
 
     parser.add_argument(

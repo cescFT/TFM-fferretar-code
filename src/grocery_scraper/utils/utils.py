@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -22,7 +22,7 @@ import sqlite3
 
 def accept_cookies(driver: webdriver.Chrome) -> None:
     """
-    Function that enables accept cookies in Mercadona's supermarket online.
+    Function that enables accept cookies in grocery online supermarket.
 
     Args:
         driver (webdriver.Chrome): Chrome driver.
@@ -115,7 +115,7 @@ def get_path_sqlite_db() -> str:
 
     actual_path = Path(__file__).resolve()
     project_path = actual_path.parent.parent.parent.parent
-    db_path = project_path / 'db' / 'mercadona-scraper-results.db'
+    db_path = project_path / 'db' / 'grocery-scraper-results.db'
 
     return str(db_path)
 
@@ -132,7 +132,7 @@ def get_path_categories_aggregation_csv_from_db() -> str:
 
     actual_path = Path(__file__).resolve()
     project_path = actual_path.parent.parent.parent.parent
-    csv_path = project_path / 'csv' / 'mercadona-scraper-aggregation-results.csv'
+    csv_path = project_path / 'csv' / 'grocery-scraper-aggregation-results.csv'
     return str(csv_path)
 
 def get_path_product_csv_from_db() -> str:
@@ -148,7 +148,7 @@ def get_path_product_csv_from_db() -> str:
 
     actual_path = Path(__file__).resolve()
     project_path = actual_path.parent.parent.parent.parent
-    csv_path = project_path / 'csv' / 'mercadona-scraper-results.csv'
+    csv_path = project_path / 'csv' / 'grocery-scraper-results.csv'
     return str(csv_path)
 
 def get_path_ewo_ingredients_data() -> str:
@@ -246,23 +246,23 @@ def insert_product_data_to_database(info_products: list) -> None:
     conn.close()
 
 def match_nutritional_data_with_each_product(
-    nutriments_indexed_by_mercadona_id: dict,
+    nutriments_indexed_by_grocery_id: dict,
     product_items: list
 ) -> list:
     """
     Function which is responsible to match product with nutritional data.
 
     Args:
-        nutriments_indexed_by_mercadona_id (dict): Nutriments indexed by Mercadona ID.
+        nutriments_indexed_by_grocery_id (dict): Nutriments indexed by grocery ID.
         product_items (list): List of product items.
 
     Returns:
         list: Product items with nutritional data.
     """
     data_to_return = []
-    for mercadona_id, nutriment_data in nutriments_indexed_by_mercadona_id.items():
+    for grocery_id, nutriment_data in nutriments_indexed_by_grocery_id.items():
         for idx, product in enumerate(product_items):
-            if product['id_product'] == mercadona_id:
+            if product['id_product'] == grocery_id:
                 item = product_items[idx]
                 item['nutriments'] = nutriment_data
 
@@ -286,13 +286,13 @@ def match_nutritional_data_with_each_product(
 
 def match_product_data_with_certifications_each_product(
     product_items: list,
-    certifications_indexed_by_mercadona_id: dict
+    certifications_indexed_by_grocery_id: dict
 ) -> list:
     """
     Function that matches products with each certifications.
     Args:
         product_items (list): List of product items.
-        certifications_indexed_by_mercadona_id (dict): Certifications indexed by Mercadona ID.
+        certifications_indexed_by_grocery_id (dict): Certifications indexed by grocery ID.
 
     Returns:
         list: Product items with certifications.
@@ -300,9 +300,9 @@ def match_product_data_with_certifications_each_product(
 
     product: ProductNutrimentsDTO
     for idx, product in enumerate(product_items):
-        product_mercadona_id = product.get_mercadona_id()
-        for mercadona_id, certifications in certifications_indexed_by_mercadona_id.items():
-            if product_mercadona_id == mercadona_id:
+        product_grocery_id = product.get_grocery_id()
+        for grocery_id, certifications in certifications_indexed_by_grocery_id.items():
+            if product_grocery_id == grocery_id:
                 for cert in certifications:
                     product.add_certification(CertificationDTO(cert['certification_name'], cert['id']))
                 break

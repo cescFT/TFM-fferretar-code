@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -30,7 +30,7 @@ def initialize(postal_code: str, test: bool=False, url: str = "") -> webdriver.C
     driver = create_selenium_driver(test)
 
     try:
-        print("Opening Mercadona Supermarket Online...")
+        print("Opening Online Grocery Supermarket...")
         if not url:
             url = BASIC_URL
 

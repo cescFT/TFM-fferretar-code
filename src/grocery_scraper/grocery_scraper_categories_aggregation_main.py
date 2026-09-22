@@ -1,13 +1,13 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
 from dto.categories_aggregate import CategoriesAggregate
-from mercadona_scraper.constants.constants_variables import constants_variables_getter
+from grocery_scraper.constants.constants_variables import constants_variables_getter
 from validations.validate_postal_code import validate as validate_postal_code
-from mercadona_navigator.initialize_mercadona_grocery import initialize
-from mercadona_scraper.mercadona_navigator.navigate_through_categories import (
+from grocery_navigator.initialize_grocery import initialize
+from grocery_scraper.grocery_navigator.navigate_through_categories import (
     obtain_valid_urls_to_follow, calculate_items_available_to_be_sold
 )
 
@@ -28,7 +28,7 @@ def execute() -> None:
     """
 
     parser = argparse.ArgumentParser(
-        description="Mercadona Scraper aggregation total products per categories and subcategories"
+        description="Online grocery scraper aggregation total products per categories and subcategories"
     )
 
     parser.add_argument(

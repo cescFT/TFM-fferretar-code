@@ -1,11 +1,11 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
 
 from dto.product_nutritional_data import ProductNutrimentsDTO
-from nutriscore.parse_mercadona_category_to_nutriscore_category import parse
+from nutriscore.parse_grocery_category_to_nutriscore_category import parse
 from nutriscore.nutriments_getter import get_nutriments
 from constants.constants_variables import constants_variables_getter
 from nutriscore.general_food_calculator import calculate as calculate_general_food
@@ -48,7 +48,7 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
         nutriments = get_nutriments(nutriments_to_get, product)
 
         print(product.get_ingredients())
-        fruits = input("Indica el percentatge de fruita/llegums >")
+        fruits = input("Introduce percentage of fruit/legumes > ")
         if not fruits:
             fruits = 0
 

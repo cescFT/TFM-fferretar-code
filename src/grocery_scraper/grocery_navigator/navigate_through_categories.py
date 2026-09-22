@@ -1,10 +1,10 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
 
-from mercadona_scraper.constants.constants_variables import constants_variables_getter
+from grocery_scraper.constants.constants_variables import constants_variables_getter
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
