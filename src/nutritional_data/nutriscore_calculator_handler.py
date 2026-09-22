@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -53,7 +53,7 @@ def execute() -> None:
     product: ProductNutrimentsDTO
     for product in products:
         nutriscore = calculate_nutriscore(product)
-        nutriscore_to_save[product.get_mercadona_id()] = nutriscore
+        nutriscore_to_save[product.get_grocery_id()] = nutriscore
         print("="*20)
         print("\n")
 

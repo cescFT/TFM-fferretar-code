@@ -1,12 +1,12 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
 
 from dto.product_nutritional_data import ProductNutrimentsDTO
-from mercadona_scraper.constants.constants_variables import constants_variables_getter
-from mercadona_scraper.utils.utils import get_path_ewo_ingredients_data
+from grocery_scraper.constants.constants_variables import constants_variables_getter
+from grocery_scraper.utils.utils import get_path_ewo_ingredients_data
 from nutritional_data.interact_db.get_data_from_db import get_products_without_ewo_ultraprocessed_qualification
 from nutritional_data.ewo.calculate_ultraprocessed_punctuation import calculate_ultraprocessed_punctuation
 from nutritional_data.interact_db.update_products_to_db import update_ewo_ultraprocessed_qualification
@@ -62,7 +62,7 @@ def execute() -> None:
     product: ProductNutrimentsDTO
     for product in products:
         punctuation = calculate_ultraprocessed_punctuation(product, ewo_ingredients)
-        ultraprocessed_punctuations[product.get_mercadona_id()] = punctuation
+        ultraprocessed_punctuations[product.get_grocery_id()] = punctuation
         print("=" * 20)
         print("\n")
 

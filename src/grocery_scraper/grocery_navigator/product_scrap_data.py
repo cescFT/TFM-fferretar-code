@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -12,9 +12,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from interact_db.get_data_from_db import retrieve_product_data_from_mercadona_id
+from interact_db.get_data_from_db import retrieve_product_data_from_grocery_id
 from constants import constants_variables
-from mercadona_api import utils as mercadona_api_caller
+from grocery_api import utils as grocery_api_caller
 from dto.product_scrap_data_request import ProductScrapDataRequestDTO
 from dto.product_scrap_data import ProductScrapedDTO
 from utils.utils import get_postal_code_from_wh_id
@@ -120,7 +120,7 @@ def get_product_scrap_data(
 ) -> ProductScrapedDTO:
     """
     Function that gets all information of product. It gets information of the requests and then use
-    mercadona api in order to get product information.
+    grocery online api in order to get product information.
 
     Args:
         data (dict): Basic information of the product.
@@ -132,8 +132,8 @@ def get_product_scrap_data(
     """
 
     id = data['url'].split("/")[4]
-    response_api = mercadona_api_caller.get_data_from_api(id, wh_id)
-    en_response_api = mercadona_api_caller.get_data_from_api(id, wh_id, "en")
+    response_api = grocery_api_caller.get_data_from_api(id, wh_id)
+    en_response_api = grocery_api_caller.get_data_from_api(id, wh_id, "en")
 
     product_name = response_api['display_name']
     en_product_name = en_response_api['display_name']
@@ -202,7 +202,7 @@ def get_product_scrap_data(
     year = now.strftime("%Y")
     year_iso, week_num, day = now.isocalendar()
 
-    product_data_from_db = retrieve_product_data_from_mercadona_id(id)
+    product_data_from_db = retrieve_product_data_from_grocery_id(id)
 
     has_found_nutriments = False
     if product_data_from_db:

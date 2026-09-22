@@ -63,7 +63,7 @@ INSERT INTO nutrients (nom, unitat_mesura_nutrient) VALUES ('Energia (kJ)', 'kJ'
 
 CREATE TABLE producte_nutrients (
 	product_id INTEGER NOT NULL,
-    producte_mercadona_id TEXT NOT NULL,
+    product_grocery_id TEXT NOT NULL,
     nutrient_id INTEGER NOT NULL,
     quantitat REAL NOT NULL,
     PRIMARY KEY (product_id, nutrient_id),

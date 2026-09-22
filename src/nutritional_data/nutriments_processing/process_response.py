@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -73,7 +73,7 @@ def process_response_from_gemini(
             product_nutritional_data_dto = add_no_nutrients_data(product_nutritional_data_dto, no_data_id)
             print(
                 f"No nutritional data of {product_nutritional_data_dto.get_product_name()} "
-                f"({product_nutritional_data_dto.get_mercadona_id()}) in category {product_nutritional_data_dto.get_category()}"
+                f"({product_nutritional_data_dto.get_grocery_id()}) in category {product_nutritional_data_dto.get_category()}"
             )
             nutriments_to_save.append(product_nutritional_data_dto)
             continue
@@ -129,7 +129,7 @@ def process_response_from_gemini(
             product_nutritional_data_dto = add_no_nutrients_data(product_nutritional_data_dto, no_data_id)
             print(
                 f"No nutritional data of product {product_nutritional_data_dto.get_product_name()} "
-                f"({product_nutritional_data_dto.get_mercadona_id()}) in category {product_nutritional_data_dto.get_category()}"
+                f"({product_nutritional_data_dto.get_grocery_id()}) in category {product_nutritional_data_dto.get_category()}"
             )
 
         nutriments_to_save.append(product_nutritional_data_dto)

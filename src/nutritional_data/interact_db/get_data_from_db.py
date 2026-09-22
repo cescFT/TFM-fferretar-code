@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -17,12 +17,12 @@ import sqlite3
 NO_DATA_NUTRIMENTS = constants_variables_getter("NUTRIMENT_NO_DATA")
 CERTIFICATIONS_NO_DATA = constants_variables_getter("CERTIFICATIONS_NO_DATA")
 
-def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict|None:
+def retrieve_product_data_from_grocery_id(grocery_id: str) -> dict|None:
     """
-    Retrieve product data using mercadona id.
+    Retrieve product data using grocery online id.
 
     Args:
-        mercadona_id (str): Mercadona id.
+        grocery_id (str): Grocery online id.
 
     Returns:
         dict|None: All data about the product.
@@ -37,7 +37,7 @@ def retrieve_product_data_from_mercadona_id(mercadona_id: str) -> dict|None:
                     from products p
                     where p.id_product = ?
                         group by p.id_product
-                    """, (mercadona_id,))
+                    """, (grocery_id,))
         response = cur.fetchone()
 
     conn.close()
@@ -206,41 +206,41 @@ def get_types_of_nutriments(special_nutriments_ids: list) -> dict:
 
     return to_return
 
-def get_nutriments_of_specific_products(mercadona_ids: list) -> dict:
+def get_nutriments_of_specific_products(grocery_ids: list) -> dict:
     """
-    Function to retrieve nutriments of specific products by mercadona_id
+    Function to retrieve nutriments of specific products by grocery id
 
     Args:
-        mercadona_ids (list): List of mercadona ids products.
+        grocery_ids (list): List of grocery ids products.
 
     Returns:
-        dict: Dictionary with mercadona_id as key and list of nutriments as value
+        dict: Dictionary with grocery_id as key and list of nutriments as value
     """
 
     db_path = get_path_sqlite_db()
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
-        placeholders = ", ".join(["?"] * len(mercadona_ids))
+        placeholders = ", ".join(["?"] * len(grocery_ids))
         cur.execute(f"""
-                select pn.producte_mercadona_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
+                select pn.product_grocery_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
                 from producte_nutrients pn
                 inner join nutrients n on n.id = pn.nutrient_id
                 where
-                    pn.producte_mercadona_id in ({placeholders})
-                """, mercadona_ids)
+                    pn.product_grocery_id in ({placeholders})
+                """, grocery_ids)
 
         nutriments = cur.fetchall()
-        nutriments_indexed_by_mercadona_id = {}
+        nutriments_indexed_by_grocery_id = {}
         for nutriment in nutriments:
-            mercadona_id = nutriment[0]
+            grocery_product_id = nutriment[0]
             nutriment_id = nutriment[1]
-            if not mercadona_id in nutriments_indexed_by_mercadona_id:
-                nutriments_indexed_by_mercadona_id[mercadona_id] = []
+            if not grocery_product_id in nutriments_indexed_by_grocery_id:
+                nutriments_indexed_by_grocery_id[grocery_product_id] = []
 
             if nutriment_id == int(NO_DATA_NUTRIMENTS):
                 continue
 
-            nutriments_indexed_by_mercadona_id[mercadona_id].append({
+            nutriments_indexed_by_grocery_id[grocery_product_id].append({
                 'id_nutriment': nutriment_id,
                 'nutriment_name': nutriment[2],
                 'quantity': nutriment[3],
@@ -248,16 +248,16 @@ def get_nutriments_of_specific_products(mercadona_ids: list) -> dict:
             })
 
     conn.close()
-    return nutriments_indexed_by_mercadona_id
+    return nutriments_indexed_by_grocery_id
 
-def get_certifications_of_specific_products(mercadona_ids: list) -> dict:
+def get_certifications_of_specific_products(grocery_ids: list) -> dict:
     """
-    Function that gets certification information of specific products by mercadona ids.
+    Function that gets certification information of specific products by grocery ids.
     Args:
-        mercadona_ids (list): List of Mercadona IDs.
+        grocery_ids (list): List of grocery IDs.
 
     Returns:
-        dict: Certifications indexed by Mercadona ID.
+        dict: Certifications indexed by grocery ID.
     """
 
     db_path = get_path_sqlite_db()
@@ -267,30 +267,30 @@ def get_certifications_of_specific_products(mercadona_ids: list) -> dict:
             select c.id, c.certification_name, pc.product_id
             from product_certifications pc
             inner join certifications c on pc.certification_id = c.id
-            where pc.product_id in ({','.join(['?'] * len(mercadona_ids))})
-        """, mercadona_ids)
+            where pc.product_id in ({','.join(['?'] * len(grocery_ids))})
+        """, grocery_ids)
 
         certifications = cur.fetchall()
 
-        certifications_indexed_by_mercadona_id = {}
+        certifications_indexed_by_grocery_id = {}
         for certification in certifications:
             certification_id = certification[0]
             certification_name = certification[1]
-            mercadona_id = certification[2]
+            grocery_product_id = certification[2]
 
-            if mercadona_id not in certifications_indexed_by_mercadona_id:
-                certifications_indexed_by_mercadona_id[mercadona_id] = []
+            if grocery_product_id not in certifications_indexed_by_grocery_id:
+                certifications_indexed_by_grocery_id[grocery_product_id] = []
 
             if certification_id == int(CERTIFICATIONS_NO_DATA):
                 continue
 
-            certifications_indexed_by_mercadona_id[mercadona_id].append({
+            certifications_indexed_by_grocery_id[grocery_product_id].append({
                 'id': certification_id,
                 'certification_name': certification_name
             })
 
     conn.close()
-    return certifications_indexed_by_mercadona_id
+    return certifications_indexed_by_grocery_id
 
 def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
     """
@@ -328,7 +328,7 @@ def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
         if not products:
             return response
 
-        mercadona_ids = []
+        grocery_products_ids = []
         for product in products:
             response.append({
                 'id': product[0],
@@ -340,10 +340,10 @@ def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
                 'ingredients': product[6],
                 'alcohol_grades': product[7]
             })
-            mercadona_ids.append(product[1])
+            grocery_products_ids.append(product[1])
 
-        nutriments = get_nutriments_of_specific_products(mercadona_ids)
-        certifications = get_certifications_of_specific_products(mercadona_ids)
+        nutriments = get_nutriments_of_specific_products(grocery_products_ids)
+        certifications = get_certifications_of_specific_products(grocery_products_ids)
         response = match_nutritional_data_with_each_product(nutriments, response)
         response = match_product_data_with_certifications_each_product(response, certifications)
 
@@ -390,7 +390,7 @@ def get_products_without_nutriscore(limit: int) -> list:
         if not products:
             return result
 
-        mercadona_ids = []
+        grocery_products_ids = []
 
         for product in products:
             result.append({
@@ -403,10 +403,10 @@ def get_products_without_nutriscore(limit: int) -> list:
                 'ingredients': product[6],
                 'alcohol_grades': product[7]
             })
-            mercadona_ids.append(product[1])
+            grocery_products_ids.append(product[1])
 
-        nutriments_indexed_by_mercadona_id = get_nutriments_of_specific_products(mercadona_ids)
-        data_to_return = match_nutritional_data_with_each_product(nutriments_indexed_by_mercadona_id, result)
+        nutriments_indexed_by_grocery_id = get_nutriments_of_specific_products(grocery_products_ids)
+        data_to_return = match_nutritional_data_with_each_product(nutriments_indexed_by_grocery_id, result)
 
     conn.close()
 
@@ -431,7 +431,7 @@ def get_products_without_nutritional_data(limit: int) -> list:
                 select p.id, p.id_product, p.category, p.subcategory, p.product_name, p.origin, p.ciqual_text_to_search
                 from products p
                 inner join product_photos ph on ph.product_id = p.id
-                left join producte_nutrients pn on pn.producte_mercadona_id = p.id_product
+                left join producte_nutrients pn on pn.product_grocery_id = p.id_product
                 where 
                     p.found_nutriments = 0 and
                     pn.nutrient_id is null

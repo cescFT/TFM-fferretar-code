@@ -1,13 +1,13 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
 
 from dto.ewo_reference import EwoReference
 from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO, CertificationDTO
-from nutritional_data.ewo.parse_mercadona_categories_to_ewo_categories import parse
-from mercadona_scraper.constants.constants_variables import constants_variables_getter
+from nutritional_data.ewo.parse_grocery_categories_to_ewo_categories import parse
+from grocery_scraper.constants.constants_variables import constants_variables_getter
 import pandas as pd
 import unicodedata
 import re
@@ -29,15 +29,15 @@ def calculate_ultraprocessed_punctuation(
     """
 
     print("Calculating ultraprocessed punctuation for product: ",
-          product.get_mercadona_id(), " ", product.get_product_name()
-    )
+          product.get_grocery_id(), " ", product.get_product_name()
+          )
 
     category = parse(product)
 
     print("Category calculated: ", category)
 
     if not product.get_ingredients() or not category:
-        print(f"The product {product.get_mercadona_id()} {product.get_product_name()} has directly a good punctuation.")
+        print(f"The product {product.get_grocery_id()} {product.get_product_name()} has directly a good punctuation.")
         return {'qualification': "1"}
 
     punctuation_step1 = calculate_first_step_punctuation(

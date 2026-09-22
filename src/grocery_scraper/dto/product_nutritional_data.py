@@ -181,7 +181,7 @@ class ProductNutritionalDataDTO:
     def __init__(
             self,
             id: int,
-            mercadona_id: str,
+            grocery_id: str,
             category: str,
             subcategory: str,
             product_name: str,
@@ -189,7 +189,7 @@ class ProductNutritionalDataDTO:
             origin: str,
     ):
         self.id = id
-        self.mercadona_id = mercadona_id
+        self.grocery_id = grocery_id
         self.category = category
         self.subcategory = subcategory
         self.product_name = product_name
@@ -228,18 +228,18 @@ class ProductNutritionalDataDTO:
 
         return self.product_name
 
-    def get_mercadona_id(self) -> str:
+    def get_grocery_id(self) -> str:
         """
-        Function that retrieves mercadona id.
+        Function that retrieves grocery id.
 
         Args:
             None.
 
         Returns:
-            str: Mercadona id.
+            str: grocery id.
         """
 
-        return self.mercadona_id
+        return self.grocery_id
 
     def get_category(self) -> str:
         """
@@ -533,15 +533,15 @@ class ProductNutrimentsDTO:
 
         return self.id
 
-    def get_mercadona_id(self) -> int:
+    def get_grocery_id(self) -> int:
         """
-        Function get mercadona id.
+        Function get grocery id.
 
         Args:
             None.
 
         Returns:
-             int: Mercadona id.
+             int: grocery id.
         """
 
         return self.id_product

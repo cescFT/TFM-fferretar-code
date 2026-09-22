@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -8,7 +8,7 @@ from dto.product_nutritional_data import ProductNutrimentsDTO
 
 def parse(product: ProductNutrimentsDTO) -> str|None:
     """
-    Function that parses mercadona's category, subcategory and second subcategory to EWO categories.
+    Function that parses grocery online category, subcategory and second subcategory to EWO categories.
     Args:
         product (ProductNutrimentsDTO): Product to parse.
 
@@ -24,9 +24,9 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     ingredients = product.get_ingredients()
 
     print(f" * Product name: {product_name}\n")
-    print(f" * Mercadona category: {category}\n")
-    print(f" * Mercadona subcategory: {subcategory}\n")
-    print(f" * Mercadona second subcategory: {second_subcategory}\n")
+    print(f" * Grocery online category: {category}\n")
+    print(f" * Grocery online subcategory: {subcategory}\n")
+    print(f" * Grocery online second subcategory: {second_subcategory}\n")
     print(f" * Alcohol: {"-" if not alcohol else alcohol}\n")
     print(f" * Ingredients: {ingredients}\n")
 

@@ -1,12 +1,12 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
 
 class ProductScrapedDTO:
     """
-    DTO class that gets all data from Mercadona's supermarket.
+    DTO class that gets all data from grocery online supermarket.
     """
     def __init__(
             self,

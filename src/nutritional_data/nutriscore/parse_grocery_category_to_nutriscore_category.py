@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -8,7 +8,7 @@ from dto.product_nutritional_data import ProductNutrimentsDTO
 
 def parse(product: ProductNutrimentsDTO) -> str|None:
     """
-    Function that parse mercadona category, subcategory and second subcategory to nutriscore categories.
+    Function that parse online grocery category, subcategory and second subcategory to nutriscore categories.
 
     Args:
         product (ProductNutrimentsDTO): Product to be parsed.
@@ -26,9 +26,9 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     splited_ingredients = ingredients.split(",")
     splited_ingredients_y = ingredients.split("y")
 
-    print(f" * Mercadona category: {category}\n")
-    print(f" * Mercadona subcategory: {subcategory}\n")
-    print(f" * Mercadona second subcategory: {second_subcategory}\n")
+    print(f" * Grocery online category: {category}\n")
+    print(f" * Grocery online subcategory: {subcategory}\n")
+    print(f" * Grocery online second subcategory: {second_subcategory}\n")
     print(f" * Alcohol: {"-" if not alcohol else alcohol}\n")
     print(f" * Ingredients: {ingredients}\n")
 
@@ -57,7 +57,10 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             return "BEVERAGES"
         elif subcategory == 'Refresco de té y sin gas':
             if second_subcategory == "Té":
-                return None
+                if len(splited_ingredients) > 0 or len(splited_ingredients_y) > 0:
+                    return "BEVERAGES"
+                else:
+                    return None
             elif second_subcategory == "Otros refrescos sin gas":
                 return "BEVERAGES"
     elif category == "Aperitivos":
