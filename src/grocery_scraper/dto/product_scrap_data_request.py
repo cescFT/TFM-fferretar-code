@@ -1,5 +1,5 @@
 """
-TFM: Food environment on Mercadona's supermarket
+TFM: Food environment on grocery online supermarket
 
 Author: Francesc Ferré Tarrés
 """
@@ -41,13 +41,13 @@ class ProductScrapDataRequestDTO:
 
     def get_wh_code(self) -> str:
         """
-        Function get product warehouse code of mercadona supermarket depending on postal code.
+        Function get product warehouse code of grocery supermarket depending on postal code.
 
         Args:
             None.
 
         Returns:
-             str: Warehouse code of mercadona supermarket.
+             str: Warehouse code of grocery supermarket.
         """
 
         return self.wh_code

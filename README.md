@@ -121,7 +121,7 @@ The execution flow of retrieve information from grocery is:
 1. **Web scraping**
 
 First of all you need to execute script `src/grocery_scraper`. This script retrieve data from
-grocery supermarket online using techniques of web scraping and save data into database. Also, uses mercadona API
+grocery supermarket online using techniques of web scraping and save data into database. Also, uses grocery API
 in order to get individual product information.
 
 The technology behind web scraping is made with Selenium and BeautifulSoup.
