@@ -72,12 +72,13 @@ def execute_scraper() -> None:
 
     products_to_scrap_urls = {}
     start_date_total = time.perf_counter()
+    main_page_position = 1
     for title, url in urls_to_follow.items():
         start_date = time.perf_counter()
         navigator.get(url)
         products_to_scrap_urls[title] = []
 
-        print(f"Getting product urls of {title} - {url}")
+        print(f"Getting product urls of {main_page_position}. {title} - {url}")
 
         element_h2 = WebDriverWait(navigator, 5).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "h2.section__header.headline1-b"))
@@ -93,7 +94,7 @@ def execute_scraper() -> None:
         position = 1
         for product in products:
             products_to_scrap_urls_result = product_scrap_data.get_urls_and_data_from_specific_page(
-                product, navigator, position, title_text
+                product, navigator, position, title_text, main_page_position
             )
             position += 1
 
@@ -105,7 +106,10 @@ def execute_scraper() -> None:
 
         end_time = time.perf_counter()
         elapsed_time = end_time - start_date
-        print(f"Total products of {title}: {len(products_to_scrap_urls[title])}. Execution time {elapsed_time:.2f} seconds.")
+        total_products_scraped = len(products_to_scrap_urls[title])
+        print(f"Total products of {title}: {total_products_scraped}. Execution time {elapsed_time:.2f} seconds.")
+        if total_products_scraped > 0:
+            main_page_position += 1
         #break # comentar aquesta linia quan funcioni per tots els elements...
     navigator.quit()
 

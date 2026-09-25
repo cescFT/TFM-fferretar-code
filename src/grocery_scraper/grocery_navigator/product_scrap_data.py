@@ -30,7 +30,8 @@ def get_urls_and_data_from_specific_page(
     product: webelement.WebElement,
     navigator: webdriver.Chrome,
     position: int,
-    title_text: str
+    title_text: str,
+    main_page_position: int
 ) -> dict:
     """
     Function that retrieve all urls of products in specific page and returns basic information of each product.
@@ -40,6 +41,7 @@ def get_urls_and_data_from_specific_page(
         navigator (webdriver.Chrome): Chrome webdriver.
         position (int): Position of the product in the page.
         title_text (str): Title of the category.
+        main_page_position (int): Position of the page in the main page.
 
     Returns:
         dict: Basic data of each product in the landing.
@@ -81,6 +83,7 @@ def get_urls_and_data_from_specific_page(
                 'subcategory': subcategory,
                 'title_in_page_product': title_text,
                 'position': position,
+                'main_page_position': main_page_position
             }
 
         close_button_modal.click()
@@ -132,6 +135,7 @@ def get_product_scrap_data(
     """
 
     id = data['url'].split("/")[4]
+    main_page_position = data['main_page_position']
     response_api = grocery_api_caller.get_data_from_api(id, wh_id)
     en_response_api = grocery_api_caller.get_data_from_api(id, wh_id, "en")
 
@@ -240,7 +244,8 @@ def get_product_scrap_data(
         second_subcategory=second_subcategory,
         alcohol_grades=alcohol_grades,
         second_subcategory_en=second_subcategory_en,
-        has_found_nutriments=has_found_nutriments
+        has_found_nutriments=has_found_nutriments,
+        main_page_position=main_page_position,
     )
 
     if product_data_from_db:

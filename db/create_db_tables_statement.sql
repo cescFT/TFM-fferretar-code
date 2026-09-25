@@ -42,6 +42,8 @@ CREATE TABLE "products" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
+ALTER TABLE products ADD COLUMN main_page_position INTEGER;
+
 CREATE TABLE "product_photos" (
 	"id"	INTEGER NOT NULL,
 	"photo_url"	TEXT NOT NULL,
