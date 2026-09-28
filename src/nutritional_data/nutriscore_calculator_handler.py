@@ -51,7 +51,8 @@ def execute() -> None:
     nutriscore_to_save = {}
 
     product: ProductNutrimentsDTO
-    for product in products:
+    for idx, product in enumerate(products):
+        print(str(idx +1)+"/"+str(len(products))+"...")
         nutriscore = calculate_nutriscore(product)
         nutriscore_to_save[product.get_grocery_id()] = nutriscore
         print("="*20)
