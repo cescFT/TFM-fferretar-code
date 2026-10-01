@@ -84,7 +84,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
         if subcategory == "Pasta y fideos" and second_subcategory in ["Pasta rellena", "Fideos orientales"]:
             return "GENERAL_FOOD"
     elif category == "Azúcar caramelos y chocolate":
-        if subcategory in ["Chicles y caramelos","Chocolate","Golosinas"]:
+        if subcategory in ["Chicles y caramelos","Chocolate","Golosinas", "Turrones"]:
             return "GENERAL_FOOD"
         elif subcategory == "Mermelada y miel":
             if second_subcategory in ["Mermelada", "Confitura y otros"]:
@@ -207,9 +207,10 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             "Postres de soja",
             "Yogures desnatados",
             "Yogures griegos",
-            "Yogures líquidos"
         ]:
             return "GENERAL_FOOD"
+        elif subcategory == "Yogures líquidos":
+            return "BEVERAGES"
         elif subcategory == "Gelatina y otros postres":
             if second_subcategory == "Gelatina":
                 return None
@@ -224,7 +225,8 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
 def check_if_is_red_meal(ingredients: str) -> str:
     if ingredients and 'ternera' in ingredients or \
             'cerdo' in ingredients or \
-            'cordero' in ingredients:
+            'cordero' in ingredients or \
+            'vacuno' in ingredients:
         return "RED_MEAT"
     else:
         return "GENERAL_FOOD"

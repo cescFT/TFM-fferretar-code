@@ -18,6 +18,7 @@ from dto.product_nutritional_data import ProductNutrimentsDTO, CertificationDTO
 from dto.product_scrap_data import ProductScrapedDTO
 
 import sqlite3
+import unicodedata
 
 
 def accept_cookies(driver: webdriver.Chrome) -> None:
@@ -310,3 +311,19 @@ def match_product_data_with_certifications_each_product(
         product_items[idx] = product
 
     return product_items
+
+def normalize_text(text: str) -> str:
+    """
+    Function that normalizes text to lowercase and removes accents.
+    Args:
+        text (str): Text to normalize.
+
+    Returns:
+        str: Normalized text.
+    """
+    text = text.lower()
+    text = ''.join(
+        c for c in unicodedata.normalize('NFD', text)
+        if unicodedata.category(c) != 'Mn'
+    )
+    return text
