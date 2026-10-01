@@ -49,6 +49,8 @@ Finally, if you want to exit virtual environment, you have to use command `deact
 First, install ollama following the instructions in the [ollama website](https://ollama.com/download/windows).
 Second, download the model using command line on windows: `ollama run llama3.2`
 
+**Note: If ollama is not running in backgrond, please start it on a different CLI by running `ollama serve`**
+
 After the download on the first time, then the port 11434 is exposed and it enables to make curls.
 
 ## Folder structure
