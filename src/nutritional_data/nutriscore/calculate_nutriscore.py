@@ -65,6 +65,7 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
     elif category_nutriscore == "BEVERAGES":
         nutriments['ingredients'] = product.get_ingredients()
         data_to_return = calculate_beverages(nutriments)
+        del nutriments['ingredients']
     elif category_nutriscore == "WATER":
         data_to_return = {'letter': 'A'}
 

@@ -44,6 +44,13 @@ pip install -r requirements.txt
 
 Finally, if you want to exit virtual environment, you have to use command `deactivate`.
 
+5. Install ollama for reverse calculation of extra sugar using AI (ollama / llama3.2)
+
+First, install ollama following the instructions in the [ollama website](https://ollama.com/download/windows).
+Second, download the model using command line on windows: `ollama run llama3.2`
+
+After the download on the first time, then the port 11434 is exposed and it enables to make curls.
+
 ## Folder structure
 
 TODO: Aqui quan tingui el tema de l'anàlisi de dades, s'ha d'explicar
@@ -92,6 +99,9 @@ is just to check specific sql's used in other parts of the project.
     * `ciqual/requests.py`: Contains ElasticSearch query to get data from ciqual for then calculate planet score.
     * `ewo/calculate_ultraprocessed_punctuation.py`: Contains the implementation of the algorithm to calculate ultraprocessed qualifications of products.
     * `ewo/parse_grocery_categories_to_ewo_categories.py`: Parses grocery categories to EWO categories.
+    * `ewo/ewo_matcher_ingredients_rudimentary.py`: First version of EWO matcher ingredients.
+    * `ewo/ewo_matcher_ingredients.py`: Second version of EWO matcher ingredients using ClaudeAI. This is the code used.
+    * `ewo/extra_sugar_reverse_calculation_ai.py`: Includes reverse calculation of extra sugar using AI (ollama / llama3.2).
     * `gemini_integration/connect.py`: Creates gemini client object which ables to make gemini requests.
     * `gemini_integration/model_getter.py`: Retrieve gemini model enabled to make petitions.
     * `gemini_integration/request.py`: Makes petitions to gemini model.

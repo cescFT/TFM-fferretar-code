@@ -4,13 +4,15 @@ TFM: Food environment on grocery online supermarket
 Author: Francesc Ferré Tarrés
 """
 
+from dto.ewo_reference import EwoReference
+from ewo.extra_sugar_reverse_calculation_ai import reverse_calculation_extra_sugar
 from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO
 from nutritional_data.ewo.parse_grocery_categories_to_ewo_categories import parse
 from grocery_scraper.constants.constants_variables import constants_variables_getter
 from ewo.ewo_matcher_ingredients import match_ewo_ingredients
 from ewo.ewo_matcher_ingredients_rudimentary import match_ewo_ingredients as match_ewo_ingredients_rudimentary
+from grocery_scraper.utils.utils import normalize_text
 import pandas as pd
-import unicodedata
 
 NUTRIMENTS_DM_EWO = constants_variables_getter("NUTRIMENTS_DM_EWO")
 
@@ -40,20 +42,39 @@ def calculate_ultraprocessed_punctuation(
         print(f"The product {product.get_grocery_id()} {product.get_product_name()} has directly a good punctuation.")
         return {'qualification': "1"}
 
-    punctuation_step1 = calculate_first_step_punctuation(
+    punctuation_step1, ingredients_matched = calculate_first_step_punctuation(
         product.get_ingredients(),
         product.get_certifications(),
         ewo_ingredients
     )
-    punctuation_step2 = calculate_second_step_punctuation(product, category)
 
-    qualification = calculate_third_step_punctuation(punctuation_step1, punctuation_step2)
+    if punctuation_step1 != 4:
+        punctuation_step2, extra_sugar_added = calculate_second_step_punctuation(product, category, ingredients_matched)
+
+        qualification = calculate_third_step_punctuation(punctuation_step1, punctuation_step2)
+    else:
+        print("Punctuation of step 1 is 4, skipping step 2 because according with Ewö algorithm,"
+              " the product is already ultraprocessed (4).")
+        qualification = 4
+        punctuation_step2 = None
+        extra_sugar_added = None
+
+    ingredients_matched_data = [
+        {
+            "name":ingredient.__dict__["ingredient_name"],
+            "reference":ingredient.__dict__["reference"],
+            "score":ingredient.__dict__["score"],
+            "sugar":ingredient.__dict__["sugar"]
+        } for ingredient in ingredients_matched
+    ]
 
     punct_dict = {
         'step1': str(punctuation_step1),
         'step2': str(punctuation_step2),
         'qualification': str(qualification),
-        'category': category
+        'category': category,
+        'ingredients_matched': ingredients_matched_data,
+        'extra_sugar_added': extra_sugar_added
     }
 
     return punct_dict
@@ -90,35 +111,62 @@ def calculate_third_step_punctuation(step1_punct:int, step2_punct:int) -> int:
 
 def calculate_second_step_punctuation(
     product: ProductNutrimentsDTO,
-    category: str
-) -> int:
+    category: str,
+    ingredients_matched: list
+) -> tuple:
     """
     Function that calculates second step of ultraprocessing punctuation.
     Args:
         product (ProductNutrimentsDTO): Product to calculate ultraprocessed punctuation.
         category (str): Category of the product.
+        ingredients_matched (list): List of ingredients matched.
 
     Returns:
-        int: Second step of ultraprocessing punctuation.
+        tuple: Second step of ultraprocessing punctuation and extra sugars added.
     """
     nutriments = product.get_nutriments()
 
     sugars_total = 0
+    carbohydrate_total = 0
     nutriment: NutrimentDataDTO
     for nutriment in nutriments:
         if nutriment.get_nutriment_name() == "sucres_g":
             sugars_total = nutriment.get_nutriment_value()
-            break
+
+        if nutriment.get_nutriment_name() == "hidrats_carboni_g":
+            carbohydrate_total = nutriment.get_nutriment_value()
+
+    ingredients_extra_sugar = []
+    ingredient: EwoReference
+    for ingredient in ingredients_matched:
+        if ingredient.get_sugar():
+            ingredients_extra_sugar.append(ingredient)
+
+    print(f"Total sugars in the product: {sugars_total}g of {carbohydrate_total}g carbohydrates.")
+
+    extra_sugar_added = {}
+    if len(ingredients_extra_sugar) > 0:
+        for ingredient in ingredients_extra_sugar:
+            extra_sugar = reverse_calculation_extra_sugar(
+                product.get_ingredients(),
+                sugars_total,
+                carbohydrate_total,
+                ingredient.get_ingredient_name()
+            )
+            extra_sugar_added[ingredient.get_ingredient_name()] = extra_sugar
+            sugars_total += extra_sugar
+
+        print(f"Total sugars after adding extra sugar: {sugars_total}g")
 
     if category == "SAVORY":
         if sugars_total > 3:
-            return 4
+            return 4, extra_sugar_added
         elif 1 <= sugars_total <= 3:
-            return 3
+            return 3, extra_sugar_added
         elif 0.5 <= sugars_total <= 1:
-            return 2
+            return 2, extra_sugar_added
         else:
-            return 1
+            return 1, extra_sugar_added
     else:
         nutriments_total_dm_g = 0
         for nutriment in product.get_nutriments():
@@ -133,20 +181,19 @@ def calculate_second_step_punctuation(
         t3 = 50.0
 
         if sugars_total <= t1:
-            return 1
+            return 1, extra_sugar_added
         elif sugars_total <= t2:
-            return 2
+            return 2, extra_sugar_added
         elif sugars_total <= t3:
-            return 3
+            return 3, extra_sugar_added
         else:
-            return 4
-
+            return 4, extra_sugar_added
 
 def calculate_first_step_punctuation(
     ingredients: str,
     product_certifications: list,
     ewo_ingredients: pd.DataFrame
-) -> int:
+) -> tuple:
     """
     Function that calculates first step of ultraprocessing punctuation.
     Args:
@@ -155,14 +202,10 @@ def calculate_first_step_punctuation(
         ewo_ingredients (pd.DataFrame): DataFrame with EWO ingredients.
 
     Returns:
-        int: First step of ultraprocessing punctuation.
+        tuple: First step of ultraprocessing punctuation and ingredients matched.
     """
 
-    ingredients = ''.join(
-        c for c in unicodedata.normalize('NFD', ingredients)
-        if unicodedata.category(c) != 'Mn'
-    )
-
+    ingredients = normalize_text(ingredients)
 
     # rudimentary_results, items_to_be_ignored = match_ewo_ingredients_rudimentary(
     #     ingredients,
@@ -182,18 +225,18 @@ def calculate_first_step_punctuation(
 
     # Level 4: 4+ MUT3 or 1+ MUT4
     if p3 >= 4 or p4 >= 1:
-        return 4
+        return 4, already_matched
 
     # Level 3: 4+ MUT2 OR (1 to 3 MUT3) -- (and no MUT4)
     if (p2 >= 4 or (1 <= p3 <= 3)) and p4 == 0:
-        return 3
+        return 3, already_matched
 
     # Level 2: 1 to 3 MUT2 -- (and no MUT3 or MUT4)
     if 1 <= p2 <= 3 and p3 == 0 and p4 == 0:
-        return 2
+        return 2, already_matched
 
     # Level 1: Only MUT0 or MUT1 (0 MUT2, 0 MUT3, 0 MUT4)
-    return 1
+    return 1, already_matched
 
 def calculate_punctuation_items_found(already_matched: list, items_to_be_ignored: list) -> dict:
     """

@@ -53,7 +53,8 @@ constants = {
     "NUTRIMENTS_DM_EWO": ["greixos_totals_g", "hidrats_carboni_g", "fibra_g", "proteines_g", "sal_g"],
     "CERTIFICATIONS_BASIC": [
         1
-    ]
+    ],
+    "OLLAMA_URL": "http://localhost:11434/"
 }
 
 def constants_variables_getter(key: str) -> str|dict|list:

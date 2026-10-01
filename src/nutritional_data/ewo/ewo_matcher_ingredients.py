@@ -24,33 +24,70 @@ This module rewrites the core of the EWO ingredient detection algorithm to corre
   does, we generate a HIGHEST priority candidate exactly at the position
   of the origin word (‘sunflower’ inside the parenthesis). Since this candidate occupies the same span as the ‘raw’ match (‘Sunflower’ alone) would, the same overlap resolution from phase 2 (bug 1) already guarantees that the reconstructed match wins — the two corrections share a mechanism.
 
-
-
-
 """
 
 import re
-import unicodedata
+from grocery_scraper.utils.utils import normalize_text
 from grocery_scraper.dto.ewo_reference import EwoReference, Candidate
 import pandas as pd
 
+NORMAL_FLOUR = [
+    "harina de trigo", "harina blanca", "harina semiintegral",
+    "harina integral", "harina semicompleta",
+]
 
-def normalize_text(text: str) -> str:
-    """
-    Function that normalizes text to lowercase and removes accents.
-    Args:
-        text (str): Text to normalize.
+# Llista de patrons o cadenes complexes que no són ingredients objectiu
+# i que causen falsos positius d'ingredients simples (ex: "agua" a "castaña de agua")
+IGNORED_COMPOUND_PATTERNS = [
+    r'\bcasta[ñn]as?\s+de\s+agua\b',
+    r'\bbaño\s+de\s+agua\b',
+    r'\bsuero\s+de\s+leche(?:\s+en\s+polvo)?\b',
+    r'\barroz\s+inflado\b',
+    r'\bcebollas?(?:\s+[\wáéíóúñ]+){0,3}?\s+encurtidas?\b',
+    r'\bzanahorias?(?:\s+[\wáéíóúñ]+){0,3}?\s+encurtidas?\b',
+    r'\bcebollas?(?:\s+[\wáéíóúñ]+){0,3}?\s+deshidratadas?\b',
+    r'\bzumos?\s+de\s+lim[oó]n(?!\s+(?:concentrados?|a\s+partir\s+de\s+concentrados?))\b',
+    r'\baceites?\s+de\s+s[eé]samo(?:\s+(?:de\s+(?:primera\s+)?presi[oó]n(?:\s+en\s+fr[ií]o)?|virgen|refinado|tostado))?\b',
+    r'\bzumos?\s+de\s+mandarinas?\b',
+    r'\bzumos?\s+de\s+naranjas?\b',
+    r'\bajos?(?:\s+[\wáéíóúñ]+){0,3}?\s+deshidratados?\b',
+    r'\bpastas?\s+de\s+tomates?(?:\s+(?:doble|triple|concentradas?|concentrados?))*\b',
+    r'\bpastas?\s+de\s+avellanas?(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bpastas?\s+de\s+cacahuetes?(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bharinas?\s+de\s+arroz(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bextractos?\s+de\s+t[eé]s?(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bjarabes?\s+de\s+ma[ií]z(?:\s+[\wáéíóúñ]+){0,3}?\b',
+    r'\bsalsas?\s+de\s+soja(?:\s+[\wáéíóúñ]+){0,3}?\b',
+    r'\bzumos?\s+de\s+frutas?(?:\s+[\wáéíóúñ]+)*(?:\s*\([^)]*\))*',
+    r'\bconcentrados?\s+de\s+frutas?\s+y\s+(?:verduras?|hortalizas?)(?:\s+[\wáéíóúñ]+)*(?:\s*\([^)]*\))*',
+    r'\bcocos?\s+rallados?\b',
+    r'\brellenos?\s+de\s+coco\b(?:\s*:?\s*\d+%\s*)?',
+    r'\bcebollas?(?:\s+[\wáéíóúñ]+){0,2}?\s+caramelizadas?\b',
+    r'\bextractos?\s+de\s+cocos?(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bl?eches?\s+de\s+cocos?(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\baromas?\s+(?:natural(?:es)?\s+)?de\s+[\wáéíóúñ]+(?:[\s\-][\wáéíóúñ]+){0,2}?\b',
+    r'\bcopos?\s+de\s+ma[ií]z(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bralladuras?\s+de\s+(?:naranjas?|lim[oó]nes?|limas?|c[ií]tricos?)(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bcalabac[ií]n(?:es)?(?:\s+[\wáéíóúñ]+){0,2}?\s+asados?\b',
+    r'\bpastas?\s+de\s+cacahuetes?(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bharinas?\s+de\s+sojas?(?:\s+[\wáéíóúñ]+){0,3}?\b',
+    r'\bprote[ií]nas?(?:\s+[\wáéíóúñ]+){0,2}?\s+de\s+sojas?(?:\s+[\wáéíóúñ]+){0,3}?\b',
+    r'\bharinas?\s+de\s+avenas?(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bs[eé]molas?\s+de\s+arroz(?:\s+[\wáéíóúñ]+){0,2}?\b',
+    r'\bsuero\s+de\s+leche(?:\s+en\s+polvo)?\b',
+]
 
-    Returns:
-        str: Normalized text.
-    """
-    text = str(text).lower()
-    text = ''.join(
-        c for c in unicodedata.normalize('NFD', text)
-        if unicodedata.category(c) != 'Mn'
-    )
-    return text
-
+CARRIER_NOUNS = {
+    "aceite": ["aceite", "aceites"],
+    "grasa": ["grasa", "grasas"],
+    "almidon": ["almidon", "almidones"],
+    "harina": ["harina", "harinas"],
+    "proteina": ["proteina", "proteinas"],
+    "extracto": ["extracto", "extractos"],
+    "fecula": ["fecula", "feculas"],
+    "aroma": ["aroma", "aromas"],
+    "semilla": ["semilla", "semillas"],
+}
 
 def build_name_lookup(ewo_ingredients: pd.DataFrame) -> dict:
     """
@@ -90,17 +127,6 @@ def build_name_lookup(ewo_ingredients: pd.DataFrame) -> dict:
 # ‘Carrier’ names that are often followed by an origin clause in
 # parentheses: ‘vegetable oil (sunflower, palm)’, ‘vegetable fat (coconut)’...
 # Extend this list as you find more cases in your corpus.
-
-CARRIER_NOUNS = {
-    "aceite": ["aceite", "aceites"],
-    "grasa": ["grasa", "grasas"],
-    "almidon": ["almidon", "almidones"],
-    "harina": ["harina", "harinas"],
-    "proteina": ["proteina", "proteinas"],
-    "extracto": ["extracto", "extractos"],
-    "fecula": ["fecula", "feculas"],
-    "aroma": ["aroma", "aromas"],
-}
 
 def _build_carrier_pattern() -> re.Pattern:
     """
@@ -161,6 +187,13 @@ def _split_origin_list_with_offsets(raw: str, base_offset: int) -> list:
         tokens.append((stripped, start, start + len(stripped)))
     return tokens
 
+OIL_QUALIFIERS_PATTERN = r'\b(?:refinados?|virgen(?:es)?|extra|alto\s+oleico|desodorizados?|(?:parcialmente\s+)?hidrogenados?|prensados?\s+en\s+fr[ií]o)\b'
+CARRIER_FALLBACKS = {
+    "grasa": ["aceite"],
+    "aceite": ["grasa"],
+    "almidon": ["fecula"],
+    "fecula": ["almidon"],
+}
 
 def reconstruct_carrier_matches(text: str, name_lookup: dict) -> list:
     """
@@ -190,9 +223,28 @@ def reconstruct_carrier_matches(text: str, name_lookup: dict) -> list:
         )
         origin_tokens = _split_origin_list_with_offsets(m.group(2), m.start(2))
 
+        # Portadors a provar: el portador trobat + els seus equivalents (ex: ["grasa", "aceite"])
+        carriers_to_try = [carrier_singular] + CARRIER_FALLBACKS.get(carrier_singular, [])
+
         for origin, o_start, o_end in origin_tokens:
-            compound_key = normalize_text(f"{carrier_singular} de {origin}")
-            hit = name_lookup.get(compound_key)
+            hit = None
+
+            # Busquem provant tots els portadors equivalents
+            for carrier in carriers_to_try:
+                # 1. Cerca directa (ex: "grasa de girasol refinado" / "aceite de girasol refinado")
+                compound_key = normalize_text(f"{carrier} de {origin}")
+                hit = name_lookup.get(compound_key)
+                if hit:
+                    break
+
+                # 2. Cerca netejant adjectius (ex: "grasa de girasol" / "aceite de girasol")
+                clean_origin = re.sub(OIL_QUALIFIERS_PATTERN, '', origin, flags=re.IGNORECASE).strip()
+                clean_origin = re.sub(r'\s+', ' ', clean_origin)
+                compound_key_clean = normalize_text(f"{carrier} de {clean_origin}")
+                hit = name_lookup.get(compound_key_clean)
+                if hit:
+                    break
+
             if hit:
                 ref_name, reference, score, row_id, sugar = hit
                 candidates.append(Candidate(
@@ -210,11 +262,135 @@ def reconstruct_carrier_matches(text: str, name_lookup: dict) -> list:
 # (vitamins, concentrated juice, gluten, non-standard flours).
 # ---------------------------------------------------------------------------
 
-NORMAL_FLOUR = [
-    "harina de trigo", "harina blanca", "harina semiintegral",
-    "harina integral", "harina semicompleta",
-]
+def mask_barley_malt_origins(text: str) -> str:
+    """
+    Mask “barley” when it follows “malt syrup/extract”,
+    leaving “malt syrup” intact to thrash with Excel and preventing “barley” from popping up as a separate raw cereal.
 
+    Args:
+        text (str): The input text to mask.
+
+    Returns:
+        str: The masked text.
+    """
+    pattern = r'(\b(?:jarabes?|extractos?)\s+de\s+malta\s+)de\s+cebadas?\b'
+
+    def _replace_barley(m: re.Match) -> str:
+        prefix = m.group(1)  # Manté "jarabe de malta "
+        full_match = m.group(0)
+        # Substitueix 'de cebada' per espais en blanc
+        spaces = ' ' * (len(full_match) - len(prefix))
+        return prefix + spaces
+
+    return re.sub(pattern, _replace_barley, text, flags=re.IGNORECASE)
+
+
+
+def mask_vinegar_origins(text: str) -> str:
+    """
+    Mask “rice” when it follows “vinegar”, keeping the word “vinegar” intact and avoiding a false positive for rice.
+
+    Args:
+        text (str): Text to be processed.
+
+    Returns:
+        str: Text with masked occurrences.
+    """
+    pattern = r'(\bvinagres?\s+)(de\s+arroz\b)'
+
+    def _replace_rice(m: re.Match) -> str:
+        return m.group(1) + ' ' * len(m.group(2))
+
+    return re.sub(pattern, _replace_rice, text, flags=re.IGNORECASE)
+
+def mask_additive_origins(text: str) -> str:
+    """
+    Spaced-mask the parenthetical source of the additive (e.g. “(soy)”, “(from soy)”)
+    when it follows an E322 / E-322 code or an emulsifier, leaving the E code intact.
+
+    Args:
+        text (str): Text to be processed.
+
+    Returns:
+        str: Text with additive origins masked.
+    """
+    # Patró que captura (1: codi E) i (2: origen entre parèntesis)
+    pattern = r'(\be\s*[-_]?\s*\d+[a-z]?\b\s*)(\(\s*(?:de\s+)?(?:soja|girasol|palma|colza)\s*\))'
+
+    def _replace_origin(m: re.Match) -> str:
+        """
+        Replaces the additive origin with spaces of the same length.
+        Args:
+            m (re.Match): Matches to be ignored.
+
+        Returns:
+            str: Ignored compound pattern replaced with spaces.
+        """
+        return m.group(1) + ' ' * len(m.group(2))
+
+
+    return re.sub(
+        pattern,
+        _replace_origin,
+        text,
+        flags=re.IGNORECASE
+    )
+
+def mask_unwanted_seeds_in_mixes(text: str) -> str:
+    """
+    Replace the words "girasol" and "calabaza" with spaces ONLY when they appear
+    inside a parenthesis of "mezcla de semillas (...)".
+    """
+
+    def _clean_mix_content(match: re.Match) -> str:
+        mix_text = match.group(0)
+        # 'girasol' té 7 lletres -> 7 espais
+        mix_text = re.sub(r'\bgirasol\b', '       ', mix_text, flags=re.IGNORECASE)
+        # 'calabaza' té 8 lletres -> 8 espais
+        mix_text = re.sub(r'\bcalabaza\b', '        ', mix_text, flags=re.IGNORECASE)
+        return mix_text
+
+    # Patró que localitza "mezcla de semillas" seguit de la seva llista entre parèntesis
+    pattern = r'\bmezcla\s+de\s+semillas?\s*\([^)]*\)'
+
+    return re.sub(pattern, _clean_mix_content, text, flags=re.IGNORECASE)
+
+def mask_ignored_phrases(text: str) -> str:
+    """
+    Replaces unwanted phrases with spaces of the same length.
+    This removes noise without altering the position indices (spans) of the rest of the text.
+    Args:
+        text (str): Text to be processed.
+
+    Returns:
+        str: Text with unwanted phrases replaced with spaces.
+    """
+    text = mask_barley_malt_origins(text)  # "jarabe de malta de cebada" -> "jarabe de malta          "
+    text = mask_vinegar_origins(text)  # "vinagre de arroz" -> "vinagre         "
+
+    # 2. Altres opcions i llavors
+    text = mask_unwanted_seeds_in_mixes(text)
+    text = mask_additive_origins(text)
+
+    def _replace_with_spaces(match: re.Match) -> str:
+        """
+        Auxiliary function to replace with spaces ignored coumpound patterns.
+        Args:
+            match (re.Match): Matches to be ignored.
+
+        Returns:
+            str: Ignored compound pattern replaced with spaces.
+        """
+        return ' ' * len(match.group(0))
+
+    for pattern in IGNORED_COMPOUND_PATTERNS:
+        text = re.sub(
+            pattern,
+            _replace_with_spaces,
+            text,
+            flags=re.IGNORECASE
+        )
+    return text
 
 def generate_candidates(
     text: str,
@@ -266,12 +442,24 @@ def generate_candidates(
         # --- referencia Exxx: te prioritat i, si es troba, no cal mirar noms ---
         if reference_ingredient:
             ref_norm = normalize_text(reference_ingredient)
-            pattern = r'(?<!\w)' + re.escape(ref_norm) + r'(?!\w)'
-            matches = list(re.finditer(pattern, text))
-            if not matches:
-                ref_no_dash = ref_norm.replace('-', '')
-                pattern = r'(?<!\w)' + re.escape(ref_no_dash) + r'(?!\w)'
+
+            # Normalitzem la referència per extreure la part numèrica si comença per 'e' (ex: e339, e-339, e 339)
+            # Permet trobar formats com "e 339", "e-339" o "e339"
+            match_e = re.match(r'^e\s*[-_]?\s*(\d+[a-z]?)$', ref_norm)
+
+            if match_e:
+                number_part = match_e.group(1)
+                # Patró regex que accepta: "e339", "e-339", "e 339", etc.
+                pattern = r'(?<!\w)e\s*[-_]?\s*' + re.escape(number_part) + r'(?!\w)'
                 matches = list(re.finditer(pattern, text))
+            else:
+                # Comportament per defecte si no compleix el patró 'E...'
+                pattern = r'(?<!\w)' + re.escape(ref_norm) + r'(?!\w)'
+                matches = list(re.finditer(pattern, text))
+                if not matches:
+                    ref_no_dash = ref_norm.replace('-', '')
+                    pattern = r'(?<!\w)' + re.escape(ref_no_dash) + r'(?!\w)'
+                    matches = list(re.finditer(pattern, text))
 
             if matches:
                 for mo in matches:
@@ -280,7 +468,7 @@ def generate_candidates(
                         ewo_ref=EwoReference(ingredient_names, reference_ingredient, score, sugar,
                                              row_id=row_id, span=(mo.start(), mo.end()))
                     ))
-                continue  # com a l'original: si hi ha referencia, no mirem noms
+                continue
 
         # --- noms (amb els 4 casos especials del vostre codi original) ---
         for ingredient_name in ingredient_names_splitted:
@@ -398,8 +586,9 @@ def match_ewo_ingredients(
     Returns:
         list: List of accepted ingredients.
     """
-
-
+    ingredients_text = ingredients_text.replace('[', '(').replace(']', ')')
+    ingredients_text = ingredients_text.replace('{', '(').replace('}', ')')
+    ingredients_text = mask_ignored_phrases(ingredients_text)
     name_lookup = build_name_lookup(ewo_ingredients)
 
     phase0_candidates = reconstruct_carrier_matches(ingredients_text, name_lookup)

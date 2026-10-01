@@ -10,11 +10,15 @@ from grocery_scraper.utils.utils import get_path_ewo_ingredients_data
 from nutritional_data.interact_db.get_data_from_db import get_products_without_ewo_ultraprocessed_qualification
 from nutritional_data.ewo.calculate_ultraprocessed_punctuation import calculate_ultraprocessed_punctuation
 from nutritional_data.interact_db.update_products_to_db import update_ewo_ultraprocessed_qualification
+from grocery_scraper.utils.utils import normalize_text
+
 import argparse
 import pandas as pd
-import unicodedata
+import requests
+
 
 LIMIT_PRODUCTS = constants_variables_getter("LIMIT_PRODUCTS_TO_CALCULATE_ULTRAPROCESSED_PUNCTUATION")
+OLLAMA_URL = constants_variables_getter("OLLAMA_URL")
 
 def execute() -> None:
     """
@@ -32,6 +36,14 @@ def execute() -> None:
         ewo_ingredients = pd.read_excel(excel_path)
     except FileNotFoundError:
         print("EWO ingredients file not found. Please, contact with EWÖ and make an agreement for this data.")
+        return
+
+    try:
+        response = requests.get(OLLAMA_URL, timeout=5)
+        response.raise_for_status()
+    except requests.exceptions.RequestException:
+        print("Error connecting to Ollama server."
+              " Please, launch Ollama server using ollama serve & ollama run llama3.2 on different CLI.")
         return
 
     parser = argparse.ArgumentParser(
@@ -60,7 +72,8 @@ def execute() -> None:
 
     ultraprocessed_punctuations = {}
     product: ProductNutrimentsDTO
-    for product in products:
+    for idx, product in enumerate(products):
+        print(f"Processing product {idx + 1} of {len(products)}")
         punctuation = calculate_ultraprocessed_punctuation(product, ewo_ingredients)
         ultraprocessed_punctuations[product.get_grocery_id()] = punctuation
         print("=" * 20)
@@ -86,10 +99,7 @@ def prepare_ingredients_df_to_be_processed(ewo_ingredients_information: pd.DataF
         ].copy()
 
     ewo_ingredients['es'] = ewo_ingredients['es'].str.lower()
-    ewo_ingredients['es'] = ewo_ingredients['es'].apply(lambda text : ''.join(
-        c for c in unicodedata.normalize('NFD', text)
-        if unicodedata.category(c) != 'Mn'
-    ))
+    ewo_ingredients['es'] = ewo_ingredients['es'].apply(lambda text : normalize_text(text))
 
     ewo_ingredients['reference'] = (
         ewo_ingredients['reference']

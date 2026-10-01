@@ -6,6 +6,8 @@ Author: Francesc Ferré Tarrés
 
 import re
 
+from utils.utils import normalize_text
+
 def calculate(nutriments: dict) -> dict:
     """
     Calculates beverage nutriscore.
@@ -26,7 +28,10 @@ def calculate(nutriments: dict) -> dict:
     proteins = nutriments["proteines"]
     fruit_percentage = nutriments["fruit_percentage"]
 
-    has_presence_of_non_nutritive_sweeteners = check_presence_of_non_nutritive_sweeteners(ingredients)
+    non_nutritive_sweeteners_occurrences = check_presence_of_non_nutritive_sweeteners(ingredients)
+    has_presence_of_non_nutritive_sweeteners = len(non_nutritive_sweeteners_occurrences) > 0
+    if has_presence_of_non_nutritive_sweeteners:
+        print(f" -> Non nutritive sweeteners found in ingredients: {",".join(non_nutritive_sweeteners_occurrences)}")
 
     negative_score = calculate_negative_score(
         energy,
@@ -54,6 +59,7 @@ def calculate(nutriments: dict) -> dict:
         'points': nutritional_score,
         'negative_points': negative_score,
         'positive_points': positive_score,
+        'presence_non_nutritive_sweeteners': has_presence_of_non_nutritive_sweeteners
     }
 
 
@@ -163,7 +169,7 @@ def calculate_negative_score(
 
 
 
-def check_presence_of_non_nutritive_sweeteners(ingredients: str|None) -> bool:
+def check_presence_of_non_nutritive_sweeteners(ingredients: str|None) -> list:
     """
     Checks presence of non-nutritive sweeteners.
 
@@ -171,31 +177,37 @@ def check_presence_of_non_nutritive_sweeteners(ingredients: str|None) -> bool:
         ingredients (str|None): List of ingredients as string.
 
     Returns:
-        bool: True if has presence of non nutritive sweeteners. Otherwise, False.
+        list: List of occurrences.
     """
 
     if not ingredients:
-        return False
+        return []
 
     ingredients = ingredients.lower()
+    ingredients = normalize_text(ingredients)
 
     NNS_REGEX = re.compile(
         r"\b(?:"
-        # E-numbers
-        r"e\s*-?\s*(?:420|421|953|956|964|965|966|967|968)"
+        # Codis E (E-950, E950, E 950, incloent E-960a i E-960b)
+        r"e\s*-?\s*(?:950|951|952|954|955|957|959|960[a-b]?|961|962|969)"
         r"|"
-        # Names
-        r"sorbitol(?:s)?"
-        r"|manitol"
-        r"|isomalt"
-        r"|alitame"
-        r"|poliglicitol(?:\s+jarabe)?"
-        r"|maltitol(?:s)?"
-        r"|lactitol"
-        r"|xilitol"
-        r"|eritritol"
+        # Noms en castellà (suporta variants de concordància)
+        r"acesulfam(?:o)?(?:\s*k)?"
+        r"|aspartam(?:o)?"
+        r"|ciclamat(?:o|os)?"
+        r"|[aá]cido\s+cicl[aá]mico"
+        r"|sacarin[aa|as]"
+        r"|sucralos[aa]"
+        r"|taumatin[aa]"
+        r"|neohesperidin[aa](?:\s*dc)?"
+        r"|estevia|estevi[aa]s|gluc[oó]sido(?:s)?\s+de\s+estviol"
+        r"|neotam(?:o)?"
+        r"|sal\s+de\s+aspartam(?:o)?\s*-?\s*acesulfam(?:o)?"
+        r"|advantam(?:o)?"
         r")\b",
         re.IGNORECASE
     )
 
-    return bool(NNS_REGEX.search(ingredients))
+    occurrences = NNS_REGEX.findall(ingredients)
+
+    return list(dict.fromkeys(match.lower() for match in occurrences))
