@@ -152,6 +152,28 @@ def get_path_product_csv_from_db() -> str:
     csv_path = project_path / 'csv' / 'grocery-scraper-results.csv'
     return str(csv_path)
 
+def get_path_of_data_to_send_to_external_team() -> str:
+    """
+    Function that retrieve path of csv file to send to external team (ewo).
+
+    Args:
+        None.
+
+    Returns:
+         str: path of csv file.
+    """
+
+    actual_path = Path(__file__).resolve()
+    project_path = actual_path.parent.parent.parent.parent
+    to_send_dir = project_path / 'csv' / 'to_send'
+
+    counter = 1
+    while True:
+        csv_path = to_send_dir / f'unique_products_{counter}.csv'
+        if not csv_path.exists():
+            return str(csv_path)
+        counter += 1
+
 def get_path_ewo_ingredients_data() -> str:
     """
     Function that retrieve path of ewo ingredients file.
