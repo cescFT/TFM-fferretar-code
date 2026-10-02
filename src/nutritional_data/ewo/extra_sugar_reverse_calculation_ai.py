@@ -11,55 +11,58 @@ import json
 PROMPT = """
 Actúa como experto en tecnología alimentaria, legislación alimentaria y analista de datos.
 Tu tarea consiste en realizar un **cálculo nutricional inverso** de un producto para estimar
-qué cantidad, en gramos, de un ingrediente específico constituye el azúcar añadido por cada 100 g o ml del producto.
+la cantidad presente (en gramos por cada 100 g o ml de producto) de uno o varios ingredientes específicos
+considerados como "azúcar/endulzante extra".
 
 Te proporcionaré los siguientes datos:
-1. Valores nutricionales por cada 100 g o ml (especialmente hidratos de carbono y azúcares totales).
-2. Lista de ingredientes (que, por ley, se ordenan de mayor a menor según su peso).
-3. El ingrediente concreto que quiero que analices.
+1. Valores nutricionales por 100 g o ml (hidratos de carbono totales y azúcares declarados).
+2. Lista completa de ingredientes del producto (ordenados legalmente de mayor a menor peso).
+3. Lista de ingredientes objetivo a analizar.
 
-Para dar tu respuesta, debes seguir estrictamente estos pasos de la **cadena de razonamiento**:
+Para dar tu respuesta, debes aplicar estrictamente las siguientes **REGLAS DE PRIORIDAD Y CADENA DE RAZONAMIENTO**:
 
-**PASO 1: Análisis de la tabla nutricional**
-Extrae los azúcares totales por cada 100 g. Este es tu límite máximo absoluto (el 100 % del azúcar del producto).
+--- REGLAS DE ORO (INVIOLABLES) ---
+REGLA 1 (DECLARACIÓN DIRECTA): Si el ingrediente objetivo tiene un porcentaje explícito en la etiqueta,
+ la cantidad en gramos por 100g ES EXACTAMENTE ESE PORCENTAJE (ejemplo: 12.0g). NO PUEDE SER MAYOR NI MENOR.
 
-**PASO 2: Identificación de las fuentes de azúcar**
-Analiza la lista de ingredientes y clasifícalos en dos categorías:
-- Fuentes de azúcar intrínsecas (p. ej., fruta, leche/lactosa, etc.). Calcula su porcentaje medio de azúcar natural.
-- Fuentes de azúcares añadidos (p. ej., sacarosa, jarabe de glucosa, miel, dextrosa, etc.).
+REGLA 2 (ORDEN Y PORCENTAJES ADYACENTES): Si el ingrediente objetivo NO tiene porcentaje explícito, su cantidad DEBE SER ESTRICTAMENTE MENOR que el ingrediente anterior y MAYOR que el ingrediente posterior.
+Si hay ingredientes colindantes con porcentaje (ej: "almendra (66%)" ... ingrediente X ... "miel (12%)"), el ingrediente X debe estar dentro de ese rango (entre 12g y 66g).
 
-**PASO 3: Razonamiento por peso relativo (orden de los ingredientes)**
-Utiliza la norma de etiquetado de los alimentos: los ingredientes se enumeran en orden descendente por peso.
-- Si el ingrediente X aparece antes que el ingrediente Y, X > Y en gramos.
-- Si se indican porcentajes para un ingrediente,
- utilízalos como puntos de referencia matemáticos para limitar el peso máximo y mínimo
-  de los ingredientes restantes.
+REGLA 3 (TECHO NUTRICIONAL): La suma total de los ingredientes estimados jamás puede superar los hidratos de carbono totales
+declarados en la tabla nutricional, ni el peso total pendiente de la fórmula del producto.
+------------------------------------
 
-**PASO 4: Cálculo de los límites y estimación**
-Resta los azúcares estimados procedentes de fuentes naturales (si los hay) del total de azúcares.
-El resultado es el total de azúcares añadidos.
-Distribuye estos azúcares añadidos entre los ingredientes edulcorantes
-de acuerdo con su orden en la lista de ingredientes.
+**PASO 1: Comprobación de porcentaje directo (Regla 1)**
+Analiza si el ingrediente objetivo tiene un porcentaje numérico escrito entre paréntesis.
+- Si LO TIENE: Asigna directamente ese porcentaje como el valor en gramos por 100g.
+- Si NO LO TIENE: Procede al PASO 2.
 
-**PASO 5: Conclusión**
-Indica claramente la estimación final. Si no se puede obtener una cifra matemática exacta por falta de porcentajes
-explícitos en el etiquetado, realiza la estimación razonada basada en los rangos
-y devuelve el valor medio estimado (float redondeado a un decimal).
+**PASO 2: Acotación por orden e hidratos de carbono (Regla 2 y 3)**
+- Extrae los hidratos de carbono totales y los azúcares declarados.
+- Determina el rango de peso mínimo y máximo posible para el ingrediente según su posición exacta en la lista
+respecto a los demás ingredientes declarados.
 
-Formato de salida esperado: {"extra_sugar": float}
+**PASO 3: Estimación final**
+Si no hay porcentaje directo, toma el valor medio estimado dentro del rango lógico calculado en el PASO 2.
+
+Devuelve EXCLUSIVAMENTE el objeto JSON final.
+
+Formato de salida esperado:
+{
+  "extra_sugar": float
+}
 
 Estos son los datos del producto:
 - Valores nutricionales: @@nutritional_values@@
-- Ingredientes: @@ingredients@@
-- Ingrediente objectivo: @@ingredient_objective@@
+- Lista de ingredientes del producto: @@ingredients@@
+- Ingredientes objetivo a analizar: @@target_ingredients@@
 """
-
 
 def reverse_calculation_extra_sugar(
     ingredients: str,
     sugars_total: float,
     carbohydrate_total: float,
-    ingredient_name: str
+    ingredient_names: str
 ) -> float:
     """
     Function that calculates extra sugar of specific ingredient which is not declared on total sugars (g). It uses
@@ -68,7 +71,7 @@ def reverse_calculation_extra_sugar(
         ingredients (str): List of ingredients.
         sugars_total (float): Total sugars declared in the product (g).
         carbohydrate_total (float): Total carbohydrates declared in the product (g).
-        ingredient_name (str): Name of the ingredient for which extra sugar is calculated.
+        ingredient_names (str): Name of the ingredients for which extra sugar is calculated.
 
     Returns:
         float: Extra sugar calculated for the ingredient (g).
@@ -80,9 +83,9 @@ def reverse_calculation_extra_sugar(
         "g de los cuales "+ str(sugars_total)  + "g son de azúcares")
 
     prompt = prompt.replace("@@ingredients@@", ingredients)
-    prompt = prompt.replace("@@ingredient_objective@@", ingredient_name)
+    prompt = prompt.replace("@@target_ingredients@@", ingredient_names)
 
-    print(f"Request sent to Ollama (llama3.2 model) for calculating extra sugar of ingredient {ingredient_name} ...")
+    print(f"Request sent to Ollama (llama3.2 model) for calculating extra sugar of ingredients {ingredient_names} ...")
 
     response = requests.post(
         "http://localhost:11434/api/chat",
@@ -109,7 +112,7 @@ def reverse_calculation_extra_sugar(
 
     try:
         result = json.loads(response.json()["message"]["content"])['extra_sugar']
-        print("Extra sugar calculated for " + ingredient_name + " is " + str(result) + "g")
+        print("Extra sugar calculated for " + ingredient_names + " is " + str(result) + "g")
     except Exception as e:
         print("Error parsing response: " + str(e))
         result = 0
