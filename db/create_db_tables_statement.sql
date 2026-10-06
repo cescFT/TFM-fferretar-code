@@ -43,6 +43,8 @@ CREATE TABLE "products" (
 );
 
 ALTER TABLE products ADD COLUMN main_page_position INTEGER;
+ALTER TABLE products ADD COLUMN is_pack INTEGER DEFAULT 0;
+ALTER TABLE products ADD COLUMN total_units INTEGER DEFAULT NULL;
 
 CREATE TABLE "product_photos" (
 	"id"	INTEGER NOT NULL,

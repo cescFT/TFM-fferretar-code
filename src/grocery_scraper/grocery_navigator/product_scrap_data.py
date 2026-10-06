@@ -192,6 +192,11 @@ def get_product_scrap_data(
     price = price_instructions['bulk_price']
     units_price = "€/"+units
     pvp = price_instructions['unit_price']
+    is_pack = price_instructions['is_pack']
+    if is_pack:
+        total_units = price_instructions['total_units']
+    else:
+        total_units = 1
 
     previous_pvp = price_instructions['previous_unit_price']
     if previous_pvp:
@@ -246,6 +251,8 @@ def get_product_scrap_data(
         second_subcategory_en=second_subcategory_en,
         has_found_nutriments=has_found_nutriments,
         main_page_position=main_page_position,
+        is_pack=is_pack,
+        total_units=total_units
     )
 
     if product_data_from_db:
