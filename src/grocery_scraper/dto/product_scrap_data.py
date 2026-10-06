@@ -39,7 +39,9 @@ class ProductScrapedDTO:
             alcohol_grades,
             second_subcategory_en,
             has_found_nutriments,
-            main_page_position
+            main_page_position,
+            is_pack,
+            total_units
     ):
         self.date = date
         self.week_num = week_num
@@ -71,6 +73,8 @@ class ProductScrapedDTO:
         self.second_subcategory_en = second_subcategory_en
         self.has_found_nutriments = has_found_nutriments
         self.main_page_position = main_page_position
+        self.is_pack = is_pack
+        self.total_units = total_units
         self.nutriscore = None
         self.planetscore = None
         self.ciqual_text = None
@@ -201,8 +205,9 @@ class ProductScrapedDTO:
                 title_category_main_page, title_in_page_product,
                 product_name, quantity, quantity_units, price, price_units,
                 pvp, ingredients, bar_code, is_new_arrival, previous_pvp, alcohol_grades, found_nutriments,
-                nutriscore, planetscore, ciqual_text, ciqual_id, ewo_ultra_processed_punctuation, main_page_position
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                nutriscore, planetscore, ciqual_text, ciqual_id, ewo_ultra_processed_punctuation, main_page_position,
+                is_pack, total_units
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         new_arrival = '0'
@@ -250,6 +255,8 @@ class ProductScrapedDTO:
             self.ciqual_id,
             self.ewo_ultra_processed_punctuation,
             self.main_page_position,
+            self.is_pack,
+            self.total_units
         )
 
         return basic_insert, tuple_data
