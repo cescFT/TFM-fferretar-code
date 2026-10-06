@@ -10,40 +10,54 @@ import json
 
 PROMPT = """
 Actúa como experto en tecnología alimentaria, legislación alimentaria y analista de datos.
-Tu tarea consiste en realizar un **cálculo nutricional inverso** de un producto para estimar
-la cantidad presente (en gramos por cada 100 g o ml de producto) de uno o varios ingredientes específicos
-considerados como "azúcar/endulzante extra".
+Tu tarea consiste en realizar un **cálculo nutricional inverso** de un producto para estimar la cantidad presente (en gramos por cada 100 g o ml de producto) únicamente de aquellos ingredientes considerados como "azúcar/endulzante extra OCULTO" según el criterio del sistema Ewö.
+
+Contexto legal clave (Reglamento UE 1169/2011):
+- Los azúcares simples (monosacáridos y disacáridos) YA están contabilizados legalmente en la fila "de los cuales azúcares" de la tabla nutricional.
+- Los azúcares complejos o sustitutivos (maltodextrinas, dextrenas, polidextrosas, polioles, etc.) NO se contabilizan como "azúcares", sino dentro de los "hidratos de carbono totales". Estos son los ÚNICOS que constituyen "azúcar extra oculto".
 
 Te proporcionaré los siguientes datos:
 1. Valores nutricionales por 100 g o ml (hidratos de carbono totales y azúcares declarados).
 2. Lista completa de ingredientes del producto (ordenados legalmente de mayor a menor peso).
 3. Lista de ingredientes objetivo a analizar.
 
-Para dar tu respuesta, debes aplicar estrictamente las siguientes **REGLAS DE PRIORIDAD Y CADENA DE RAZONAMIENTO**:
+Para dar tu respuesta, debes aplicar estrictamente las siguientes **REGLAS Y CADENA DE RAZONAMIENTO**:
 
---- REGLAS DE ORO (INVIOLABLES) ---
-REGLA 1 (DECLARACIÓN DIRECTA): Si el ingrediente objetivo tiene un porcentaje explícito en la etiqueta,
- la cantidad en gramos por 100g ES EXACTAMENTE ESE PORCENTAJE (ejemplo: 12.0g). NO PUEDE SER MAYOR NI MENOR.
+**PASO 1: Clasificación legal de los ingredientes objetivo**
+Clasifica los ingredientes objetivo analizados según las siguientes listas estrictas:
 
-REGLA 2 (ORDEN Y PORCENTAJES ADYACENTES): Si el ingrediente objetivo NO tiene porcentaje explícito, su cantidad DEBE SER ESTRICTAMENTE MENOR que el ingrediente anterior y MAYOR que el ingrediente posterior.
-Si hay ingredientes colindantes con porcentaje (ej: "almendra (66%)" ... ingrediente X ... "miel (12%)"), el ingrediente X debe estar dentro de ese rango (entre 12g y 66g).
+- GRUPO A (Mono/Disacáridos declarados en la tabla nutricional):
+  * Azúcar de caña / Azúcar de remolacha
+  * Azúcar invertido / Azúcar líquido invertido
+  * Dextrosa / Dextrosa de maíz
+  * Miel
+  * Sirope de agave / Jarabe de arce
+  * Jarabe de glucosa / Jarabe de fructosa / Jarabe de glucosa y fructosa
+  * Zumo concentrado (excluido zumo concentrado de limón)
+  * Fruta seca dulce
+  -> Resultado para los ingredientes de este Grupo A = 0.0g de azúcar extra (ya están contabilizados en la fila "de los cuales azúcares").
 
-REGLA 3 (TECHO NUTRICIONAL): La suma total de los ingredientes estimados jamás puede superar los hidratos de carbono totales
-declarados en la tabla nutricional, ni el peso total pendiente de la fórmula del producto.
-------------------------------------
+- GRUPO B (No mono/disacáridos - Azúcares Ocultos):
+  * Maltodextrina / Maltodextrina de maíz
+  * Dextrina
+  * E1200: Polidextrosas a y n / Polidextrosas modificadas
+  * E150: Caramelo / Colorante caramelo
+  * Cualquier otro poliol o carbohidrato complejo no catalogado en el Grupo A.
+  -> Solo los ingredientes clasificados en este Grupo B pasan al PASO 2 para ser calculados.
 
-**PASO 1: Comprobación de porcentaje directo (Regla 1)**
-Analiza si el ingrediente objetivo tiene un porcentaje numérico escrito entre paréntesis.
-- Si LO TIENE: Asigna directamente ese porcentaje como el valor en gramos por 100g.
-- Si NO LO TIENE: Procede al PASO 2.
+*Si NINGUNO de los ingredientes objetivo pertenece al Grupo B, la respuesta final de "extra_sugar" será 0.0.*
 
-**PASO 2: Acotación por orden e hidratos de carbono (Regla 2 y 3)**
-- Extrae los hidratos de carbono totales y los azúcares declarados.
-- Determina el rango de peso mínimo y máximo posible para el ingrediente según su posición exacta en la lista
-respecto a los demás ingredientes declarados.
+**PASO 2: Comprobación de porcentaje directo (para ingredientes del Grupo B)**
+Si el ingrediente del Grupo B tiene un porcentaje explícito en la etiqueta (ejemplo: "maltodextrina (10%)"), la cantidad en gramos por 100g ES EXACTAMENTE ESE PORCENTAJE (10.0g).
 
-**PASO 3: Estimación final**
-Si no hay porcentaje directo, toma el valor medio estimado dentro del rango lógico calculado en el PASO 2.
+**PASO 3: Acotación por orden e hidratos de carbono (para ingredientes del Grupo B)**
+Si NO tiene porcentaje explícito:
+- Calcula el margen de carbohidratos no azucarados: Carbohidratos_No_Azúcares = Hidratos_de_carbono_totales - Azúcares_declarados.
+- Determina la posición del ingrediente en la lista respecto a los demás ingredientes colindantes para establecer un rango lógico (mínimo y máximo) que no supere el margen de carbohidratos no azucarados.
+
+**PASO 4: Estimación final y suma**
+Toma el valor medio estimado del rango del PASO 3 para cada ingrediente del Grupo B.
+Suma las cantidades estimadas de todos los ingredientes del Grupo B para obtener la cifra final.
 
 Devuelve EXCLUSIVAMENTE el objeto JSON final.
 
