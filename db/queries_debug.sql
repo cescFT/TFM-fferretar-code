@@ -1,6 +1,6 @@
 select n.nom, n.unitat_mesura_nutrient, pn.quantitat
 from producte_nutrients pn
-inner join nutrients n on n.id = pn.nutrient_id
+inner join nutriments n on n.id = pn.nutrient_id
 where product_grocery_id = '4706';
 
 
@@ -24,6 +24,6 @@ SELECT found_nutriments
 
 select pn.product_grocery_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
 from producte_nutrients pn
-inner join nutrients n on n.id = pn.nutrient_id
+inner join nutriments n on n.id = pn.nutrient_id
 where
     pn.product_grocery_id in ("11680")

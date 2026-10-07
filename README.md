@@ -74,13 +74,13 @@ is just to check specific sql's used in other parts of the project.
       * `product_nutritional_data.py`: Contains different classes:
         * `CiqualDTO`: This class represents information from [Ciqual](https://ciqual.anses.fr/). This data is used
         for planet score.
-        * `NutrientDTO`: This class is used when products has to be processed in order to get nutriments. 
+        * `NutrimentDTO`: This class is used when products has to be processed in order to get nutriments. 
         * `CertificationDTO`: This class contains all information to create certifications of the products. This 
         certifications then will be used for calculate planet score.
         * `ProductNutritionalDataDTO`: This class constructs all nutritional data of certain product for save nutriments.
-        * `NutrimentDataDTO`: The meaning of this class is different in comparison of `NutrientDTO` class. The difference
-        is based on if nutriment is saved in database or not. If is not saved, I use `NutrientDTO`, if not, I use `NutrimentDataDTO`.
-        This data is used for calculate nutriscore.
+        * `NutrimentDataDTO`: The meaning of this class is different in comparison of `NutrimentDTO` class. The difference
+          is based on if nutriment is saved in database or not. If is not saved, I use `NutrimentDTO`, if not, I use `NutrimentDataDTO`.
+          This data is used for calculate nutriscore.
         * `ProductNutrimentsDTO`: This class constructs all nutritional data of certain product for calculate nutriscore.
       * `product_scrap_data.py`: Contains `ProductScrapedDTO` class which represents all data scraped from online supermarket.
       * `product_scrap_data_request.py`: Contains `ProductScrapDataRequestDTO` class which is a request for scrape data.

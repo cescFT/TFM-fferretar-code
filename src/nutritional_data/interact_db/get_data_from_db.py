@@ -130,7 +130,7 @@ def get_all_nutriments() -> dict:
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
 
-        query = "SELECT id, nom, unitat_mesura_nutrient FROM nutrients"
+        query = "SELECT id, nom, unitat_mesura_nutrient FROM nutriments"
 
         cur.execute(query)
 
@@ -194,7 +194,7 @@ def get_types_of_nutriments(special_nutriments_ids: list) -> dict:
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
         cur.execute(
-            f"SELECT id, nom FROM nutrients where id not in({placeholders})",
+            f"SELECT id, nom FROM nutriments where id not in({placeholders})",
             special_nutriments_ids
         )
         response = cur.fetchall()
@@ -224,7 +224,7 @@ def get_nutriments_of_specific_products(grocery_ids: list) -> dict:
         cur.execute(f"""
                 select pn.product_grocery_id, n.id as id_nutrient, n.nom, pn.quantitat, n.unitat_mesura_nutrient
                 from producte_nutrients pn
-                inner join nutrients n on n.id = pn.nutrient_id
+                inner join nutriments n on n.id = pn.nutrient_id
                 where
                     pn.product_grocery_id in ({placeholders})
                 """, grocery_ids)

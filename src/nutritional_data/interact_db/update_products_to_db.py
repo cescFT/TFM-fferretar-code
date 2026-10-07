@@ -4,7 +4,7 @@ TFM: Food environment on grocery online supermarket
 Author: Francesc Ferré Tarrés
 """
 
-from dto.product_nutritional_data import CiqualDTO, NutrientDTO, CertificationDTO, ProductNutritionalDataDTO
+from dto.product_nutritional_data import CiqualDTO, NutrimentDTO, CertificationDTO, ProductNutritionalDataDTO
 from utils.utils import get_path_sqlite_db
 from interact_db.get_data_from_db import get_all_nutriments, get_all_certifications
 import sqlite3
@@ -85,14 +85,14 @@ def update_food_found_nutriments(data_to_update: list) -> None:
 
     product_nutritional_data_dto: ProductNutritionalDataDTO
     for product_nutritional_data_dto in data_to_update:
-        nutriments = product_nutritional_data_dto.get_nutrients()
+        nutriments = product_nutritional_data_dto.get_nutriments()
         product_ids.append(product_nutritional_data_dto.get_grocery_id())
-        nutriment: NutrientDTO
+        nutriment: NutrimentDTO
         for nutriment in nutriments:
-            if nutriment.get_nutrient_id() is None:
+            if nutriment.get_nutriment_id() is None:
                 new_nutriments_to_save.append(nutriment)
             else:
-                nutriments_already_saved.append(nutriment.get_nutrient_id())
+                nutriments_already_saved.append(nutriment.get_nutriment_id())
 
         certification: CertificationDTO
         for certification in product_nutritional_data_dto.get_certifications():
@@ -103,10 +103,10 @@ def update_food_found_nutriments(data_to_update: list) -> None:
 
 
     unique_new_nutriments_to_save = {}
-    nutriment: NutrientDTO
+    nutriment: NutrimentDTO
     for nutriment in new_nutriments_to_save:
-        if nutriment.get_nutrient_name() not in unique_new_nutriments_to_save:
-            unique_new_nutriments_to_save[nutriment.get_nutrient_name()] = nutriment.get_nutrient_unit()
+        if nutriment.get_nutriment_name() not in unique_new_nutriments_to_save:
+            unique_new_nutriments_to_save[nutriment.get_nutriment_name()] = nutriment.get_nutriment_unit()
 
     unique_certifications_to_save = {}
     certification: CertificationDTO
@@ -121,7 +121,7 @@ def update_food_found_nutriments(data_to_update: list) -> None:
 
         for nutriment_name, unit in unique_new_nutriments_to_save.items():
             cur.execute(f"""
-                    insert into nutrients (nom, unitat_mesura_nutrient)
+                    insert into nutriments (nom, unitat_mesura_nutrient)
                     values (?, ?)
                     """, (nutriment_name, unit))
 
@@ -168,18 +168,18 @@ def update_food_found_nutriments(data_to_update: list) -> None:
                     product_nutritional_data_dto.get_grocery_id()
                 ))
 
-            for nutriment in product_nutritional_data_dto.get_nutrients():
-                if nutriment.get_nutrient_id() is not None:
-                    nutriment_id = nutriment.get_nutrient_id()
+            for nutriment in product_nutritional_data_dto.get_nutriments():
+                if nutriment.get_nutriment_id() is not None:
+                    nutriment_id = nutriment.get_nutriment_id()
                 else:
-                    nutriment_id = all_nutriments[nutriment.get_nutrient_name()]
+                    nutriment_id = all_nutriments[nutriment.get_nutriment_name()]
 
                 cur.execute(f"""
                 insert into producte_nutrients (product_grocery_id, nutrient_id, quantitat) values (?, ?, ?)
                 """, (
                         product_nutritional_data_dto.get_grocery_id(),
                         nutriment_id,
-                        nutriment.get_nutrient_value()
+                        nutriment.get_nutriment_value()
                     )
                 )
 
