@@ -66,12 +66,11 @@ INSERT INTO nutrients (nom, unitat_mesura_nutrient) VALUES ('Energia (kcal)', 'k
 INSERT INTO nutrients (nom, unitat_mesura_nutrient) VALUES ('Energia (kJ)', 'kJ');
 
 CREATE TABLE producte_nutrients (
-	product_id INTEGER NOT NULL,
     product_grocery_id TEXT NOT NULL,
     nutrient_id INTEGER NOT NULL,
     quantitat REAL NOT NULL,
-    PRIMARY KEY (product_id, nutrient_id),
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    PRIMARY KEY (product_grocery_id, nutrient_id),
+    FOREIGN KEY (product_grocery_id) REFERENCES products(id_product) ON DELETE CASCADE,
     FOREIGN KEY (nutrient_id) REFERENCES nutrients(id) ON DELETE RESTRICT
 );
 

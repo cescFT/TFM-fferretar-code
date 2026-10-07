@@ -175,9 +175,8 @@ def update_food_found_nutriments(data_to_update: list) -> None:
                     nutriment_id = all_nutriments[nutriment.get_nutrient_name()]
 
                 cur.execute(f"""
-                insert into producte_nutrients (product_id,product_grocery_id, nutrient_id, quantitat) values (?, ?, ?, ?)
+                insert into producte_nutrients (product_grocery_id, nutrient_id, quantitat) values (?, ?, ?)
                 """, (
-                        product_nutritional_data_dto.get_id(),
                         product_nutritional_data_dto.get_grocery_id(),
                         nutriment_id,
                         nutriment.get_nutrient_value()
