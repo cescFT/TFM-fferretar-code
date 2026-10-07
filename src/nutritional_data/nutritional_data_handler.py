@@ -16,12 +16,12 @@ from manual_nutritional_processing import nutritional_info
 import argparse
 
 LIMIT_PRODUCTS = constants_variables_getter('LIMIT_PRODUCTS_TO_GET_NUTRITIONAL_DATA')
-BASIC_NUTRIENTS_TO_GET = constants_variables_getter('BASIC_NUTRIENTS_TO_GET')
+BASIC_NUTRIMENTS_TO_GET = constants_variables_getter('BASIC_NUTRIMENTS_TO_GET')
 CERTIFICATIONS_BASIC = constants_variables_getter('CERTIFICATIONS_BASIC')
 NO_CERTIFICATIONS = CERTIFICATIONS_BASIC[0]
-NO_DATA = BASIC_NUTRIENTS_TO_GET[0]
-ENERGY_KCAL = BASIC_NUTRIENTS_TO_GET[1]
-ENERGY_KJ = BASIC_NUTRIENTS_TO_GET[2]
+NO_DATA = BASIC_NUTRIMENTS_TO_GET[0]
+ENERGY_KCAL = BASIC_NUTRIMENTS_TO_GET[1]
+ENERGY_KJ = BASIC_NUTRIMENTS_TO_GET[2]
 
 def nutritional_data_handler() -> None:
     """
@@ -77,7 +77,7 @@ def nutritional_data_handler() -> None:
     else:
         nutritional_data_responses = nutritional_info.get_manual_data_from_foods(products_data)
 
-    nutriments = get_data_from_db.get_types_of_nutriments(BASIC_NUTRIENTS_TO_GET)
+    nutriments = get_data_from_db.get_types_of_nutriments(BASIC_NUTRIMENTS_TO_GET)
     certifications = get_data_from_db.get_types_of_certifications(CERTIFICATIONS_BASIC)
 
     print("Processing responses of gemini...")

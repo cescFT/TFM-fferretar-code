@@ -38,18 +38,18 @@ class CiqualDTO:
 
         return self.text
 
-class NutrientDTO:
+class NutrimentDTO:
     """
     DTO class that saves nutrient information to persist in database
     """
-    def __init__(self, nutrient_name: str, nutrient_value: float, nutrient_unit: str):
-        self.nutrient_name = nutrient_name
-        self.nutrient_value = nutrient_value
-        self.nutrient_unit = nutrient_unit
-        self.nutrient_id = None
+    def __init__(self, nutriment_name: str, nutriment_value: float, nutriment_unit: str):
+        self.nutriment_name = nutriment_name
+        self.nutriment_value = nutriment_value
+        self.nutriment_unit = nutriment_unit
+        self.nutriment_id = None
 
 
-    def get_nutrient_name(self) -> str:
+    def get_nutriment_name(self) -> str:
         """
         Function that returns nutrient name
 
@@ -60,9 +60,9 @@ class NutrientDTO:
             str: nutrient name
         """
 
-        return self.nutrient_name
+        return self.nutriment_name
 
-    def get_nutrient_value(self) -> float:
+    def get_nutriment_value(self) -> float:
         """
         Function that returns nutrient value.
 
@@ -73,9 +73,9 @@ class NutrientDTO:
             float: nutrient value
         """
 
-        return self.nutrient_value
+        return self.nutriment_value
 
-    def get_nutrient_unit(self) -> str:
+    def get_nutriment_unit(self) -> str:
         """
         Function that returns nutrient unit.
 
@@ -86,9 +86,9 @@ class NutrientDTO:
              str: Nutrient unit.
         """
 
-        return self.nutrient_unit
+        return self.nutriment_unit
 
-    def get_nutrient_id(self) -> int|None:
+    def get_nutriment_id(self) -> int|None:
         """
         Function that returns nutrient id.
 
@@ -99,33 +99,33 @@ class NutrientDTO:
              int|None: Nutrient id
         """
 
-        return self.nutrient_id
+        return self.nutriment_id
 
-    def set_nutrient_id(self, nutrient_id: int|None = None) -> None:
+    def set_nutriment_id(self, nutriment_id: int|None = None) -> None:
         """
         Function set nutrient id.
 
         Args:
-            nutrient_id (int|None): Nutrient id.
+            nutriment_id (int|None): Nutrient id.
 
         Returns:
             None.
         """
 
-        self.nutrient_id = nutrient_id
+        self.nutriment_id = nutriment_id
 
-    def set_nutrient_value(self, nutrient_value: float) -> None:
+    def set_nutriment_value(self, nutriment_value: float) -> None:
         """
         Function set nutrient value.
 
         Args:
-            nutrient_value (float): Nutrient value.
+            nutriment_value (float): Nutrient value.
 
         Returns:
             None.
         """
 
-        self.nutrient_value = nutrient_value
+        self.nutriment_value = nutriment_value
 
 class CertificationDTO:
     """
@@ -196,7 +196,7 @@ class ProductNutritionalDataDTO:
         self.photos = photos
         self.origin = origin
         self.ciqual_response = None
-        self.nutrients = []
+        self.nutriments = []
         self.nutriscore = None
         self.origin_from_gemini = None
         self.certifications = []
@@ -280,7 +280,7 @@ class ProductNutritionalDataDTO:
 
         return self.photos
 
-    def get_nutrients(self) -> list:
+    def get_nutriments(self) -> list:
         """
         Function that gets nutriments.
 
@@ -290,20 +290,20 @@ class ProductNutritionalDataDTO:
         Returns:
             list: List of nutriments.
         """
-        return self.nutrients
+        return self.nutriments
 
-    def add_nutrient(self, nutrient: NutrientDTO) -> None:
+    def add_nutrient(self, nutrient: NutrimentDTO) -> None:
         """
         Function that append new nutriment in product.
 
         Args:
-            nutrient (NutrientDTO): Nutrient to add.
+            nutrient (NutrimentDTO): Nutrient to add.
 
         Returns:
             None.
         """
 
-        self.nutrients.append(nutrient)
+        self.nutriments.append(nutrient)
 
     def get_nutriscore(self) -> str|None:
         """

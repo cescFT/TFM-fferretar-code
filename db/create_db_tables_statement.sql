@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS "product_photos";
 DROP TABLE IF EXISTS "products";
-DROP TABLE IF EXISTS "nutrients";
+DROP TABLE IF EXISTS "nutriments";
 DROP TABLE IF EXISTS "producte_nutrients";
 DROP TABLE IF EXISTS "certifications";
 DROP TABLE IF EXISTS "product_certifications";
@@ -54,16 +54,16 @@ CREATE TABLE "product_photos" (
 	FOREIGN KEY("product_id") REFERENCES "products"("id")
 );
 
-CREATE TABLE "nutrients" (
+CREATE TABLE "nutriments" (
 	"id"	INTEGER NOT NULL,
 	"nom"	TEXT NOT NULL UNIQUE,
 	"unitat_mesura_nutrient"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-INSERT INTO nutrients (nom, unitat_mesura_nutrient) VALUES ('NO DATA', '-');
-INSERT INTO nutrients (nom, unitat_mesura_nutrient) VALUES ('Energia (kcal)', 'kcal');
-INSERT INTO nutrients (nom, unitat_mesura_nutrient) VALUES ('Energia (kJ)', 'kJ');
+INSERT INTO nutriments (nom, unitat_mesura_nutrient) VALUES ('NO DATA', '-');
+INSERT INTO nutriments (nom, unitat_mesura_nutrient) VALUES ('Energia (kcal)', 'kcal');
+INSERT INTO nutriments (nom, unitat_mesura_nutrient) VALUES ('Energia (kJ)', 'kJ');
 
 CREATE TABLE producte_nutrients (
     product_grocery_id TEXT NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE producte_nutrients (
     quantitat REAL NOT NULL,
     PRIMARY KEY (product_grocery_id, nutrient_id),
     FOREIGN KEY (product_grocery_id) REFERENCES products(id_product) ON DELETE CASCADE,
-    FOREIGN KEY (nutrient_id) REFERENCES nutrients(id) ON DELETE RESTRICT
+    FOREIGN KEY (nutrient_id) REFERENCES nutriments(id) ON DELETE RESTRICT
 );
 
 

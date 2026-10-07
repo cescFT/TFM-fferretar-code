@@ -4,10 +4,10 @@ TFM: Food environment on grocery online supermarket
 Author: Francesc Ferré Tarrés
 """
 
-from dto.product_nutritional_data import ProductNutritionalDataDTO, NutrientDTO, CiqualDTO, CertificationDTO
+from dto.product_nutritional_data import ProductNutritionalDataDTO, NutrimentDTO, CiqualDTO, CertificationDTO
 
 
-def add_no_nutrients_data(
+def add_no_nutriments_data(
     product_nutritional_data_dto: ProductNutritionalDataDTO,
     no_data_id: int
 ) -> ProductNutritionalDataDTO:
@@ -22,8 +22,8 @@ def add_no_nutrients_data(
         ProductNutritionalDataDTO: Product data with no nutritional data added.  
     """
     
-    no_data_nutriment = NutrientDTO('', 0, '')
-    no_data_nutriment.set_nutrient_id(no_data_id)
+    no_data_nutriment = NutrimentDTO('', 0, '')
+    no_data_nutriment.set_nutriment_id(no_data_id)
     product_nutritional_data_dto.add_nutrient(no_data_nutriment)
 
     return product_nutritional_data_dto
@@ -70,7 +70,7 @@ def process_response_from_gemini(
         )
 
         if not nutritional_data:
-            product_nutritional_data_dto = add_no_nutrients_data(product_nutritional_data_dto, no_data_id)
+            product_nutritional_data_dto = add_no_nutriments_data(product_nutritional_data_dto, no_data_id)
             print(
                 f"No nutritional data of {product_nutritional_data_dto.get_product_name()} "
                 f"({product_nutritional_data_dto.get_grocery_id()}) in category {product_nutritional_data_dto.get_category()}"
@@ -79,7 +79,7 @@ def process_response_from_gemini(
             continue
 
         for key, value in nutritional_data.items():
-            nutriment_data = NutrientDTO('', 0, '')
+            nutriment_data = NutrimentDTO('', 0, '')
             process_dict_as_nutriment = True
             if key == "origen" and value:
                 product_nutritional_data_dto.set_origin_from_gemini(value)
@@ -104,11 +104,11 @@ def process_response_from_gemini(
                         product_nutritional_data_dto.add_certifications(certification_dto)
                 nutriment_data = None
             if key == "energia_kcal" and value:
-                nutriment_data.set_nutrient_id(energy_kcal_id)
-                nutriment_data.set_nutrient_value(value)
+                nutriment_data.set_nutriment_id(energy_kcal_id)
+                nutriment_data.set_nutriment_value(value)
             if key == "energia_kj" and value:
-                nutriment_data.set_nutrient_id(energy_kj_id)
-                nutriment_data.set_nutrient_value(value)
+                nutriment_data.set_nutriment_id(energy_kj_id)
+                nutriment_data.set_nutriment_value(value)
 
             if not value:
                 continue
@@ -117,16 +117,16 @@ def process_response_from_gemini(
                 name_nutriment = key + "_" + value['units']
                 if name_nutriment in nutriments:
                     nutriment_id = nutriments[name_nutriment]
-                    nutriment_data.set_nutrient_id(nutriment_id)
-                    nutriment_data.set_nutrient_value(value['quantity'])
+                    nutriment_data.set_nutriment_id(nutriment_id)
+                    nutriment_data.set_nutriment_value(value['quantity'])
                 else:
-                    nutriment_data = NutrientDTO(name_nutriment, value['quantity'], value['units'])
+                    nutriment_data = NutrimentDTO(name_nutriment, value['quantity'], value['units'])
 
             if nutriment_data:
                 product_nutritional_data_dto.add_nutrient(nutriment_data)
 
-        if not product_nutritional_data_dto.get_nutrients():
-            product_nutritional_data_dto = add_no_nutrients_data(product_nutritional_data_dto, no_data_id)
+        if not product_nutritional_data_dto.get_nutriments():
+            product_nutritional_data_dto = add_no_nutriments_data(product_nutritional_data_dto, no_data_id)
             print(
                 f"No nutritional data of product {product_nutritional_data_dto.get_product_name()} "
                 f"({product_nutritional_data_dto.get_grocery_id()}) in category {product_nutritional_data_dto.get_category()}"
