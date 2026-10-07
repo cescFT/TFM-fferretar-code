@@ -22,6 +22,8 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     alcohol = product.get_alcohol_grades()
     product_name = product.get_product_name()
     ingredients = product.get_ingredients()
+    len_ingredients = len(ingredients.split(","))
+    len_ingredients_y = len(ingredients.split("y"))
 
     print(f" * Product name: {product_name}\n")
     print(f" * Grocery online category: {category}\n")
@@ -30,8 +32,11 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     print(f" * Alcohol: {"-" if not alcohol else alcohol}\n")
     print(f" * Ingredients: {ingredients}\n")
 
-    if len(ingredients.split(",")) == 1 or len(ingredients.split("y")) == 1:
-        print("There is only one ingredient. Skipping...")
+    calculate_ewo_category = False
+    if len_ingredients > 0 or len_ingredients_y > 0:
+        calculate_ewo_category = True
+
+    if not calculate_ewo_category:
         return None
 
     if category == "Aceite especias y salsas":
@@ -49,6 +54,8 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
     if category == "Aperitivos":
         if subcategory == "Frutos secos y fruta desecada":
             if second_subcategory in ["Frutos secos", "Fruta desecada"]:
+                if len_ingredients > 0 or len_ingredients_y > 0:
+                    return "SAVORY"
                 return None
         return "SAVORY"
 
@@ -162,6 +169,8 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             return "SWEET"
 
         if "Guacamole" in product_name:
+            return "SAVORY"
+        if second_subcategory == "Ensalada preparada":
             return "SAVORY"
 
     return None

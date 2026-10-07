@@ -41,7 +41,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
                     return None
                 else:
                     return "GENERAL_FOOD"
-        elif subcategory in ["Mayonesa, ketchup y mostaza", "Otras salsas"]:
+        elif subcategory in ["Mayonesa ketchup y mostaza", "Otras salsas"]:
             return "GENERAL_FOOD"
     elif category == "Agua y refrescos":
         if "coco" in ingredients:
@@ -144,17 +144,20 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             "Marisco",
             "Pizzas",
             "Rebozados",
-            "Tartas y churros"
+            "Tartas y churros",
+            "Carne"
         ]:
             if second_subcategory in ["Carne rebozada", "Carne"]:
                 return check_if_is_red_meal(ingredients)
-            return "GENERAL_FOOD"
+        return "GENERAL_FOOD"
     elif category == "Conservas caldos y cremas":
         return "GENERAL_FOOD"
     elif category == "Fruta y verdura":
         if subcategory == "Lechuga y ensalada preparada":
             if second_subcategory == "Ensalada preparada":
                 return "GENERAL_FOOD"
+        if subcategory == "Verdura":
+            return "GENERAL_FOOD"
     elif category == "Huevos leche y mantequilla":
         if subcategory == "Leche y bebidas vegetales":
             if second_subcategory in [
@@ -169,9 +172,15 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
                 return "GENERAL_FOOD"
         elif subcategory == "Mantequilla y margarina":
             return "FATS_OILS_NUTS_SEEDS"
+        elif subcategory == "Huevos":
+            if "Claras de huevo líquidas" in product_name:
+                return "GENERAL_FOOD"
     elif category == "Marisco y pescado":
         if subcategory in ["Marisco", "Pescado congelado", "Salazones y ahumados"]:
             return "GENERAL_FOOD"
+        elif subcategory == "Pescado fresco":
+            if "Elaborado" in product_name:
+                return "GENERAL_FOOD"
     elif category == "Panadería y pastelería":
         if subcategory in [
             "Bollería de horno",
@@ -207,6 +216,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             "Postres de soja",
             "Yogures desnatados",
             "Yogures griegos",
+            "Yogures naturales y sabores"
         ]:
             return "GENERAL_FOOD"
         elif subcategory == "Yogures líquidos":
