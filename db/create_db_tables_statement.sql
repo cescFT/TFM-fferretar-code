@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS "product_photos";
 DROP TABLE IF EXISTS "products";
 DROP TABLE IF EXISTS "nutriments";
-DROP TABLE IF EXISTS "producte_nutrients";
+DROP TABLE IF EXISTS "product_nutriments";
 DROP TABLE IF EXISTS "certifications";
 DROP TABLE IF EXISTS "product_certifications";
 DROP TABLE IF EXISTS "gemini_models";
@@ -65,7 +65,7 @@ INSERT INTO nutriments (nom, unitat_mesura_nutrient) VALUES ('NO DATA', '-');
 INSERT INTO nutriments (nom, unitat_mesura_nutrient) VALUES ('Energia (kcal)', 'kcal');
 INSERT INTO nutriments (nom, unitat_mesura_nutrient) VALUES ('Energia (kJ)', 'kJ');
 
-CREATE TABLE producte_nutrients (
+CREATE TABLE product_nutriments (
     product_grocery_id TEXT NOT NULL,
     nutrient_id INTEGER NOT NULL,
     quantitat REAL NOT NULL,
