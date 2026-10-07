@@ -39,6 +39,9 @@ def calculate_ultraprocessed_punctuation(
     print("Category calculated: ", category)
 
     if not product.get_ingredients() or not category:
+        if product.get_alcohol_grades():
+            return {}
+
         print(f"The product {product.get_grocery_id()} {product.get_product_name()} has directly a good punctuation.")
         return {'qualification': "1"}
 
