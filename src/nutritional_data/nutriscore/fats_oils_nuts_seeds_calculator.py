@@ -130,9 +130,7 @@ def calculate_negative_points (
 
     ratio_sfa_thesholds = [10, 16, 22, 28, 34, 40, 46, 52, 58, 64]
 
-    pnt_sfa = sum(1 for t in ratio_sfa_thesholds if t < ratio_sfa)
-    if ratio_sfa >= 64:
-        pnt_sfa += 1
+    pnt_sfa = sum(1 for t in ratio_sfa_thesholds if t <= ratio_sfa)
 
     salt_thresholds = [0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3, 3.2, 3.4, 3.6, 3.8, 4]
     pnt_salt = sum(1 for t in salt_thresholds if salt > t)
