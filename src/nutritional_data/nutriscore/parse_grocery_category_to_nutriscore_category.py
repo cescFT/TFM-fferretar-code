@@ -195,7 +195,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             if second_subcategory == "Masas":
                 return "GENERAL_FOOD"
         elif subcategory == "Pan tostado y rallado":
-            if second_subcategory in ["Pan tostado", "Crackers y tartaletas"]:
+            if second_subcategory in ["Pan tostado", "Crakers y tartaletas"]:
                 return "GENERAL_FOOD"
     elif category == "Pizzas y platos preparados":
         if subcategory in [
