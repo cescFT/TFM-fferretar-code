@@ -7,12 +7,100 @@ Author: Francesc Ferré Tarrés
 import sqlite3
 import pandas as pd
 import json
+
+from dto.product_nutritional_data import ProductNutrimentsDTO
+from utils.factory.product_nutriments_factory import create_from_product_id
 from utils.utils import (
     get_path_sqlite_db,
     get_path_product_csv_from_db,
     get_path_categories_aggregation_csv_from_db,
     get_path_of_data_to_send_to_external_team
 )
+
+from nutriscore.parse_grocery_category_to_nutriscore_category import parse as parse_grocery_cat_to_nutriscore_cat
+
+def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO) -> str:
+    """
+    Function to check if product can be calculated nutriscore.
+    Args:
+        product (ProductNutrimentsDTO): product dto.
+
+    Returns:
+        str: String with the information about if nutriscore can not be calculated.
+    """
+
+    if not product.get_nutriments():
+        return "NO_NUTRIMENTS"
+
+    category = parse_grocery_cat_to_nutriscore_cat(product)
+
+    if not category:
+        return "NOT_NUTRISCORE_CATEGORY"
+
+    if category == "HAS_ALCOHOL":
+        return "HAS_ALCOHOL"
+
+    return ""
+
+def check_if_ewo_ultraprocessed_level_can_be_calculated(product: ProductNutrimentsDTO) -> str:
+    """
+    Function to check if product can be calculated ewo ultraprocessing level.
+    Args:
+        product (ProductNutrimentsDTO): product dto.
+
+    Returns:
+        str: String with the information about if ewo ultraprocessing level can not be calculated.
+    """
+
+    if product.get_alcohol_grades():
+        return "HAS_ALCOHOL"
+
+    return ""
+
+def generate_csv_product_data_for_analysis(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Auxiliary function to generate csv product data for analysis.
+    Args:
+        df (pd.DataFrame): dataframe with the product data.
+
+    Returns:
+        pd.DataFrame: dataframe with the product data for analysis.
+    """
+
+    df['nutriscore'] = df['nutriscore'].apply(lambda x: extract_json_key(x, 'letter'))
+    df['ewo_ultra_processed_punctuation'] = df['ewo_ultra_processed_punctuation'].apply(
+        lambda x: extract_json_key(x, 'qualification'))
+
+    print("Preparing data to check if nutriscore and ewo can be calculated")
+    product_dtos = {}
+    print("Creating product DTOs")
+    id_products = df['id_product'].unique()
+    id_product_idx = 1
+    for id in id_products:
+        product_dto: ProductNutrimentsDTO
+        product_dto = create_from_product_id(id)
+        product_dtos[product_dto.get_grocery_id()] = product_dto
+        print(f"DTO product {id_product_idx} of {len(id_products)} created.", flush=True)
+        id_product_idx += 1
+
+    print("Checking if nutriscore and ewo can be calculated")
+    nutri_score_be_calculated = {}
+    ewo_be_calculated = {}
+    for product_dto in product_dtos.values():
+        can_nutriscore_be_calculated = check_if_nutriscore_can_be_calculated(product_dto)
+        can_ewo_be_calculated = check_if_ewo_ultraprocessed_level_can_be_calculated(product_dto)
+        nutri_score_be_calculated[product_dto.get_grocery_id()] = can_nutriscore_be_calculated
+        ewo_be_calculated[product_dto.get_grocery_id()] = can_ewo_be_calculated
+
+    df["can_nutriscore_be_calculated"] = (
+        df["id_product"].map(nutri_score_be_calculated)
+    )
+
+    df["can_ewo_be_calculated"] = (
+        df["id_product"].map(ewo_be_calculated)
+    )
+    print("CSV product data ready to be generated.")
+    return df
 
 def extract_json_key(val: str, key: str) -> str|None:
     """
@@ -48,10 +136,7 @@ if __name__ == "__main__":
         from products p
         """, conn)
 
-        df['nutriscore'] = df['nutriscore'].apply(lambda x: extract_json_key(x, 'letter'))
-        df['ewo_ultra_processed_punctuation'] = df['ewo_ultra_processed_punctuation'].apply(
-            lambda x: extract_json_key(x, 'qualification'))
-
+        df = generate_csv_product_data_for_analysis(df)
         df.to_csv(csv_path, index=False, sep="|", encoding="utf-8")
         print("CSV product data generated.")
         print("Generating CSV file of categories aggregation.")

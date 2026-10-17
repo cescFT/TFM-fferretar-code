@@ -351,6 +351,48 @@ def get_products_without_ewo_ultraprocessed_qualification(limit: int) -> list:
 
     return response
 
+def get_product_information_by_product_grocery_id(product_id: str) -> dict:
+    """
+    Function to get product information by product grocery id.
+    Args:
+        product_id: product grocery id.
+
+    Returns:
+        dict: product information.
+    """
+
+    db_path = get_path_sqlite_db()
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        cur.execute("""
+                    select p.id,
+                           p.id_product,
+                           p.category,
+                           p.subcategory,
+                           p.second_subcategory,
+                           p.product_name,
+                           p.ingredients,
+                           p.alcohol_grades
+                    from products p
+                    where p.id_product = ?
+                    group by p.id_product
+                    """, (product_id,))
+
+        product = cur.fetchone()
+
+        cur.execute("""
+                    select n.id, n.nom, pn.quantitat, n.unitat_mesura_nutrient
+                    from product_nutriments pn
+                    inner join nutriments n on n.id = pn.nutrient_id
+                    where pn.product_grocery_id = ?
+                    """, (product_id,))
+
+        nutriments = cur.fetchall()
+
+    conn.close()
+
+    return {"product": product, "nutriments": nutriments}
+
 def get_products_without_nutriscore(limit: int) -> list:
     """
     Get products without nutriscore limited by parameter with all

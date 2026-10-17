@@ -63,7 +63,9 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
         if subcategory == "Pasta y fideos" and second_subcategory in [
             "Pasta rellena",
             "Fideos orientales",
-            "Lasaña y canelones"
+            "Lasaña y canelones",
+            "Macarrones, pajaritas y hélices",
+            "Spaghetti y tallarines"
         ]:
             return "SAVORY"
 
@@ -165,12 +167,18 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
         return "SWEET"
 
     if category == "Fruta y verdura":
-        if "tratado" in ingredients:
+        if "tratado" in ingredients or "microondas" in ingredients:
             return "SWEET"
 
         if "Guacamole" in product_name:
             return "SAVORY"
-        if second_subcategory == "Ensalada preparada":
+        if second_subcategory in ["Ensalada preparada", "Verduras al vapor"]:
             return "SAVORY"
+
+        if second_subcategory in ["Setas y champiñones"]:
+            return "SAVORY"
+
+        if len_ingredients_y > 0 and len_ingredients > 0:
+            return "SWEET"
 
     return None
