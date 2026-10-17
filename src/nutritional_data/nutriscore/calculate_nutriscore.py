@@ -38,7 +38,7 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
 
     print(f"Nutriscore category: {category_nutriscore}\n")
 
-    if not category_nutriscore:
+    if not category_nutriscore or category_nutriscore == "HAS_ALCOHOL":
         print("For product there are no nutriscore category for calculate nutriscore. We cannot calculate.")
         return data_to_return
 

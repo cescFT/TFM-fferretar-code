@@ -103,7 +103,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             if second_subcategory == "Licores sin alcohol":
                 return "BEVERAGES"
             if alcohol > 1.2:
-                return None
+                return "HAS_ALCOHOL"
     elif category == "Cacao café e infusiones":
         if subcategory == "Cacao soluble y chocolate a la taza":
             return "GENERAL_FOOD"
