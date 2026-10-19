@@ -1,4 +1,4 @@
-# Food environment on Spanish grocery supermarket chain
+# The healthiness and sustainability of food promotions in a Spanish online supermarket
 
 ## Brief resume of the project
 
@@ -11,8 +11,6 @@ Finally, there is also a part of software which will get all the data retrieved 
 using data analysis techiques.
 
 ## Configuration
-
-TODO: Aqui quan tingui el tema de l'anàlisi de dades, s'ha d'explicar
 
 ***NOTE: ALL CONFIGURATIONS ARE CHECKED IN WINDOWS 11 ENVIRONMENT***
 
@@ -44,6 +42,18 @@ pip install -r requirements.txt
 
 Finally, if you want to exit virtual environment, you have to use command `deactivate`.
 
+TODO: Revisar llibreries que faig servir en l'anàlisi de dades per afegir o modificar d'aquí.
+
+For the data analysis, you have to install anaconda (I suggest MiniConda version because you have the control 
+of packages installed on your pc) (https://www.anaconda.com/download) and install jupyter notebook. Then, you might
+need to install some packages using `conda install <package_name>`. The packages necessary to run the analysis are:
+* pandas
+* numpy
+* matplotlib
+* seaborn
+* scikit-learn
+* scipy
+
 5. Install ollama for reverse calculation of extra sugar using AI (ollama / llama3.2)
 
 First, install ollama following the instructions in the [ollama website](https://ollama.com/download/windows).
@@ -55,9 +65,10 @@ After the download on the first time, then the port 11434 is exposed and it enab
 
 ## Folder structure
 
-TODO: Aqui quan tingui el tema de l'anàlisi de dades, s'ha d'explicar
-
 * `csv/`: The idea of this folder is to save final dataset to analyze in the step of data analysis.
+* `data-analysis/`: Folder that contains files related to data analysis.
+  * `TFM-fferretar-data-analysis.ipynb`: Interactive python notebook with data analysis integrated with Kaggle platform.
+  * TODO: aqui si genero l'html, posar-lo aqui tmb.
 * `db/`: In this folder, the project which is abled to retrieve information from online supermarket, save the data in
 sqlite database. The structure of this database can be seen in `create_db_table_statement.sql` file. The sqlite
 database is `grocery-scraper-results.db` folder. Also, you can see another file called `queries_debug.sql`. This file
@@ -91,6 +102,7 @@ is just to check specific sql's used in other parts of the project.
     and get links to follow with products.
     * `grocery_navigator/product_scrap_data.py`: Contains code that enables retrieve information from specific product.
     * `utils/utls.py`: Contains stuff such as get path of database. Contain general functions used in all project.
+    * `utils/factory/product_nutriments_factory.py`: Contains code to create instances of product nutriments dto by factory design pattern.
     * `validations/validate_postal_code.py`: As customer of my application, you can introduce a postal code as argument. So,
     it need to be validated if is recognized as valid. This file contains code to check this.
     * `grocery_scraper_main.py`: Script which scrape data from online supermarket and save data into database.
