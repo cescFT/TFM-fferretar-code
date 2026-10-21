@@ -75,6 +75,7 @@ IGNORED_COMPOUND_PATTERNS = [
     r'\bharinas?\s+de\s+avenas?(?:\s+[\wáéíóúñ]+){0,2}?\b',
     r'\bs[eé]molas?\s+de\s+arroz(?:\s+[\wáéíóúñ]+){0,2}?\b',
     r'\bsuero\s+de\s+leche(?:\s+en\s+polvo)?\b',
+    r'\baromas?\s+natural(?:es)?\b'
 ]
 
 CARRIER_NOUNS = {
