@@ -125,27 +125,10 @@ def calculate_negative_score(
     """
 
     energy_thresholds = [30, 90, 150, 210, 240, 270, 300, 330, 360, 390]
-
-    pnt_e = None
-    for points, t in enumerate(energy_thresholds):
-        if energy <= t:
-            pnt_e = points
-            break
-
-    if not pnt_e:
-        pnt_e = 10
+    pnt_e = sum(1 for t in energy_thresholds if energy > t)
 
     sugars_thresholds = [0.5, 2, 3.5, 5, 6, 7, 8, 9, 10, 11]
-    pnt_s = None
-
-    for points, t in enumerate(sugars_thresholds):
-        if sugars <= t:
-            pnt_s = points
-            break
-
-    if not pnt_s:
-        pnt_s = 10
-
+    pnt_s = sum(1 for t in sugars_thresholds if sugars > t)
 
     saturated_fats_thresholds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     pnt_f = sum(1 for t in saturated_fats_thresholds if saturated_fats > t)
@@ -153,9 +136,7 @@ def calculate_negative_score(
     salt_thresholds = [0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3, 3.2, 3.4, 3.6, 3.8, 4]
     pnt_salt = sum(1 for t in salt_thresholds if salt > t)
 
-    pnt_presence_of_non_nutritive_sweeteners = 0
-    if has_non_nutritive_sweeteners:
-        pnt_presence_of_non_nutritive_sweeteners = 4
+    pnt_presence_of_non_nutritive_sweeteners = 4 if has_non_nutritive_sweeteners else 0
 
     return {
         "negative_points": pnt_e + pnt_s + pnt_f + pnt_salt + pnt_presence_of_non_nutritive_sweeteners,
