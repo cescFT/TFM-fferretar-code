@@ -87,11 +87,12 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
         if subcategory in ["Chicles y caramelos","Chocolate","Golosinas", "Turrones"]:
             return "GENERAL_FOOD"
         elif subcategory == "Mermelada y miel":
-            if second_subcategory in ["Mermelada", "Confitura y otros"]:
+            if second_subcategory in ["Mermelada", "Confitura y otros", "Miel"]:
                 return "GENERAL_FOOD"
     elif category == "Bodega":
         if subcategory in [
             "Cerveza",
+            "Cerveza sin alcohol",
             "Licores",
             "Sidra y cava",
             "Tinto de verano y sangría",
@@ -104,6 +105,8 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
                 return "BEVERAGES"
             if alcohol != '' and float(alcohol) > 1.2:
                 return "HAS_ALCOHOL"
+            else:
+                return "BEVERAGES"
     elif category == "Cacao café e infusiones":
         if subcategory == "Cacao soluble y chocolate a la taza":
             return "GENERAL_FOOD"
