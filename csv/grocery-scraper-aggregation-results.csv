@@ -1078,3 +1078,219 @@ id|date_scraped|week_num|year|postal_code|category|subcategory|total_items
 1077|2026-10-28 09:10:32|44|2026|08032|Zumos|Melocotón y piña|10
 1078|2026-10-28 09:10:38|44|2026|08032|Zumos|Naranja|12
 1079|2026-10-28 09:10:44|44|2026|08032|Zumos|Tomate y otros sabores|8
+1080|2026-11-04 08:42:50|45|2026|43812|Aceite, especias y salsas|Aceite, vinagre y sal|38
+1081|2026-11-04 08:42:56|45|2026|43812|Aceite, especias y salsas|Especias|50
+1082|2026-11-04 08:43:01|45|2026|43812|Aceite, especias y salsas|Mayonesa, ketchup y mostaza|19
+1083|2026-11-04 08:43:07|45|2026|43812|Aceite, especias y salsas|Otras salsas|38
+1084|2026-11-04 08:43:13|45|2026|43812|Agua y refrescos|Agua|50
+1085|2026-11-04 08:43:18|45|2026|43812|Agua y refrescos|Isotónico y energético|39
+1086|2026-11-04 08:43:24|45|2026|43812|Agua y refrescos|Refresco de cola|40
+1087|2026-11-04 08:43:30|45|2026|43812|Agua y refrescos|Refresco de naranja y de limón|34
+1088|2026-11-04 08:43:35|45|2026|43812|Agua y refrescos|Tónica y bitter|11
+1089|2026-11-04 08:43:41|45|2026|43812|Agua y refrescos|Refresco de té y sin gas|31
+1090|2026-11-04 08:43:46|45|2026|43812|Aperitivos|Aceitunas y encurtidos|40
+1091|2026-11-04 08:43:52|45|2026|43812|Aperitivos|Frutos secos y fruta desecada|68
+1092|2026-11-04 08:43:58|45|2026|43812|Aperitivos|Patatas fritas y snacks|43
+1093|2026-11-04 08:44:04|45|2026|43812|Arroz, legumbres y pasta|Arroz|15
+1094|2026-11-04 08:44:09|45|2026|43812|Arroz, legumbres y pasta|Legumbres|19
+1095|2026-11-04 08:44:15|45|2026|43812|Arroz, legumbres y pasta|Pasta y fideos|60
+1096|2026-11-04 08:44:21|45|2026|43812|Azúcar, caramelos y chocolate|Azúcar y edulcorante|15
+1097|2026-11-04 08:44:26|45|2026|43812|Azúcar, caramelos y chocolate|Chicles y caramelos|23
+1098|2026-11-04 08:44:32|45|2026|43812|Azúcar, caramelos y chocolate|Chocolate|80
+1099|2026-11-04 08:44:38|45|2026|43812|Azúcar, caramelos y chocolate|Golosinas|23
+1100|2026-11-04 08:44:43|45|2026|43812|Azúcar, caramelos y chocolate|Mermelada y miel|18
+1101|2026-11-04 08:44:49|45|2026|43812|Azúcar, caramelos y chocolate|Turrones|24
+1102|2026-11-04 08:44:54|45|2026|43812|Bebé|Alimentación infantil|37
+1103|2026-11-04 08:45:00|45|2026|43812|Bodega|Cerveza|64
+1104|2026-11-04 08:45:06|45|2026|43812|Bodega|Cerveza sin alcohol|16
+1105|2026-11-04 08:45:11|45|2026|43812|Bodega|Licores|49
+1106|2026-11-04 08:45:17|45|2026|43812|Bodega|Sidra y cava|15
+1107|2026-11-04 08:45:22|45|2026|43812|Bodega|Tinto de verano y sangría|8
+1108|2026-11-04 08:45:28|45|2026|43812|Bodega|Vino blanco|29
+1109|2026-11-04 08:45:33|45|2026|43812|Bodega|Vino lambrusco y espumoso|5
+1110|2026-11-04 08:45:39|45|2026|43812|Bodega|Vino rosado|5
+1111|2026-11-04 08:45:44|45|2026|43812|Bodega|Vino tinto|32
+1112|2026-11-04 08:45:50|45|2026|43812|Cacao, café e infusiones|Cacao soluble y chocolate a la taza|15
+1113|2026-11-04 08:45:55|45|2026|43812|Cacao, café e infusiones|Café cápsula y monodosis|27
+1114|2026-11-04 08:46:01|45|2026|43812|Cacao, café e infusiones|Café molido y en grano|18
+1115|2026-11-04 08:46:07|45|2026|43812|Cacao, café e infusiones|Café soluble y otras bebidas|19
+1116|2026-11-04 08:46:12|45|2026|43812|Cacao, café e infusiones|Té e infusiones|27
+1117|2026-11-04 08:46:19|45|2026|43812|Carne|Arreglos|15
+1118|2026-11-04 08:46:26|45|2026|43812|Carne|Aves y pollo|51
+1119|2026-11-04 08:46:33|45|2026|43812|Carne|Carne congelada|14
+1120|2026-11-04 08:46:39|45|2026|43812|Carne|Cerdo|39
+1121|2026-11-04 08:46:45|45|2026|43812|Carne|Conejo y cordero|7
+1122|2026-11-04 08:46:51|45|2026|43812|Carne|Embutido|12
+1123|2026-11-04 08:46:56|45|2026|43812|Carne|Hamburguesas y picadas|26
+1124|2026-11-04 08:47:02|45|2026|43812|Carne|Vacuno|12
+1125|2026-11-04 08:47:07|45|2026|43812|Carne|Empanados y elaborados|29
+1126|2026-11-04 08:47:13|45|2026|43812|Cereales y galletas|Cereales|43
+1127|2026-11-04 08:47:19|45|2026|43812|Cereales y galletas|Galletas|62
+1128|2026-11-04 08:47:25|45|2026|43812|Cereales y galletas|Tortitas|8
+1129|2026-11-04 08:47:31|45|2026|43812|Charcutería y quesos|Aves y jamón cocido|43
+1130|2026-11-04 08:47:36|45|2026|43812|Charcutería y quesos|Bacón y salchichas|26
+1131|2026-11-04 08:47:42|45|2026|43812|Charcutería y quesos|Chopped y mortadela|10
+1132|2026-11-04 08:47:48|45|2026|43812|Charcutería y quesos|Embutido curado|58
+1133|2026-11-04 08:47:53|45|2026|43812|Charcutería y quesos|Jamón serrano|29
+1134|2026-11-04 08:47:59|45|2026|43812|Charcutería y quesos|Paté y sobrasada|22
+1135|2026-11-04 08:48:05|45|2026|43812|Charcutería y quesos|Queso curado, semicurado y tierno|43
+1136|2026-11-04 08:48:10|45|2026|43812|Charcutería y quesos|Queso lonchas, rallado y en porciones|27
+1137|2026-11-04 08:48:16|45|2026|43812|Charcutería y quesos|Queso untable, fresco y especialidades|41
+1138|2026-11-04 08:48:22|45|2026|43812|Congelados|Arroz y pasta|15
+1139|2026-11-04 08:48:27|45|2026|43812|Congelados|Carne|14
+1140|2026-11-04 08:48:33|45|2026|43812|Congelados|Fruta y verdura|59
+1141|2026-11-04 08:48:39|45|2026|43812|Congelados|Helados|52
+1142|2026-11-04 08:48:44|45|2026|43812|Congelados|Marisco|19
+1143|2026-11-04 08:48:50|45|2026|43812|Congelados|Pescado|35
+1144|2026-11-04 08:48:56|45|2026|43812|Congelados|Pizzas|15
+1145|2026-11-04 08:49:01|45|2026|43812|Congelados|Rebozados|31
+1146|2026-11-04 08:49:07|45|2026|43812|Congelados|Tartas y churros|19
+1147|2026-11-04 08:49:12|45|2026|43812|Conservas, caldos y cremas|Atún y otras conservas de pescado|31
+1148|2026-11-04 08:49:18|45|2026|43812|Conservas, caldos y cremas|Berberechos y mejillones|11
+1149|2026-11-04 08:49:24|45|2026|43812|Conservas, caldos y cremas|Conservas de verdura y frutas|54
+1150|2026-11-04 08:49:29|45|2026|43812|Conservas, caldos y cremas|Gazpacho y cremas|20
+1151|2026-11-04 08:49:35|45|2026|43812|Conservas, caldos y cremas|Sopa y caldo|23
+1152|2026-11-04 08:49:41|45|2026|43812|Conservas, caldos y cremas|Tomate|17
+1153|2026-11-04 08:49:46|45|2026|43812|Fruta y verdura|Fruta|45
+1154|2026-11-04 08:49:52|45|2026|43812|Fruta y verdura|Lechuga y ensalada preparada|30
+1155|2026-11-04 08:49:57|45|2026|43812|Fruta y verdura|Verdura|81
+1156|2026-11-04 08:50:03|45|2026|43812|Huevos, leche y mantequilla|Huevos|11
+1157|2026-11-04 08:50:09|45|2026|43812|Huevos, leche y mantequilla|Leche y bebidas vegetales|117
+1158|2026-11-04 08:50:15|45|2026|43812|Huevos, leche y mantequilla|Mantequilla y margarina|25
+1159|2026-11-04 08:50:20|45|2026|43812|Marisco y pescado|Marisco|33
+1160|2026-11-04 08:50:26|45|2026|43812|Marisco y pescado|Pescado congelado|49
+1161|2026-11-04 08:50:32|45|2026|43812|Marisco y pescado|Pescado fresco|49
+1162|2026-11-04 08:50:37|45|2026|43812|Marisco y pescado|Salazones y ahumados|16
+1163|2026-11-04 08:50:43|45|2026|43812|Panadería y pastelería|Bollería de horno|36
+1164|2026-11-04 08:50:48|45|2026|43812|Panadería y pastelería|Bollería envasada|59
+1165|2026-11-04 08:50:54|45|2026|43812|Panadería y pastelería|Harina y preparado repostería|40
+1166|2026-11-04 08:51:00|45|2026|43812|Panadería y pastelería|Pan de horno|50
+1167|2026-11-04 08:51:05|45|2026|43812|Panadería y pastelería|Pan de molde y otras especialidades|39
+1168|2026-11-04 08:51:11|45|2026|43812|Panadería y pastelería|Pan tostado y rallado|29
+1169|2026-11-04 08:51:16|45|2026|43812|Panadería y pastelería|Picos, rosquilletas y picatostes|20
+1170|2026-11-04 08:51:22|45|2026|43812|Panadería y pastelería|Tartas y pasteles|17
+1171|2026-11-04 08:51:27|45|2026|43812|Pizzas y platos preparados|Listo para Comer|21
+1172|2026-11-04 08:51:33|45|2026|43812|Pizzas y platos preparados|Pizzas|43
+1173|2026-11-04 08:51:39|45|2026|43812|Pizzas y platos preparados|Platos preparados calientes|68
+1174|2026-11-04 08:51:44|45|2026|43812|Pizzas y platos preparados|Platos preparados fríos|27
+1175|2026-11-04 08:51:50|45|2026|43812|Postres y yogures|Bífidus|17
+1176|2026-11-04 08:51:55|45|2026|43812|Postres y yogures|Flan y natillas|12
+1177|2026-11-04 08:52:01|45|2026|43812|Postres y yogures|Gelatina y otros postres|26
+1178|2026-11-04 08:52:06|45|2026|43812|Postres y yogures|Postres de soja|8
+1179|2026-11-04 08:52:12|45|2026|43812|Postres y yogures|Yogures desnatados|14
+1180|2026-11-04 08:52:17|45|2026|43812|Postres y yogures|Yogures griegos|10
+1181|2026-11-04 08:52:23|45|2026|43812|Postres y yogures|Yogures líquidos|31
+1182|2026-11-04 08:52:28|45|2026|43812|Postres y yogures|Yogures naturales y sabores|20
+1183|2026-11-04 08:52:34|45|2026|43812|Postres y yogures|Yogures y postres infantiles|9
+1184|2026-11-04 08:52:39|45|2026|43812|Zumos|Fruta variada|28
+1185|2026-11-04 08:52:45|45|2026|43812|Zumos|Melocotón y piña|10
+1186|2026-11-04 08:52:51|45|2026|43812|Zumos|Naranja|12
+1187|2026-11-04 08:52:56|45|2026|43812|Zumos|Tomate y otros sabores|8
+1188|2026-11-04 08:54:09|45|2026|08032|Aceite, especias y salsas|Aceite, vinagre y sal|39
+1189|2026-11-04 08:54:15|45|2026|08032|Aceite, especias y salsas|Especias|50
+1190|2026-11-04 08:54:20|45|2026|08032|Aceite, especias y salsas|Mayonesa, ketchup y mostaza|19
+1191|2026-11-04 08:54:26|45|2026|08032|Aceite, especias y salsas|Otras salsas|38
+1192|2026-11-04 08:54:31|45|2026|08032|Agua y refrescos|Agua|50
+1193|2026-11-04 08:54:37|45|2026|08032|Agua y refrescos|Isotónico y energético|38
+1194|2026-11-04 08:54:43|45|2026|08032|Agua y refrescos|Refresco de cola|40
+1195|2026-11-04 08:54:48|45|2026|08032|Agua y refrescos|Refresco de naranja y de limón|34
+1196|2026-11-04 08:54:54|45|2026|08032|Agua y refrescos|Tónica y bitter|11
+1197|2026-11-04 08:54:59|45|2026|08032|Agua y refrescos|Refresco de té y sin gas|31
+1198|2026-11-04 08:55:05|45|2026|08032|Aperitivos|Aceitunas y encurtidos|40
+1199|2026-11-04 08:55:11|45|2026|08032|Aperitivos|Frutos secos y fruta desecada|68
+1200|2026-11-04 08:55:16|45|2026|08032|Aperitivos|Patatas fritas y snacks|43
+1201|2026-11-04 08:55:22|45|2026|08032|Arroz, legumbres y pasta|Arroz|15
+1202|2026-11-04 08:55:28|45|2026|08032|Arroz, legumbres y pasta|Legumbres|19
+1203|2026-11-04 08:55:33|45|2026|08032|Arroz, legumbres y pasta|Pasta y fideos|60
+1204|2026-11-04 08:55:39|45|2026|08032|Azúcar, caramelos y chocolate|Azúcar y edulcorante|15
+1205|2026-11-04 08:55:44|45|2026|08032|Azúcar, caramelos y chocolate|Chicles y caramelos|23
+1206|2026-11-04 08:55:50|45|2026|08032|Azúcar, caramelos y chocolate|Chocolate|80
+1207|2026-11-04 08:55:55|45|2026|08032|Azúcar, caramelos y chocolate|Golosinas|24
+1208|2026-11-04 08:56:01|45|2026|08032|Azúcar, caramelos y chocolate|Mermelada y miel|18
+1209|2026-11-04 08:56:07|45|2026|08032|Azúcar, caramelos y chocolate|Turrones|24
+1210|2026-11-04 08:56:12|45|2026|08032|Bebé|Alimentación infantil|37
+1211|2026-11-04 08:56:18|45|2026|08032|Bodega|Cerveza|67
+1212|2026-11-04 08:56:24|45|2026|08032|Bodega|Cerveza sin alcohol|17
+1213|2026-11-04 08:56:29|45|2026|08032|Bodega|Licores|49
+1214|2026-11-04 08:56:35|45|2026|08032|Bodega|Sidra y cava|16
+1215|2026-11-04 08:56:40|45|2026|08032|Bodega|Tinto de verano y sangría|8
+1216|2026-11-04 08:56:46|45|2026|08032|Bodega|Vino blanco|30
+1217|2026-11-04 08:56:51|45|2026|08032|Bodega|Vino lambrusco y espumoso|5
+1218|2026-11-04 08:56:57|45|2026|08032|Bodega|Vino rosado|4
+1219|2026-11-04 08:57:02|45|2026|08032|Bodega|Vino tinto|32
+1220|2026-11-04 08:57:08|45|2026|08032|Cacao, café e infusiones|Cacao soluble y chocolate a la taza|15
+1221|2026-11-04 08:57:13|45|2026|08032|Cacao, café e infusiones|Café cápsula y monodosis|27
+1222|2026-11-04 08:57:19|45|2026|08032|Cacao, café e infusiones|Café molido y en grano|17
+1223|2026-11-04 08:57:24|45|2026|08032|Cacao, café e infusiones|Café soluble y otras bebidas|19
+1224|2026-11-04 08:57:30|45|2026|08032|Cacao, café e infusiones|Té e infusiones|27
+1225|2026-11-04 08:57:35|45|2026|08032|Carne|Arreglos|16
+1226|2026-11-04 08:57:41|45|2026|08032|Carne|Aves y pollo|51
+1227|2026-11-04 08:57:46|45|2026|08032|Carne|Carne congelada|15
+1228|2026-11-04 08:57:52|45|2026|08032|Carne|Cerdo|39
+1229|2026-11-04 08:57:57|45|2026|08032|Carne|Conejo y cordero|7
+1230|2026-11-04 08:58:03|45|2026|08032|Carne|Embutido|12
+1231|2026-11-04 08:58:08|45|2026|08032|Carne|Hamburguesas y picadas|26
+1232|2026-11-04 08:58:14|45|2026|08032|Carne|Vacuno|12
+1233|2026-11-04 08:58:19|45|2026|08032|Carne|Empanados y elaborados|29
+1234|2026-11-04 08:58:25|45|2026|08032|Cereales y galletas|Cereales|42
+1235|2026-11-04 08:58:31|45|2026|08032|Cereales y galletas|Galletas|62
+1236|2026-11-04 08:58:36|45|2026|08032|Cereales y galletas|Tortitas|8
+1237|2026-11-04 08:58:42|45|2026|08032|Charcutería y quesos|Aves y jamón cocido|43
+1238|2026-11-04 08:58:48|45|2026|08032|Charcutería y quesos|Bacón y salchichas|26
+1239|2026-11-04 08:58:53|45|2026|08032|Charcutería y quesos|Chopped y mortadela|10
+1240|2026-11-04 08:58:59|45|2026|08032|Charcutería y quesos|Embutido curado|52
+1241|2026-11-04 08:59:04|45|2026|08032|Charcutería y quesos|Jamón serrano|32
+1242|2026-11-04 08:59:10|45|2026|08032|Charcutería y quesos|Paté y sobrasada|22
+1243|2026-11-04 08:59:15|45|2026|08032|Charcutería y quesos|Queso curado, semicurado y tierno|43
+1244|2026-11-04 08:59:21|45|2026|08032|Charcutería y quesos|Queso lonchas, rallado y en porciones|26
+1245|2026-11-04 08:59:27|45|2026|08032|Charcutería y quesos|Queso untable, fresco y especialidades|41
+1246|2026-11-04 08:59:32|45|2026|08032|Congelados|Arroz y pasta|15
+1247|2026-11-04 08:59:37|45|2026|08032|Congelados|Carne|15
+1248|2026-11-04 08:59:43|45|2026|08032|Congelados|Fruta y verdura|59
+1249|2026-11-04 08:59:49|45|2026|08032|Congelados|Helados|52
+1250|2026-11-04 08:59:54|45|2026|08032|Congelados|Marisco|20
+1251|2026-11-04 08:59:59|45|2026|08032|Congelados|Pescado|34
+1252|2026-11-04 09:00:05|45|2026|08032|Congelados|Pizzas|15
+1253|2026-11-04 09:00:11|45|2026|08032|Congelados|Rebozados|31
+1254|2026-11-04 09:00:16|45|2026|08032|Congelados|Tartas y churros|19
+1255|2026-11-04 09:00:22|45|2026|08032|Conservas, caldos y cremas|Atún y otras conservas de pescado|31
+1256|2026-11-04 09:00:27|45|2026|08032|Conservas, caldos y cremas|Berberechos y mejillones|11
+1257|2026-11-04 09:00:33|45|2026|08032|Conservas, caldos y cremas|Conservas de verdura y frutas|54
+1258|2026-11-04 09:00:38|45|2026|08032|Conservas, caldos y cremas|Gazpacho y cremas|20
+1259|2026-11-04 09:00:44|45|2026|08032|Conservas, caldos y cremas|Sopa y caldo|23
+1260|2026-11-04 09:00:49|45|2026|08032|Conservas, caldos y cremas|Tomate|17
+1261|2026-11-04 09:00:55|45|2026|08032|Fruta y verdura|Fruta|45
+1262|2026-11-04 09:01:00|45|2026|08032|Fruta y verdura|Lechuga y ensalada preparada|30
+1263|2026-11-04 09:01:06|45|2026|08032|Fruta y verdura|Verdura|81
+1264|2026-11-04 09:01:11|45|2026|08032|Huevos, leche y mantequilla|Huevos|11
+1265|2026-11-04 09:01:17|45|2026|08032|Huevos, leche y mantequilla|Leche y bebidas vegetales|117
+1266|2026-11-04 09:01:22|45|2026|08032|Huevos, leche y mantequilla|Mantequilla y margarina|25
+1267|2026-11-04 09:01:28|45|2026|08032|Marisco y pescado|Marisco|34
+1268|2026-11-04 09:01:33|45|2026|08032|Marisco y pescado|Pescado congelado|48
+1269|2026-11-04 09:01:39|45|2026|08032|Marisco y pescado|Pescado fresco|48
+1270|2026-11-04 09:01:44|45|2026|08032|Marisco y pescado|Salazones y ahumados|16
+1271|2026-11-04 09:01:50|45|2026|08032|Panadería y pastelería|Bollería de horno|37
+1272|2026-11-04 09:01:56|45|2026|08032|Panadería y pastelería|Bollería envasada|59
+1273|2026-11-04 09:02:01|45|2026|08032|Panadería y pastelería|Harina y preparado repostería|40
+1274|2026-11-04 09:02:07|45|2026|08032|Panadería y pastelería|Pan de horno|46
+1275|2026-11-04 09:02:12|45|2026|08032|Panadería y pastelería|Pan de molde y otras especialidades|39
+1276|2026-11-04 09:02:18|45|2026|08032|Panadería y pastelería|Pan tostado y rallado|29
+1277|2026-11-04 09:02:23|45|2026|08032|Panadería y pastelería|Picos, rosquilletas y picatostes|20
+1278|2026-11-04 09:02:28|45|2026|08032|Panadería y pastelería|Tartas y pasteles|17
+1279|2026-11-04 09:02:34|45|2026|08032|Pizzas y platos preparados|Listo para Comer|22
+1280|2026-11-04 09:02:39|45|2026|08032|Pizzas y platos preparados|Pizzas|43
+1281|2026-11-04 09:02:45|45|2026|08032|Pizzas y platos preparados|Platos preparados calientes|68
+1282|2026-11-04 09:02:51|45|2026|08032|Pizzas y platos preparados|Platos preparados fríos|28
+1283|2026-11-04 09:02:56|45|2026|08032|Postres y yogures|Bífidus|17
+1284|2026-11-04 09:03:02|45|2026|08032|Postres y yogures|Flan y natillas|12
+1285|2026-11-04 09:03:07|45|2026|08032|Postres y yogures|Gelatina y otros postres|26
+1286|2026-11-04 09:03:12|45|2026|08032|Postres y yogures|Postres de soja|8
+1287|2026-11-04 09:03:18|45|2026|08032|Postres y yogures|Yogures desnatados|14
+1288|2026-11-04 09:03:23|45|2026|08032|Postres y yogures|Yogures griegos|10
+1289|2026-11-04 09:03:29|45|2026|08032|Postres y yogures|Yogures líquidos|31
+1290|2026-11-04 09:03:34|45|2026|08032|Postres y yogures|Yogures naturales y sabores|20
+1291|2026-11-04 09:03:40|45|2026|08032|Postres y yogures|Yogures y postres infantiles|9
+1292|2026-11-04 09:03:45|45|2026|08032|Zumos|Fruta variada|28
+1293|2026-11-04 09:03:51|45|2026|08032|Zumos|Melocotón y piña|10
+1294|2026-11-04 09:03:56|45|2026|08032|Zumos|Naranja|12
+1295|2026-11-04 09:04:02|45|2026|08032|Zumos|Tomate y otros sabores|8
