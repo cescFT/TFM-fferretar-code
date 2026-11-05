@@ -12,6 +12,7 @@ from grocery_scraper.constants.constants_variables import constants_variables_ge
 from ewo.ewo_matcher_ingredients import match_ewo_ingredients
 from ewo.ewo_matcher_ingredients_rudimentary import match_ewo_ingredients as match_ewo_ingredients_rudimentary
 from grocery_scraper.utils.utils import normalize_text
+from ewo.ewo_direct_punctuation_checker import check_direct_punctuation
 import pandas as pd
 
 NUTRIMENTS_DM_EWO = constants_variables_getter("NUTRIMENTS_DM_EWO")
@@ -42,8 +43,14 @@ def calculate_ultraprocessed_punctuation(
         if product.get_alcohol_grades():
             return {}
 
-        print(f"The product {product.get_grocery_id()} {product.get_product_name()} has directly a good punctuation.")
-        return {'qualification': "1"}
+        if check_direct_punctuation(product):
+            print(f"The product {product.get_grocery_id()} {product.get_product_name()} has directly a good punctuation.")
+            return {'qualification': "1"}
+        else:
+            print(f"Although this product has Ewö category,"
+                  f" it not contains ingredients and its not in lists of categories and subcategories"
+                  f" to have directly a good punctuation.")
+            return {}
 
     punctuation_step1, ingredients_matched = calculate_first_step_punctuation(
         product.get_ingredients(),

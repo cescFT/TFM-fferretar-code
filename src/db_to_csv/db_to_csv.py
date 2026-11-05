@@ -9,6 +9,7 @@ import pandas as pd
 import json
 
 from dto.product_nutritional_data import ProductNutrimentsDTO
+from ewo.ewo_direct_punctuation_checker import check_direct_punctuation
 from utils.factory.product_nutriments_factory import create_from_product_id
 from utils.utils import (
     get_path_sqlite_db,
@@ -54,6 +55,10 @@ def check_if_ewo_ultraprocessed_level_can_be_calculated(product: ProductNutrimen
 
     if product.get_alcohol_grades():
         return "HAS_ALCOHOL"
+
+    if not product.get_ingredients():
+        if not check_direct_punctuation(product):
+            return "MISSING_EWÖ"
 
     return ""
 

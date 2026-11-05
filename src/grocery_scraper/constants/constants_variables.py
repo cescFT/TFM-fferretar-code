@@ -32,6 +32,24 @@ constants = {
         "Velas y decoración",
         "Hielo"
     ],
+    "SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS": [
+        "Aceite vinagre y sal",
+        "Agua",
+        "Arroz",
+        "Legumbres",
+        "Vacuno",
+        "Conejo y cordero",
+        "Cerdo",
+        "Fruta y verdura",
+        "Huevos",
+        "Pescado fresco",
+    ],
+    "SECOND_SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS": [
+        "Pollo",
+        "Lechuga",
+        "Marisco",
+        "Marisco de concha"
+    ],
     "NOT_INGREDIENTS_SAME_NAME_CATEGORIES": [
         "Fruta y verdura"
     ],

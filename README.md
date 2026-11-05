@@ -112,6 +112,7 @@ is just to check specific sql's used in other parts of the project.
   is used to calculate nutriscore. Thus, new variables added are nutritrional data and nutriscore.
     * `ciqual/requests.py`: Contains ElasticSearch query to get data from ciqual for then calculate planet score.
     * `ewo/calculate_ultraprocessed_punctuation.py`: Contains the implementation of the algorithm to calculate ultraprocessed qualifications of products.
+    * `ewo/ewo_direct_punctuation_checker.py`: Checks if the product has direct punctuation on basis the subcategories and second subcategories.
     * `ewo/parse_grocery_categories_to_ewo_categories.py`: Parses grocery categories to EWO categories.
     * `ewo/ewo_matcher_ingredients_rudimentary.py`: First version of EWO matcher ingredients.
     * `ewo/ewo_matcher_ingredients.py`: Second version of EWO matcher ingredients using ClaudeAI. This is the code used.
