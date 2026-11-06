@@ -32,7 +32,7 @@ def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO) -> str:
     """
 
     if not product.get_nutriments():
-        return "NO_NUTRIMENTS"
+        return "NO_NUTRIENTS"
 
     category = parse_grocery_cat_to_nutriscore_cat(product)
 
