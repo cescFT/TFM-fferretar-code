@@ -64,8 +64,9 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
             "Pasta rellena",
             "Fideos orientales",
             "Lasaña y canelones",
-            "Macarrones, pajaritas y hélices",
-            "Spaghetti y tallarines"
+            "Macarrones pajaritas y hélices",
+            "Spaghetti y tallarines",
+            "Fideos"
         ]:
             return "SAVORY"
 

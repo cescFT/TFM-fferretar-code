@@ -21,9 +21,6 @@ def check_direct_punctuation(product: ProductNutrimentsDTO) -> bool:
         bool: True if the product has direct a good punctuation, False otherwise.
     """
 
-    if product.get_ingredients():
-        return False
-
     if product.get_subcategory() in SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS:
         return True
 

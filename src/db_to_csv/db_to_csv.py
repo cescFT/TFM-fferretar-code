@@ -19,6 +19,7 @@ from utils.utils import (
 )
 
 from nutriscore.parse_grocery_category_to_nutriscore_category import parse as parse_grocery_cat_to_nutriscore_cat
+from nutritional_data.ewo.parse_grocery_categories_to_ewo_categories import parse as parse_grocery_cat_to_ewo_cat
 
 def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO) -> str:
     """
@@ -53,10 +54,12 @@ def check_if_ewo_ultraprocessed_level_can_be_calculated(product: ProductNutrimen
         str: String with the information about if ewo ultraprocessing level can not be calculated.
     """
 
-    if product.get_alcohol_grades():
-        return "HAS_ALCOHOL"
+    category = parse_grocery_cat_to_ewo_cat(product)
 
-    if not product.get_ingredients():
+    if not product.get_ingredients() or not category:
+        if product.get_alcohol_grades():
+            return "HAS_ALCOHOL"
+
         if not check_direct_punctuation(product):
             return "MISSING_EWÖ"
 
