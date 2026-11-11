@@ -31,16 +31,16 @@ def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO) -> str:
         str: String with the information about if nutriscore can not be calculated.
     """
 
-    if not product.get_nutriments():
-        return "NO_NUTRIENTS"
-
     category = parse_grocery_cat_to_nutriscore_cat(product)
+
+    if category == "HAS_ALCOHOL":
+        return "HAS_ALCOHOL"
 
     if not category:
         return "NOT_NUTRISCORE_CATEGORY"
 
-    if category == "HAS_ALCOHOL":
-        return "HAS_ALCOHOL"
+    if not product.get_nutriments():
+        return "NO_NUTRIENTS"
 
     return ""
 
