@@ -58,8 +58,13 @@ def calculate_ultraprocessed_punctuation(
         ewo_ingredients
     )
 
+    need_to_calculate_extra_sugar = False
     if punctuation_step1 != 4:
-        punctuation_step2, extra_sugar_added = calculate_second_step_punctuation(product, category, ingredients_matched)
+        punctuation_step2, extra_sugar_added, need_to_calculate_extra_sugar = calculate_second_step_punctuation(
+            product,
+            category,
+            ingredients_matched
+        )
 
         qualification = calculate_third_step_punctuation(punctuation_step1, punctuation_step2)
     else:
@@ -84,7 +89,10 @@ def calculate_ultraprocessed_punctuation(
         'qualification': str(qualification),
         'category': category,
         'ingredients_matched': ingredients_matched_data,
-        'extra_sugar_added': extra_sugar_added
+        'extra_sugar_added_data': {
+            'extra_sugar_added': extra_sugar_added,
+            'need_to_calculate_extra_sugar': need_to_calculate_extra_sugar
+        }
     }
 
     return punct_dict
@@ -153,7 +161,8 @@ def calculate_second_step_punctuation(
             ingredients_extra_sugar.append(ingredient)
 
     extra_sugar = 0
-    if len(ingredients_extra_sugar) > 0:
+    need_to_calculate_extra_sugar = len(ingredients_extra_sugar) > 0
+    if need_to_calculate_extra_sugar:
         print(f"Total sugars in {product.get_product_name()}: {sugars_total}g of {carbohydrate_total}g carbohydrates.")
         ingredient_names = ", ".join([ingredient.get_ingredient_name() for ingredient in ingredients_extra_sugar])
         extra_sugar = reverse_calculation_extra_sugar(
@@ -168,13 +177,13 @@ def calculate_second_step_punctuation(
 
     if category == "SAVORY":
         if sugars_total > 3:
-            return 4, extra_sugar
+            return 4, extra_sugar, need_to_calculate_extra_sugar
         elif 1 <= sugars_total <= 3:
-            return 3, extra_sugar
+            return 3, extra_sugar, need_to_calculate_extra_sugar
         elif 0.5 <= sugars_total <= 1:
-            return 2, extra_sugar
+            return 2, extra_sugar, need_to_calculate_extra_sugar
         else:
-            return 1, extra_sugar
+            return 1, extra_sugar, need_to_calculate_extra_sugar
     else:
         nutriments_total_dm_g = 0
         for nutriment in product.get_nutriments():
@@ -189,13 +198,13 @@ def calculate_second_step_punctuation(
         t3 = 50.0
 
         if sugars_total <= t1:
-            return 1, extra_sugar
+            return 1, extra_sugar, need_to_calculate_extra_sugar
         elif sugars_total <= t2:
-            return 2, extra_sugar
+            return 2, extra_sugar, need_to_calculate_extra_sugar
         elif sugars_total <= t3:
-            return 3, extra_sugar
+            return 3, extra_sugar, need_to_calculate_extra_sugar
         else:
-            return 4, extra_sugar
+            return 4, extra_sugar, need_to_calculate_extra_sugar
 
 def calculate_first_step_punctuation(
     ingredients: str,
