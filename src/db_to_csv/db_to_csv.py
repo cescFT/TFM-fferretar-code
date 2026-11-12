@@ -76,6 +76,10 @@ def generate_csv_product_data_for_analysis(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     df['nutriscore'] = df['nutriscore'].apply(lambda x: extract_json_key(x, 'letter'))
+    df['extra_sugar_added'] = df['ewo_ultra_processed_punctuation'].apply(
+        lambda x: json.loads(x).get('extra_sugar_added_data', {}).get('need_to_calculate_extra_sugar')
+        if pd.notna(x) else False
+    )
     df['ewo_ultra_processed_punctuation'] = df['ewo_ultra_processed_punctuation'].apply(
         lambda x: extract_json_key(x, 'qualification'))
 
