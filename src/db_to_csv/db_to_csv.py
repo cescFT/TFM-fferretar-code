@@ -6,9 +6,10 @@ Author: Francesc Ferré Tarrés
 
 import sqlite3
 import pandas as pd
+import numpy as np
 import json
 
-from dto.product_nutritional_data import ProductNutrimentsDTO
+from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO
 from ewo.ewo_direct_punctuation_checker import check_direct_punctuation
 from utils.factory.product_nutriments_factory import create_from_product_id
 from utils.utils import (
@@ -31,7 +32,12 @@ def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO) -> str:
         str: String with the information about if nutriscore can not be calculated.
     """
 
-    category = parse_grocery_cat_to_nutriscore_cat(product)
+    category = None
+    if check_direct_punctuation(product) and not product.get_nutriments():
+        category = "GOOD_PUNCTUATION_DIRECTLY"
+
+    if not category:
+        category = parse_grocery_cat_to_nutriscore_cat(product)
 
     if category == "HAS_ALCOHOL":
         return "HAS_ALCOHOL"
@@ -39,7 +45,7 @@ def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO) -> str:
     if not category:
         return "NOT_NUTRISCORE_CATEGORY"
 
-    if not product.get_nutriments():
+    if not product.get_nutriments() and not category:
         return "NO_NUTRIENTS"
 
     return ""
@@ -61,9 +67,45 @@ def check_if_ewo_ultraprocessed_level_can_be_calculated(product: ProductNutrimen
             return "HAS_ALCOHOL"
 
         if not check_direct_punctuation(product):
-            return "MISSING_EWÖ"
+            sugars_total = 0
+            nutriment: NutrimentDataDTO
+            for nutriment in product.get_nutriments():
+                if nutriment.get_nutriment_name() == "sucres_g":
+                    sugars_total = nutriment.get_nutriment_value()
+                    break
+
+            if sugars_total == 0:
+                return "MISSING_EWÖ"
 
     return ""
+
+def check_zero_fvl_not_enough_data(nutriscore_json: str) -> bool:
+    """
+    Function to check if zero fvl is for not have enough data.
+    Args:
+        nutriscore_json (str): Nutriscore value.
+
+    Returns:
+        bool: True if not enough data. Otherwise False.
+    """
+
+    if pd.isna(nutriscore_json):
+        return False
+
+    try:
+        data = json.loads(nutriscore_json)
+    except (json.JSONDecodeError, TypeError):
+        return False
+
+    if 'request_made' in data:
+        if '0fvl_not_enough_information' in data['request_made'] and \
+            'fruit_percentage' in data['request_made']:
+            not_enough_data = data['request_made']['0fvl_not_enough_information']
+            fruit_pct = data['request_made']['fruit_percentage']
+
+            return not_enough_data == True and fruit_pct == 0.0
+
+    return False
 
 def generate_csv_product_data_for_analysis(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -75,7 +117,9 @@ def generate_csv_product_data_for_analysis(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: dataframe with the product data for analysis.
     """
 
+    df['zero_fvl_not_enough_data'] = df['nutriscore'].apply(lambda x: check_zero_fvl_not_enough_data(x))
     df['nutriscore'] = df['nutriscore'].apply(lambda x: extract_json_key(x, 'letter'))
+    df['planetscore'] = df['planetscore'].apply(lambda x: extract_json_key(x, 'letter'))
     df['extra_sugar_added'] = df['ewo_ultra_processed_punctuation'].apply(
         lambda x: json.loads(x).get('extra_sugar_added_data', {}).get('need_to_calculate_extra_sugar')
         if pd.notna(x) else False
@@ -111,6 +155,13 @@ def generate_csv_product_data_for_analysis(df: pd.DataFrame) -> pd.DataFrame:
     df["can_ewo_be_calculated"] = (
         df["id_product"].map(ewo_be_calculated)
     )
+
+    df["can_planet_score_be_calculated"] = np.where(
+        df['planetscore'].notna() & (df['planetscore'] != ""),
+        "",
+        "NOT_ASSESSED_BY_PLANET_SCORE"
+    )
+
     print("CSV product data ready to be generated.")
     return df
 

@@ -173,8 +173,11 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
 
         if "Guacamole" in product_name:
             return "SAVORY"
-        if second_subcategory in ["Ensalada preparada", "Verduras al vapor"]:
+        if second_subcategory in ["Ensalada preparada", ]:
             return "SAVORY"
+
+        if second_subcategory in ["Verduras al vapor"]:
+            return "SWEET"
 
         if second_subcategory in ["Setas y champiñones"]:
             return "SAVORY"

@@ -38,25 +38,40 @@ def calculate_ultraprocessed_punctuation(
     category = parse(product)
 
     print("Category calculated: ", category)
-
+    exclude_step1 = False
     if not product.get_ingredients() or not category:
         if product.get_alcohol_grades():
+            print("This product contains alcohol. So Ewö can't be calculated.")
             return {}
 
         if check_direct_punctuation(product):
             print(f"The product {product.get_grocery_id()} {product.get_product_name()} has directly a good punctuation.")
             return {'qualification': "1"}
         else:
-            print(f"Although this product has Ewö category,"
-                  f" it not contains ingredients and its not in lists of categories and subcategories"
-                  f" to have directly a good punctuation.")
-            return {}
+            sugars_total = 0
+            nutriment: NutrimentDataDTO
+            for nutriment in product.get_nutriments():
+                if nutriment.get_nutriment_name() == "sucres_g":
+                    sugars_total = nutriment.get_nutriment_value()
+                    break
 
-    punctuation_step1, ingredients_matched = calculate_first_step_punctuation(
-        product.get_ingredients(),
-        product.get_certifications(),
-        ewo_ingredients
-    )
+            if sugars_total == 0:
+                print(f"Although this product has Ewö category,"
+                      f" it not contains ingredients and its not in lists of categories and subcategories"
+                      f" to have directly a good punctuation and not have sugar content.")
+                return {}
+            else:
+                exclude_step1 = True
+
+    punctuation_step1 = None
+    ingredients_matched = []
+
+    if not exclude_step1:
+        punctuation_step1, ingredients_matched = calculate_first_step_punctuation(
+            product.get_ingredients(),
+            product.get_certifications(),
+            ewo_ingredients
+        )
 
     need_to_calculate_extra_sugar = False
     if punctuation_step1 != 4:
@@ -66,7 +81,10 @@ def calculate_ultraprocessed_punctuation(
             ingredients_matched
         )
 
-        qualification = calculate_third_step_punctuation(punctuation_step1, punctuation_step2)
+        if punctuation_step1 is not None:
+            qualification = calculate_third_step_punctuation(punctuation_step1, punctuation_step2)
+        else:
+            qualification = punctuation_step2
     else:
         print("Punctuation of step 1 is 4, skipping step 2 because according with Ewö algorithm,"
               " the product is already ultraprocessed (4).")

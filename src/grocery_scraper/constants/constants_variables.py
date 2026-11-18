@@ -32,6 +32,9 @@ constants = {
         "Velas y decoración",
         "Hielo"
     ],
+    "CATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS": [
+        "Fruta y verdura",
+    ],
     "SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS": [
         "Aceite vinagre y sal",
         "Agua",
@@ -40,7 +43,6 @@ constants = {
         "Vacuno",
         "Conejo y cordero",
         "Cerdo",
-        "Fruta y verdura",
         "Huevos",
         "Pescado fresco",
     ],
