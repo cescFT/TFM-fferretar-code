@@ -182,7 +182,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
         if subcategory in ["Marisco", "Pescado congelado", "Salazones y ahumados"]:
             return "GENERAL_FOOD"
         elif subcategory == "Pescado fresco":
-            if "Elaborado" in product_name:
+            if "Elaborado" in product_name or "rebozada" in product_name or "rebozado" in product_name:
                 return "GENERAL_FOOD"
     elif category == "Panadería y pastelería":
         if subcategory in [

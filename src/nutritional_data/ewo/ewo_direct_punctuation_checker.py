@@ -7,6 +7,7 @@ Author: Francesc Ferré Tarrés
 from dto.product_nutritional_data import ProductNutrimentsDTO
 from grocery_scraper.constants.constants_variables import constants_variables_getter
 
+CATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS = constants_variables_getter("CATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS")
 SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS = constants_variables_getter("SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS")
 SECOND_SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS = constants_variables_getter("SECOND_SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS")
 
@@ -20,6 +21,9 @@ def check_direct_punctuation(product: ProductNutrimentsDTO) -> bool:
     Returns:
         bool: True if the product has direct a good punctuation, False otherwise.
     """
+
+    if product.get_category() in CATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS:
+        return True
 
     if product.get_subcategory() in SUBCATEGORIES_TO_HAVE_GOOD_EWO_WHEN_NO_INGREDIENTS:
         return True
