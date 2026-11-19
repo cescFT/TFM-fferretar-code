@@ -159,7 +159,7 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
         if subcategory == "Lechuga y ensalada preparada":
             if second_subcategory == "Ensalada preparada":
                 return "GENERAL_FOOD"
-        if subcategory == "Verdura":
+        if subcategory in ["Fruta","Verdura"]:
             return "GENERAL_FOOD"
     elif category == "Huevos leche y mantequilla":
         if subcategory == "Leche y bebidas vegetales":
@@ -176,14 +176,11 @@ def parse(product: ProductNutrimentsDTO) -> str|None:
         elif subcategory == "Mantequilla y margarina":
             return "FATS_OILS_NUTS_SEEDS"
         elif subcategory == "Huevos":
-            if "Claras de huevo líquidas" in product_name:
+            if "Claras de huevo líquidas" in product_name or "Huevo hilado" in product_name:
                 return "GENERAL_FOOD"
     elif category == "Marisco y pescado":
-        if subcategory in ["Marisco", "Pescado congelado", "Salazones y ahumados"]:
+        if subcategory in ["Marisco", "Pescado congelado", "Salazones y ahumados", "Pescado fresco"]:
             return "GENERAL_FOOD"
-        elif subcategory == "Pescado fresco":
-            if "Elaborado" in product_name or "rebozada" in product_name or "rebozado" in product_name:
-                return "GENERAL_FOOD"
     elif category == "Panadería y pastelería":
         if subcategory in [
             "Bollería de horno",
