@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import json
 
-from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO
+from dto.product_nutritional_data import ProductNutrimentsDTO
 from ewo.ewo_direct_punctuation_checker import check_direct_punctuation
 from utils.factory.product_nutriments_factory import create_from_product_id
 from utils.utils import (
@@ -22,23 +22,17 @@ from utils.utils import (
 from nutriscore.parse_grocery_category_to_nutriscore_category import parse as parse_grocery_cat_to_nutriscore_cat
 from nutritional_data.ewo.parse_grocery_categories_to_ewo_categories import parse as parse_grocery_cat_to_ewo_cat
 
-def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO, nutriscore: str) -> str:
+def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO) -> str:
     """
     Function to check if product can be calculated nutriscore.
     Args:
         product (ProductNutrimentsDTO): product dto.
-        nutriscore (str): Nutriscore value.
 
     Returns:
         str: String with the information about if nutriscore can not be calculated.
     """
 
-    category = None
-    if check_direct_punctuation(product) and not product.get_nutriments():
-        category = "GOOD_PUNCTUATION_DIRECTLY"
-
-    if not category:
-        category = parse_grocery_cat_to_nutriscore_cat(product)
+    category = parse_grocery_cat_to_nutriscore_cat(product)
 
     if category == "HAS_ALCOHOL":
         return "HAS_ALCOHOL"
@@ -46,7 +40,9 @@ def check_if_nutriscore_can_be_calculated(product: ProductNutrimentsDTO, nutrisc
     if not category:
         return "NOT_NUTRISCORE_CATEGORY"
 
-    if not product.get_nutriments() and not nutriscore:
+    if not product.get_nutriments():
+        if check_direct_punctuation(product):
+            return "NO_NUTRIENTS_WHOLE_FOODS"
         return "NO_NUTRIENTS"
 
     return ""
@@ -130,7 +126,6 @@ def generate_csv_product_data_for_analysis(df: pd.DataFrame) -> pd.DataFrame:
 
     print("Preparing data to check if nutriscore and ewo can be calculated")
     product_dtos = {}
-    nutriscores_indexed_by_product_id = dict(zip(df['id_product'], df['nutriscore']))
     print("Creating product DTOs")
     id_products = df['id_product'].unique()
     id_product_idx = 1
@@ -145,8 +140,7 @@ def generate_csv_product_data_for_analysis(df: pd.DataFrame) -> pd.DataFrame:
     nutri_score_be_calculated = {}
     ewo_be_calculated = {}
     for product_dto in product_dtos.values():
-        nutriscore_value = nutriscores_indexed_by_product_id[product_dto.get_grocery_id()]
-        can_nutriscore_be_calculated = check_if_nutriscore_can_be_calculated(product_dto, nutriscore_value)
+        can_nutriscore_be_calculated = check_if_nutriscore_can_be_calculated(product_dto)
         can_ewo_be_calculated = check_if_ewo_ultraprocessed_level_can_be_calculated(product_dto)
         nutri_score_be_calculated[product_dto.get_grocery_id()] = can_nutriscore_be_calculated
         ewo_be_calculated[product_dto.get_grocery_id()] = can_ewo_be_calculated

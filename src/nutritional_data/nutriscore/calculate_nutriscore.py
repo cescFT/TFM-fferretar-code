@@ -4,7 +4,7 @@ TFM: The healthiness and sustainability of food promotions in a Spanish online s
 Author: Francesc Ferré Tarrés
 """
 
-from dto.product_nutritional_data import ProductNutrimentsDTO, NutrimentDataDTO
+from dto.product_nutritional_data import ProductNutrimentsDTO
 from nutriscore.parse_grocery_category_to_nutriscore_category import parse
 from nutriscore.nutriments_getter import get_nutriments
 from constants.constants_variables import constants_variables_getter
@@ -13,7 +13,6 @@ from nutriscore.red_meat_calculator import calculate as calculate_red_meat
 from nutriscore.cheese_calculator import calculate as calculate_cheese
 from nutriscore.fats_oils_nuts_seeds_calculator import calculate as calculate_fats_oils_nuts_seeds
 from nutriscore.beverages_calculator import calculate as calculate_beverages
-from ewo.ewo_direct_punctuation_checker import check_direct_punctuation
 
 NUTRIMENTS_NUTRISCORE = constants_variables_getter("NUTRIMENTS_NUTRISCORE")
 
@@ -28,19 +27,14 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
         dict: nutriscore for specific product.
     """
 
-    print(f"Product: {product.get_product_name()}\n")
     data_to_return = {}
 
-    category_nutriscore = None
-    if check_direct_punctuation(product) and not product.get_nutriments():
-        category_nutriscore = "GOOD_PUNCTUATION_DIRECTLY"
-
-    if not product.get_nutriments() and not category_nutriscore:
+    print(f"Product: {product.get_product_name()}\n")
+    if not product.get_nutriments():
         print("There are no nutriments for this product, we cannot calculate nutriscore.")
         return data_to_return
 
-    if not category_nutriscore:
-        category_nutriscore = parse(product)
+    category_nutriscore = parse(product)
 
     print(f"Nutriscore category: {category_nutriscore}\n")
 
@@ -49,7 +43,7 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
         return data_to_return
 
     nutriments = {}
-    if category_nutriscore not in ["WATER", "GOOD_PUNCTUATION_DIRECTLY"]:
+    if category_nutriscore not in ["WATER"]:
         nutriments_to_get = NUTRIMENTS_NUTRISCORE[category_nutriscore]
 
         nutriments = get_nutriments(nutriments_to_get, product)
@@ -81,7 +75,7 @@ def calculate_nutriscore(product: ProductNutrimentsDTO) -> dict:
         nutriments['ingredients'] = product.get_ingredients()
         data_to_return = calculate_beverages(nutriments)
         del nutriments['ingredients']
-    elif category_nutriscore in ["WATER", "GOOD_PUNCTUATION_DIRECTLY"]:
+    elif category_nutriscore in ["WATER"]:
         data_to_return = {'letter': 'A'}
 
     data_to_return['request_made'] = nutriments
